@@ -324,8 +324,19 @@ export default function QrGenerator() {
         </div>
       </main>
 
-      <footer className="text-center py-8 text-xs text-zinc-400 dark:text-zinc-600">
-        {t.footer}
+      <footer className="text-center py-8 text-xs text-zinc-400 dark:text-zinc-600 space-y-1">
+        <p>{t.footer}</p>
+        <p>
+          Un outil par{' '}
+          <a
+            href="https://nscreative.cg"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-zinc-500 dark:text-zinc-400 hover:text-blue-500 dark:hover:text-blue-400 underline underline-offset-2 transition-colors"
+          >
+            nscreative.cg
+          </a>
+        </p>
       </footer>
     </div>
   )
