@@ -8,6 +8,7 @@ type Lang = 'fr' | 'en'
 type DotType = 'square' | 'rounded' | 'dots' | 'classy' | 'classy-rounded' | 'extra-rounded'
 type CornerSquareType = 'square' | 'extra-rounded' | 'dot'
 type CornerDotType = 'square' | 'dot'
+type GradientType = 'linear' | 'radial'
 
 interface QrConfig {
   dotColor: string
@@ -29,13 +30,22 @@ const T = {
     copiedTitle: 'Copié !',
     presets: 'Styles prédéfinis',
     colors: 'Couleurs',
+    solid: 'Unie',
+    gradient: 'Dégradé',
     foreground: 'Premier plan',
     background: 'Arrière-plan',
+    color1: 'Couleur 1',
+    color2: 'Couleur 2',
+    gradientDir: 'Direction',
     swapTitle: 'Inverser les couleurs',
     fgColorAria: 'Couleur du premier plan',
     bgColorAria: "Couleur de l'arrière-plan",
     fgHexAria: 'Valeur hexadécimale du premier plan',
     bgHexAria: "Valeur hexadécimale de l'arrière-plan",
+    color1Aria: 'Première couleur du dégradé',
+    color2Aria: 'Deuxième couleur du dégradé',
+    color1HexAria: 'Valeur hexadécimale de la couleur 1',
+    color2HexAria: 'Valeur hexadécimale de la couleur 2',
     dotStyle: 'Style des points',
     cornerFrame: 'Cadre des coins',
     cornerCenter: 'Centre des coins',
@@ -43,22 +53,10 @@ const T = {
     exportSizeAria: "Taille d'export en pixels",
     previewInfo: (p: number, e: number) => `Aperçu à ${p} px · Export à ${e} px`,
     footer: 'Aucune donnée stockée · Sans inscription · 100% gratuit',
-    // dot types
-    dotSquare: 'Carré',
-    dotRounded: 'Arrondi',
-    dotDots: 'Points',
-    dotClassy: 'Élégant',
-    dotClassyPlus: 'Élégant +',
-    dotExtraRounded: 'Très arrondi',
-    // corner types
-    cornerSquare: 'Carré',
-    cornerRounded: 'Arrondi',
-    cornerDot: 'Point',
-    // preset names
-    presetClassic: 'Classique',
-    presetRounded: 'Arrondi',
-    presetBlue: 'Bleu',
-    presetDark: 'Sombre',
+    dotSquare: 'Carré', dotRounded: 'Arrondi', dotDots: 'Points',
+    dotClassy: 'Élégant', dotClassyPlus: 'Élégant +', dotExtraRounded: 'Très arrondi',
+    cornerSquare: 'Carré', cornerRounded: 'Arrondi', cornerDot: 'Point',
+    presetClassic: 'Classique', presetRounded: 'Arrondi', presetBlue: 'Bleu', presetDark: 'Sombre',
   },
   en: {
     title: 'QR Code Generator',
@@ -69,13 +67,22 @@ const T = {
     copiedTitle: 'Copied!',
     presets: 'Presets',
     colors: 'Colors',
+    solid: 'Solid',
+    gradient: 'Gradient',
     foreground: 'Foreground',
     background: 'Background',
+    color1: 'Color 1',
+    color2: 'Color 2',
+    gradientDir: 'Direction',
     swapTitle: 'Swap colors',
     fgColorAria: 'Foreground color',
     bgColorAria: 'Background color',
     fgHexAria: 'Foreground hex value',
     bgHexAria: 'Background hex value',
+    color1Aria: 'First gradient color',
+    color2Aria: 'Second gradient color',
+    color1HexAria: 'Color 1 hex value',
+    color2HexAria: 'Color 2 hex value',
     dotStyle: 'Dot style',
     cornerFrame: 'Corner frame',
     cornerCenter: 'Corner center',
@@ -83,32 +90,28 @@ const T = {
     exportSizeAria: 'Export size in pixels',
     previewInfo: (p: number, e: number) => `Preview at ${p} px · Export at ${e} px`,
     footer: 'No data stored · No sign-up · 100% free',
-    // dot types
-    dotSquare: 'Square',
-    dotRounded: 'Rounded',
-    dotDots: 'Dots',
-    dotClassy: 'Classy',
-    dotClassyPlus: 'Classy +',
-    dotExtraRounded: 'Extra round',
-    // corner types
-    cornerSquare: 'Square',
-    cornerRounded: 'Rounded',
-    cornerDot: 'Dot',
-    // preset names
-    presetClassic: 'Classic',
-    presetRounded: 'Rounded',
-    presetBlue: 'Blue',
-    presetDark: 'Dark',
+    dotSquare: 'Square', dotRounded: 'Rounded', dotDots: 'Dots',
+    dotClassy: 'Classy', dotClassyPlus: 'Classy +', dotExtraRounded: 'Extra round',
+    cornerSquare: 'Square', cornerRounded: 'Rounded', cornerDot: 'Dot',
+    presetClassic: 'Classic', presetRounded: 'Rounded', presetBlue: 'Blue', presetDark: 'Dark',
   },
 } as const
 
-// ── Static config (labels derived from translations inside component) ─────────
+// ── Static config ─────────────────────────────────────────────────────────────
 
 const PRESET_CONFIGS: QrConfig[] = [
   { dotColor: '#000000', bgColor: '#ffffff', dotType: 'square', cornerSquareType: 'square', cornerDotType: 'square' },
   { dotColor: '#18181b', bgColor: '#fafafa', dotType: 'rounded', cornerSquareType: 'extra-rounded', cornerDotType: 'dot' },
   { dotColor: '#1d4ed8', bgColor: '#eff6ff', dotType: 'extra-rounded', cornerSquareType: 'extra-rounded', cornerDotType: 'dot' },
   { dotColor: '#e2e8f0', bgColor: '#0f172a', dotType: 'dots', cornerSquareType: 'dot', cornerDotType: 'dot' },
+]
+
+const GRAD_DIRS: { label: string; angle: number; type: GradientType }[] = [
+  { label: '→', angle: 0,   type: 'linear' },
+  { label: '↓', angle: 90,  type: 'linear' },
+  { label: '↘', angle: 45,  type: 'linear' },
+  { label: '↙', angle: 135, type: 'linear' },
+  { label: '◯', angle: 0,   type: 'radial' },
 ]
 
 const PREVIEW_SIZE = 280
@@ -149,9 +152,7 @@ function OptionBtn({ active, onClick, children }: { active: boolean; onClick: ()
 
 function HexInput({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
   const [local, setLocal] = useState(value)
-
   useEffect(() => { setLocal(value) }, [value])
-
   return (
     <input
       type="text"
@@ -167,6 +168,23 @@ function HexInput({ value, onChange, label }: { value: string; onChange: (v: str
       spellCheck={false}
       className="w-[5.5rem] text-xs font-mono text-zinc-700 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 uppercase"
     />
+  )
+}
+
+function ColorSwatch({
+  color, onChange, ariaLabel,
+}: { color: string; onChange: (v: string) => void; ariaLabel: string }) {
+  return (
+    <div className="relative w-9 h-9 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 shadow-sm overflow-hidden shrink-0">
+      <div className="absolute inset-0" style={{ backgroundColor: color }} />
+      <input
+        type="color"
+        aria-label={ariaLabel}
+        value={color}
+        onChange={(e) => onChange(e.target.value)}
+        className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+      />
+    </div>
   )
 }
 
@@ -223,23 +241,34 @@ export default function QrGenerator() {
   const [copied, setCopied] = useState(false)
   const [lang, setLang] = useState<Lang>('fr')
 
+  // QR content
   const [text, setText] = useState('https://example.com')
   const [exportSize, setExportSize] = useState(512)
+
+  // Solid colors
   const [dotColor, setDotColor] = useState('#000000')
   const [bgColor, setBgColor] = useState('#ffffff')
+
+  // Gradient
+  const [useGradient, setUseGradient] = useState(false)
+  const [gradientColor2, setGradientColor2] = useState('#3b82f6')
+  const [gradientType, setGradientType] = useState<GradientType>('linear')
+  const [gradientAngle, setGradientAngle] = useState(0) // degrees
+
+  // Shape
   const [dotType, setDotType] = useState<DotType>('rounded')
   const [cornerSquareType, setCornerSquareType] = useState<CornerSquareType>('extra-rounded')
   const [cornerDotType, setCornerDotType] = useState<CornerDotType>('dot')
 
   const t = T[lang]
 
-  // Sync html[lang] with current language
+  // Sync html[lang]
   useEffect(() => {
     document.documentElement.lang = lang
     document.title = t.title
   }, [lang, t.title])
 
-  // Labels derived from translations
+  // Derived labels
   const dotTypes = [
     { value: 'square' as DotType, label: t.dotSquare },
     { value: 'rounded' as DotType, label: t.dotRounded },
@@ -264,12 +293,25 @@ export default function QrGenerator() {
     { label: t.presetDark, config: PRESET_CONFIGS[3] },
   ]
 
+  // Build gradient spread (applies to dots + corners)
+  const buildGrad = () => ({
+    gradient: useGradient ? {
+      type: gradientType,
+      rotation: (gradientAngle * Math.PI) / 180,
+      colorStops: [
+        { offset: 0, color: dotColor },
+        { offset: 1, color: gradientColor2 },
+      ],
+    } : undefined,
+  })
+
   const applyPreset = (cfg: QrConfig) => {
     setDotColor(cfg.dotColor)
     setBgColor(cfg.bgColor)
     setDotType(cfg.dotType)
     setCornerSquareType(cfg.cornerSquareType)
     setCornerDotType(cfg.cornerDotType)
+    setUseGradient(false)
   }
 
   const copyText = async () => {
@@ -282,10 +324,8 @@ export default function QrGenerator() {
   useEffect(() => {
     import('qr-code-styling').then(({ default: QRCodeStyling }) => {
       qrRef.current = new QRCodeStyling({
-        width: PREVIEW_SIZE,
-        height: PREVIEW_SIZE,
-        data: 'https://example.com',
-        margin: 12,
+        width: PREVIEW_SIZE, height: PREVIEW_SIZE,
+        data: 'https://example.com', margin: 12,
         qrOptions: { errorCorrectionLevel: 'H' },
         dotsOptions: { color: '#000000', type: 'rounded' },
         backgroundOptions: { color: '#ffffff' },
@@ -303,31 +343,31 @@ export default function QrGenerator() {
   // Update on option change
   useEffect(() => {
     if (!ready) return
+    const grad = buildGrad()
     qrRef.current?.update({
-      width: PREVIEW_SIZE,
-      height: PREVIEW_SIZE,
-      data: text.trim() || 'https://example.com',
-      margin: 12,
+      width: PREVIEW_SIZE, height: PREVIEW_SIZE,
+      data: text.trim() || 'https://example.com', margin: 12,
       qrOptions: { errorCorrectionLevel: 'H' },
-      dotsOptions: { color: dotColor, type: dotType },
+      dotsOptions: { color: dotColor, type: dotType, ...grad },
       backgroundOptions: { color: bgColor },
-      cornersSquareOptions: { type: cornerSquareType, color: dotColor },
-      cornersDotOptions: { type: cornerDotType, color: dotColor },
+      cornersSquareOptions: { type: cornerSquareType, color: dotColor, ...grad },
+      cornersDotOptions: { type: cornerDotType, color: dotColor, ...grad },
     })
-  }, [ready, text, dotColor, bgColor, dotType, cornerSquareType, cornerDotType])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, text, dotColor, bgColor, dotType, cornerSquareType, cornerDotType,
+      useGradient, gradientColor2, gradientType, gradientAngle])
 
   const download = async (ext: 'png' | 'svg') => {
     const { default: QRCodeStyling } = await import('qr-code-styling')
+    const grad = buildGrad()
     const qr = new QRCodeStyling({
-      width: exportSize,
-      height: exportSize,
-      data: text.trim() || 'https://example.com',
-      margin: 16,
+      width: exportSize, height: exportSize,
+      data: text.trim() || 'https://example.com', margin: 16,
       qrOptions: { errorCorrectionLevel: 'H' },
-      dotsOptions: { color: dotColor, type: dotType },
+      dotsOptions: { color: dotColor, type: dotType, ...grad },
       backgroundOptions: { color: bgColor },
-      cornersSquareOptions: { type: cornerSquareType, color: dotColor },
-      cornersDotOptions: { type: cornerDotType, color: dotColor },
+      cornersSquareOptions: { type: cornerSquareType, color: dotColor, ...grad },
+      cornersDotOptions: { type: cornerDotType, color: dotColor, ...grad },
     })
     qr.download({ extension: ext, name: 'qrcode' })
   }
@@ -338,16 +378,13 @@ export default function QrGenerator() {
       {/* ── Header ── */}
       <header className="sticky top-0 z-10 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center gap-3">
-          {/* Logo */}
           <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shrink-0">
             <IconQr />
           </div>
-          {/* Title */}
           <div className="min-w-0">
             <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate">{t.title}</span>
             <span className="hidden sm:inline text-xs text-zinc-400 dark:text-zinc-500 ml-2">· {t.subtitle}</span>
           </div>
-          {/* Language toggle */}
           <div className="ml-auto flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 rounded-xl p-1 shrink-0">
             {(['fr', 'en'] as const).map((l) => (
               <button
@@ -416,54 +453,123 @@ export default function QrGenerator() {
 
             {/* Colors */}
             <Card>
-              <SectionLabel>{t.colors}</SectionLabel>
-              <div className="flex items-center gap-3 flex-wrap">
-                {/* Foreground */}
-                <div className="flex items-center gap-2">
-                  <div className="relative w-9 h-9 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 shadow-sm overflow-hidden shrink-0">
-                    <div className="absolute inset-0" style={{ backgroundColor: dotColor }} />
-                    <input
-                      type="color"
-                      aria-label={t.fgColorAria}
-                      value={dotColor}
-                      onChange={(e) => setDotColor(e.target.value)}
-                      className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider">{t.foreground}</span>
-                    <HexInput value={dotColor} onChange={setDotColor} label={t.fgHexAria} />
-                  </div>
-                </div>
-
-                {/* Swap */}
-                <button
-                  type="button"
-                  onClick={() => { setDotColor(bgColor); setBgColor(dotColor) }}
-                  title={t.swapTitle}
-                  className="p-2 text-zinc-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-xl transition-colors"
-                >
-                  <IconSwap />
-                </button>
-
-                {/* Background */}
-                <div className="flex items-center gap-2">
-                  <div className="relative w-9 h-9 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 shadow-sm overflow-hidden shrink-0">
-                    <div className="absolute inset-0" style={{ backgroundColor: bgColor }} />
-                    <input
-                      type="color"
-                      aria-label={t.bgColorAria}
-                      value={bgColor}
-                      onChange={(e) => setBgColor(e.target.value)}
-                      className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider">{t.background}</span>
-                    <HexInput value={bgColor} onChange={setBgColor} label={t.bgHexAria} />
-                  </div>
+              {/* Mode toggle */}
+              <div className="flex items-center justify-between mb-4">
+                <SectionLabel>{t.colors}</SectionLabel>
+                <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg p-0.5 -mt-3">
+                  <button
+                    type="button"
+                    onClick={() => setUseGradient(false)}
+                    className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${
+                      !useGradient
+                        ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm'
+                        : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
+                    }`}
+                  >
+                    {t.solid}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUseGradient(true)}
+                    className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${
+                      useGradient
+                        ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm'
+                        : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
+                    }`}
+                  >
+                    {t.gradient}
+                  </button>
                 </div>
               </div>
+
+              {!useGradient ? (
+                /* ── Solid mode ── */
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <ColorSwatch color={dotColor} onChange={setDotColor} ariaLabel={t.fgColorAria} />
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider">{t.foreground}</span>
+                      <HexInput value={dotColor} onChange={setDotColor} label={t.fgHexAria} />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => { setDotColor(bgColor); setBgColor(dotColor) }}
+                    title={t.swapTitle}
+                    className="p-2 text-zinc-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-xl transition-colors"
+                  >
+                    <IconSwap />
+                  </button>
+                  <div className="flex items-center gap-2">
+                    <ColorSwatch color={bgColor} onChange={setBgColor} ariaLabel={t.bgColorAria} />
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider">{t.background}</span>
+                      <HexInput value={bgColor} onChange={setBgColor} label={t.bgHexAria} />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* ── Gradient mode ── */
+                <div className="space-y-4">
+                  {/* Color stops */}
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <ColorSwatch color={dotColor} onChange={setDotColor} ariaLabel={t.color1Aria} />
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider">{t.color1}</span>
+                        <HexInput value={dotColor} onChange={setDotColor} label={t.color1HexAria} />
+                      </div>
+                    </div>
+                    {/* Gradient preview strip */}
+                    <div
+                      className="flex-1 h-6 rounded-lg min-w-16"
+                      style={{
+                        background: gradientType === 'radial'
+                          ? `radial-gradient(circle, ${dotColor}, ${gradientColor2})`
+                          : `linear-gradient(${gradientAngle}deg, ${dotColor}, ${gradientColor2})`,
+                      }}
+                    />
+                    <div className="flex items-center gap-2">
+                      <ColorSwatch color={gradientColor2} onChange={setGradientColor2} ariaLabel={t.color2Aria} />
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider">{t.color2}</span>
+                        <HexInput value={gradientColor2} onChange={setGradientColor2} label={t.color2HexAria} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Direction */}
+                  <div>
+                    <span className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider block mb-2">{t.gradientDir}</span>
+                    <div className="flex gap-2 flex-wrap">
+                      {GRAD_DIRS.map((dir) => {
+                        const isActive = dir.type === gradientType && (dir.type === 'radial' || gradientAngle === dir.angle)
+                        return (
+                          <OptionBtn
+                            key={`${dir.type}-${dir.angle}`}
+                            active={isActive}
+                            onClick={() => {
+                              setGradientType(dir.type)
+                              if (dir.type === 'linear') setGradientAngle(dir.angle)
+                            }}
+                          >
+                            {dir.label}
+                          </OptionBtn>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Background (always solid) */}
+                  <div className="flex items-center gap-2 pt-1 border-t border-zinc-100 dark:border-zinc-800">
+                    <ColorSwatch color={bgColor} onChange={setBgColor} ariaLabel={t.bgColorAria} />
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider">{t.background}</span>
+                      <HexInput value={bgColor} onChange={setBgColor} label={t.bgHexAria} />
+                    </div>
+                  </div>
+                </div>
+              )}
             </Card>
 
             {/* Dot style */}
@@ -532,9 +638,7 @@ export default function QrGenerator() {
           {/* ── Preview + Download ── */}
           <div className="flex flex-col items-center gap-3 order-1 lg:order-2 lg:sticky lg:top-20 w-full lg:w-auto">
             <Card className="w-full flex justify-center">
-              {!ready && (
-                <div className="w-70 h-70 rounded-xl bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
-              )}
+              {!ready && <div className="w-70 h-70 rounded-xl bg-zinc-100 dark:bg-zinc-800 animate-pulse" />}
               <div ref={containerRef} className="leading-none" />
             </Card>
 
@@ -545,8 +649,7 @@ export default function QrGenerator() {
                 disabled={!ready}
                 className="flex-1 flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white py-2.5 px-4 rounded-xl font-semibold text-sm transition-colors shadow-sm"
               >
-                <IconDownload />
-                PNG
+                <IconDownload />PNG
               </button>
               <button
                 type="button"
@@ -554,8 +657,7 @@ export default function QrGenerator() {
                 disabled={!ready}
                 className="flex-1 flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600 disabled:opacity-40 disabled:cursor-not-allowed text-white py-2.5 px-4 rounded-xl font-semibold text-sm transition-colors shadow-sm"
               >
-                <IconDownload />
-                SVG
+                <IconDownload />SVG
               </button>
             </div>
 
