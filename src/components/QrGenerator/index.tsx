@@ -6,20 +6,20 @@ import {
   type Lang, type DotType, type CornerSquareType, type CornerDotType, type GradientType, type QrConfig,
 } from './config'
 import { T } from './translations'
-import { Card, SectionLabel, OptionBtn, IconDownload, IconQr, IconCopy } from './atoms'
+import { Card, SectionLabel, OptionBtn, IconDownload, IconQr } from './atoms'
 import { ColorsCard } from './ColorsCard'
 import { ImageCard } from './ImageCard'
+import { ContentCard } from './ContentCard'
 
 export default function QrGenerator() {
   const containerRef = useRef<HTMLDivElement>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const qrRef = useRef<any>(null)
   const [ready, setReady] = useState(false)
-  const [copied, setCopied] = useState(false)
   const [lang, setLang] = useState<Lang>('fr')
 
   // QR content
-  const [text, setText] = useState('https://example.com')
+  const [text, setText] = useState('')
   const [exportSize, setExportSize] = useState(512)
 
   // Solid colors
@@ -94,12 +94,6 @@ export default function QrGenerator() {
     setCornerSquareType(cfg.cornerSquareType)
     setCornerDotType(cfg.cornerDotType)
     setUseGradient(false)
-  }
-
-  const copyText = async () => {
-    await navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
   }
 
   // Initialize QR on mount
@@ -197,28 +191,7 @@ export default function QrGenerator() {
           {/* ── Controls ── */}
           <div className="space-y-3 order-2 lg:order-1">
 
-            {/* URL / Text */}
-            <Card>
-              <SectionLabel>{t.urlOrText}</SectionLabel>
-              <div className="relative">
-                <textarea
-                  id="qr-input"
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  rows={3}
-                  placeholder={t.placeholder}
-                  className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3.5 py-2.5 pr-11 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition"
-                />
-                <button
-                  type="button"
-                  onClick={copyText}
-                  title={copied ? t.copiedTitle : t.copyTitle}
-                  className="absolute top-2.5 right-2.5 p-1.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-lg transition-colors"
-                >
-                  <IconCopy done={copied} />
-                </button>
-              </div>
-            </Card>
+            <ContentCard t={t} lang={lang} onChange={setText} />
 
             {/* Presets */}
             <Card>
