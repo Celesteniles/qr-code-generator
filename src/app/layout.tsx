@@ -31,13 +31,12 @@ export const metadata: Metadata = {
     title: "Générateur de QR Code",
     description: "Générateur de QR code gratuit — personnalisez les couleurs, les formes et téléchargez en PNG ou SVG. Sans inscription.",
     type: "website",
-    images: [{ url: "/logo.png", alt: "Générateur de QR Code" }],
+    url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://qr.nscreative.cg",
   },
   twitter: {
     card: "summary_large_image",
     title: "Générateur de QR Code",
     description: "Générateur de QR code gratuit — personnalisez les couleurs, les formes et téléchargez en PNG ou SVG. Sans inscription.",
-    images: ["/logo.png"],
   },
 };
 
