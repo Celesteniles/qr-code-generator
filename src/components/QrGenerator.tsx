@@ -57,6 +57,12 @@ const T = {
     dotClassy: 'Élégant', dotClassyPlus: 'Élégant +', dotExtraRounded: 'Très arrondi',
     cornerSquare: 'Carré', cornerRounded: 'Arrondi', cornerDot: 'Point',
     presetClassic: 'Classique', presetRounded: 'Arrondi', presetBlue: 'Bleu', presetDark: 'Sombre',
+    imageLogo: 'Image / Logo',
+    addImage: 'Ajouter une image',
+    removeImage: 'Supprimer',
+    imageSize: "Taille de l'image",
+    imageSizeAria: "Taille de l'image dans le QR",
+    hideBackDots: 'Masquer les points sous l\'image',
   },
   en: {
     title: 'QR Code Generator',
@@ -94,6 +100,12 @@ const T = {
     dotClassy: 'Classy', dotClassyPlus: 'Classy +', dotExtraRounded: 'Extra round',
     cornerSquare: 'Square', cornerRounded: 'Rounded', cornerDot: 'Dot',
     presetClassic: 'Classic', presetRounded: 'Rounded', presetBlue: 'Blue', presetDark: 'Dark',
+    imageLogo: 'Image / Logo',
+    addImage: 'Add an image',
+    removeImage: 'Remove',
+    imageSize: 'Image size',
+    imageSizeAria: 'Image size in QR',
+    hideBackDots: 'Hide dots behind image',
   },
 } as const
 
@@ -237,6 +249,7 @@ export default function QrGenerator() {
   const containerRef = useRef<HTMLDivElement>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const qrRef = useRef<any>(null)
+  const logoInputRef = useRef<HTMLInputElement>(null)
   const [ready, setReady] = useState(false)
   const [copied, setCopied] = useState(false)
   const [lang, setLang] = useState<Lang>('fr')
@@ -254,6 +267,11 @@ export default function QrGenerator() {
   const [gradientColor2, setGradientColor2] = useState('#3b82f6')
   const [gradientType, setGradientType] = useState<GradientType>('linear')
   const [gradientAngle, setGradientAngle] = useState(0) // degrees
+
+  // Logo / image
+  const [logoUrl, setLogoUrl] = useState('')
+  const [logoSize, setLogoSize] = useState(0.3)
+  const [hideBackDots, setHideBackDots] = useState(true)
 
   // Shape
   const [dotType, setDotType] = useState<DotType>('rounded')
@@ -320,6 +338,22 @@ export default function QrGenerator() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      const result = ev.target?.result
+      if (typeof result === 'string') setLogoUrl(result)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const removeLogo = () => {
+    setLogoUrl('')
+    if (logoInputRef.current) logoInputRef.current.value = ''
+  }
+
   // Initialize on mount
   useEffect(() => {
     import('qr-code-styling').then(({ default: QRCodeStyling }) => {
@@ -348,6 +382,8 @@ export default function QrGenerator() {
       width: PREVIEW_SIZE, height: PREVIEW_SIZE,
       data: text.trim() || 'https://example.com', margin: 12,
       qrOptions: { errorCorrectionLevel: 'H' },
+      image: logoUrl || undefined,
+      imageOptions: { crossOrigin: 'anonymous', margin: 4, imageSize: logoSize, hideBackgroundDots: hideBackDots },
       dotsOptions: { color: dotColor, type: dotType, ...grad },
       backgroundOptions: { color: bgColor },
       cornersSquareOptions: { type: cornerSquareType, color: dotColor, ...grad },
@@ -355,7 +391,8 @@ export default function QrGenerator() {
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, text, dotColor, bgColor, dotType, cornerSquareType, cornerDotType,
-      useGradient, gradientColor2, gradientType, gradientAngle])
+      useGradient, gradientColor2, gradientType, gradientAngle,
+      logoUrl, logoSize, hideBackDots])
 
   const download = async (ext: 'png' | 'svg') => {
     const { default: QRCodeStyling } = await import('qr-code-styling')
@@ -364,6 +401,8 @@ export default function QrGenerator() {
       width: exportSize, height: exportSize,
       data: text.trim() || 'https://example.com', margin: 16,
       qrOptions: { errorCorrectionLevel: 'H' },
+      image: logoUrl || undefined,
+      imageOptions: { crossOrigin: 'anonymous', margin: 4, imageSize: logoSize, hideBackgroundDots: hideBackDots },
       dotsOptions: { color: dotColor, type: dotType, ...grad },
       backgroundOptions: { color: bgColor },
       cornersSquareOptions: { type: cornerSquareType, color: dotColor, ...grad },
@@ -449,6 +488,76 @@ export default function QrGenerator() {
                   </button>
                 ))}
               </div>
+            </Card>
+
+            {/* Image / Logo */}
+            <Card>
+              <SectionLabel>{t.imageLogo}</SectionLabel>
+              {!logoUrl ? (
+                <button
+                  type="button"
+                  onClick={() => logoInputRef.current?.click()}
+                  className="w-full flex flex-col items-center justify-center gap-2 py-5 rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-700 text-zinc-400 hover:border-blue-400 dark:hover:border-blue-600 hover:text-blue-500 transition-colors"
+                >
+                  <svg className="w-6 h-6" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-xs font-medium">{t.addImage}</span>
+                </button>
+              ) : (
+                <div className="space-y-3">
+                  {/* Thumbnail + remove */}
+                  <div className="flex items-center gap-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={logoUrl} alt="" className="w-12 h-12 rounded-lg object-contain border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">{t.imageLogo}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={removeLogo}
+                      className="text-xs font-medium text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 px-2.5 py-1.5 rounded-lg transition-colors shrink-0"
+                    >
+                      {t.removeImage}
+                    </button>
+                  </div>
+                  {/* Size slider */}
+                  <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <span className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider">{t.imageSize}</span>
+                      <span className="text-xs text-zinc-500 font-mono tabular-nums">{Math.round(logoSize * 100)}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      aria-label={t.imageSizeAria}
+                      min={0.1}
+                      max={0.5}
+                      step={0.05}
+                      value={logoSize}
+                      onChange={(e) => setLogoSize(Number(e.target.value))}
+                      className="w-full accent-blue-500"
+                    />
+                  </div>
+                  {/* Hide dots toggle */}
+                  <label className="flex items-center gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={hideBackDots}
+                      onChange={(e) => setHideBackDots(e.target.checked)}
+                      className="w-4 h-4 rounded accent-blue-500"
+                    />
+                    <span className="text-xs text-zinc-600 dark:text-zinc-400">{t.hideBackDots}</span>
+                  </label>
+                </div>
+              )}
+              <input
+                ref={logoInputRef}
+                type="file"
+                accept="image/*"
+                aria-label={t.imageLogo}
+                onChange={handleLogoUpload}
+                className="hidden"
+              />
             </Card>
 
             {/* Colors */}
