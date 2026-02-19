@@ -15,6 +15,7 @@ import {
   MapPinIcon,
   DevicePhoneMobileIcon,
   GlobeAltIcon,
+  ChevronDownIcon,
 } from '@heroicons/react/24/outline'
 
 // ── Local bilingual labels ────────────────────────────────────────────────────
@@ -44,6 +45,8 @@ const L = {
     socialNetwork: 'Réseau social', profileUrl: 'URL du profil',
     // URL / Text
     urlPlaceholder: 'https://exemple.com', textPlaceholder: 'Votre texte...',
+    // vCard collapsible
+    vcMore: '+ Plus d\'infos', vcLess: '− Moins d\'infos',
   },
   en: {
     copy: 'Copy', copied: 'Copied!',
@@ -61,6 +64,7 @@ const L = {
     appPlaceholderAndroid: 'https://play.google.com/store/apps/details?id=...',
     socialNetwork: 'Social network', profileUrl: 'Profile URL',
     urlPlaceholder: 'https://example.com', textPlaceholder: 'Your text...',
+    vcMore: '+ More info', vcLess: '− Less info',
   },
 } as const
 
@@ -140,6 +144,7 @@ export function ContentCard({ t, lang, onChange }: {
 
   const [qrType, setQrType] = useState<QrType>('url')
   const [copied, setCopied] = useState(false)
+  const [vcExpanded, setVcExpanded] = useState(false)
 
   // Form state
   const [urlValue,     setUrlValue]     = useState('https://example.com')
@@ -249,15 +254,22 @@ export function ContentCard({ t, lang, onChange }: {
     <Card>
       <SectionLabel>{t.contentType}</SectionLabel>
 
-      {/* Type selector */}
-      <div className="flex flex-wrap gap-1.5 mb-4">
+      {/* Type selector — grille 5×2 */}
+      <div className="grid grid-cols-5 gap-1.5 mb-4">
         {TYPES.map(({ id, label, Icon }) => (
-          <OptionBtn key={id} active={qrType === id} onClick={() => setQrType(id)}>
-            <span className="flex items-center gap-1.5">
-              <Icon className="w-3.5 h-3.5 shrink-0" />
-              {label}
-            </span>
-          </OptionBtn>
+          <button
+            key={id}
+            type="button"
+            onClick={() => setQrType(id)}
+            className={`flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-xl border text-[10px] font-semibold transition-all ${
+              qrType === id
+                ? 'bg-blue-500 text-white border-blue-500 shadow-sm'
+                : 'bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:border-blue-400 dark:hover:border-blue-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+            }`}
+          >
+            <Icon className="w-5 h-5 shrink-0" />
+            <span className="leading-tight text-center">{label}</span>
+          </button>
         ))}
       </div>
 
@@ -319,12 +331,27 @@ export function ContentCard({ t, lang, onChange }: {
             <Field label={l.firstName} value={vcFirst} onChange={setVcFirst} />
             <Field label={l.lastName}  value={vcLast}  onChange={setVcLast}  />
           </div>
-          <Field label={l.org}      value={vcOrg}   onChange={setVcOrg}   />
-          <Field label={l.jobTitle} value={vcTitle} onChange={setVcTitle} />
-          <Field label={l.phone}    value={vcPhone} onChange={setVcPhone} type="tel"   placeholder="+242 06 000 0000" />
-          <Field label={l.email}    value={vcEmail} onChange={setVcEmail} type="email" placeholder="nom@exemple.com" />
-          <Field label={l.website}  value={vcWeb}   onChange={setVcWeb}   type="url"   placeholder="https://..." />
-          <Field label={l.address}  value={vcAddr}  onChange={setVcAddr} />
+          <Field label={l.phone} value={vcPhone} onChange={setVcPhone} type="tel"   placeholder="+242 06 000 0000" />
+          <Field label={l.email} value={vcEmail} onChange={setVcEmail} type="email" placeholder="nom@exemple.com" />
+
+          {/* Champs optionnels */}
+          <button
+            type="button"
+            onClick={() => setVcExpanded(v => !v)}
+            className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-blue-500 transition-colors"
+          >
+            <ChevronDownIcon className={`w-3.5 h-3.5 transition-transform duration-200 ${vcExpanded ? 'rotate-180' : ''}`} />
+            {vcExpanded ? l.vcLess : l.vcMore}
+          </button>
+
+          {vcExpanded && (
+            <div className="space-y-3 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+              <Field label={l.org}      value={vcOrg}   onChange={setVcOrg}   />
+              <Field label={l.jobTitle} value={vcTitle} onChange={setVcTitle} />
+              <Field label={l.website}  value={vcWeb}   onChange={setVcWeb}   type="url" placeholder="https://..." />
+              <Field label={l.address}  value={vcAddr}  onChange={setVcAddr}  />
+            </div>
+          )}
         </div>
       )}
 
