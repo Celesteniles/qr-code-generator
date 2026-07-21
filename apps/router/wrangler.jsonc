@@ -1,0 +1,31 @@
+{
+  // Worker de redirection link.cg. Le déploiement requiert un compte Cloudflare
+  // et `wrangler login` ; les identifiants de ressources ci-dessous (id KV,
+  // routes) sont à renseigner par l'équipe au premier déploiement.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "link-router",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-15",
+  "observability": { "enabled": true },
+
+  "vars": {
+    "CARD_BASE_URL": "https://qrcode.cg"
+  },
+
+  // KV de lecture des liens. Créer avec :
+  //   wrangler kv namespace create LINKS
+  // puis coller l'id renvoyé ici.
+  "kv_namespaces": [
+    { "binding": "LINKS", "id": "TODO_REMPLIR_APRES_CREATION" }
+  ],
+
+  // Analytique des scans. Optionnelle — le Worker fonctionne sans.
+  "analytics_engine_datasets": [
+    { "binding": "SCANS", "dataset": "link_scans" }
+  ],
+
+  // Route de production. À activer une fois le domaine link.cg rattaché au compte.
+  // "routes": [
+  //   { "pattern": "link.cg/*", "zone_name": "link.cg" }
+  // ]
+}
