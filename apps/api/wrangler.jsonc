@@ -1,0 +1,22 @@
+{
+  // API d'administration des liens. Écrit dans D1 et propage vers KV.
+  // Déploiement : compte Cloudflare + `wrangler login`.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "link-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-15",
+  "observability": { "enabled": true },
+
+  // Même namespace KV que le routeur — l'API écrit, le routeur lit.
+  "kv_namespaces": [
+    { "binding": "LINKS", "id": "41d7ebd986a141e0a5abde505aa174e2" }
+  ],
+
+  // Base de vérité partagée. link-db créée le 2026-07-21.
+  "d1_databases": [
+    { "binding": "DB", "database_name": "link-db", "database_id": "6798b00a-d331-488c-9e48-a38fb11654d1" }
+  ]
+
+  // SAFE_BROWSING_KEY : à fournir en secret pour activer l'anti-abus.
+  //   wrangler secret put SAFE_BROWSING_KEY
+}
