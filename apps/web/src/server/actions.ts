@@ -37,12 +37,18 @@ function ruleFromForm(formData: FormData): Rule | { error: string } {
 }
 
 export async function createLinkAction(_prev: CreateState, formData: FormData): Promise<CreateState> {
+  // Répercuté sur erreur pour repeupler le formulaire (React 19 le réinitialise).
+  const fields = ['type', 'slug', 'url', 'ios', 'android', 'fallback', 'fullName', 'title', 'org', 'cardPhone', 'cardEmail', 'website']
+  const values: Record<string, string> = {}
+  for (const f of fields) values[f] = String(formData.get(f) ?? '')
+  const fail = (message: string): CreateState => ({ ok: false, message, values })
+
   const ctx = await getSessionContext()
-  if (!ctx) return { ok: false, message: 'Session expirée.' }
+  if (!ctx) return fail('Session expirée.')
 
   const slug = String(formData.get('slug') ?? '').trim()
   const rule = ruleFromForm(formData)
-  if ('error' in rule) return { ok: false, message: rule.error }
+  if ('error' in rule) return fail(rule.error)
 
   const db = getDb()
 
@@ -53,7 +59,7 @@ export async function createLinkAction(_prev: CreateState, formData: FormData): 
   ])
   const plan = (ws?.plan ?? 'free') as Plan
   if (!canCreateLink(plan, existing.length)) {
-    return { ok: false, message: `Limite du palier ${PLANS[plan].label} atteinte (${PLANS[plan].maxLinks} liens).` }
+    return fail(`Limite du palier ${PLANS[plan].label} atteinte (${PLANS[plan].maxLinks} liens).`)
   }
 
   const res = await createLink(
@@ -70,13 +76,13 @@ export async function createLinkAction(_prev: CreateState, formData: FormData): 
     revalidatePath('/dashboard')
     return { ok: true, slug }
   }
-  const message =
-    res.error === 'slug_taken' ? 'Ce raccourci est déjà pris.'
+  return fail(
+    res.error === 'slug_taken' ? 'Ce raccourci est déjà utilisé sur link.cg. Essayez-en un autre.'
     : res.error === 'domain_not_found' ? 'Domaine introuvable.'
     : res.error === 'unsafe_url' ? 'Cette URL a été jugée dangereuse.'
     : res.error === 'invalid' ? res.issues[0] ?? 'Entrée invalide.'
-    : 'Erreur inconnue.'
-  return { ok: false, message }
+    : 'Erreur inconnue.',
+  )
 }
 
 /** Vérifie que le lien appartient à l'espace de l'utilisateur connecté. */

@@ -8,5 +8,7 @@ export const DEFAULT_DOMAIN = 'dom_linkcg'
 
 export type CreateState =
   | { ok: true; slug: string }
-  | { ok: false; message: string }
+  // `values` répercute la saisie : React 19 réinitialise le formulaire après une
+  // action, on restaure les champs via defaultValue en cas d'erreur.
+  | { ok: false; message: string; values: Record<string, string> }
   | null
