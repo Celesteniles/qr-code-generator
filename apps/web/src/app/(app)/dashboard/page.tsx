@@ -8,6 +8,7 @@ import { DEFAULT_WORKSPACE } from '@/server/config'
 import Link from 'next/link'
 import { CreateLinkForm } from './CreateLinkForm'
 import { SignOutButton } from './SignOutButton'
+import { LinkQr } from './LinkQr'
 import { toggleLinkAction, deleteLinkAction } from '@/server/actions'
 
 export const dynamic = 'force-dynamic'
@@ -49,7 +50,7 @@ export default async function DashboardPage() {
             {links.map((l) => (
               <li
                 key={l.id}
-                className="flex items-center gap-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3"
+                className="relative flex items-center gap-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3"
               >
                 <div className="min-w-0 flex-1">
                   <a
@@ -69,6 +70,8 @@ export default async function DashboardPage() {
                 <span className="shrink-0 text-xs text-zinc-500 tabular-nums" title="Scans (30 jours)">
                   {(scans[l.slug] ?? 0).toLocaleString('fr-FR')} <span className="text-zinc-400">scans</span>
                 </span>
+
+                <LinkQr slug={l.slug} />
 
                 {l.kind === 'card' && (
                   <Link
