@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import type { Lang } from './config'
 import type { Translations } from './translations'
 import { Card, SectionLabel, OptionBtn, IconCopy } from './atoms'
+import { toUrl, toText, toWifi, toVCard, toEmail, toSms, toPhone, toGeo, toApp, toSocial } from '@link/qr'
 import {
   LinkIcon,
   DocumentTextIcon,
@@ -83,12 +84,6 @@ const SOCIAL_PLATFORMS = [
 // ── Type ──────────────────────────────────────────────────────────────────────
 
 type QrType = 'url' | 'text' | 'wifi' | 'vcard' | 'email' | 'sms' | 'phone' | 'geo' | 'app' | 'social'
-
-// ── WiFi string escaping ──────────────────────────────────────────────────────
-
-function wifiEsc(s: string) {
-  return s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/"/g, '\\"').replace(/,/g, '\\,')
-}
 
 // ── Form helpers ──────────────────────────────────────────────────────────────
 
@@ -179,39 +174,16 @@ export function ContentCard({ t, lang, onChange }: {
 
   const buildText = (): string => {
     switch (qrType) {
-      case 'url':   return urlValue.trim() || 'https://example.com'
-      case 'text':  return textValue
-      case 'wifi':  return `WIFI:T:${wifiSecurity};S:${wifiEsc(wifiSsid)};P:${wifiEsc(wifiPassword)};H:${wifiHidden};;`
-      case 'vcard': {
-        const lines = ['BEGIN:VCARD', 'VERSION:3.0']
-        if (vcLast || vcFirst) {
-          lines.push(`N:${vcLast};${vcFirst};;;`)
-          lines.push(`FN:${[vcFirst, vcLast].filter(Boolean).join(' ')}`)
-        }
-        if (vcOrg)   lines.push(`ORG:${vcOrg}`)
-        if (vcTitle) lines.push(`TITLE:${vcTitle}`)
-        if (vcPhone) lines.push(`TEL:${vcPhone}`)
-        if (vcEmail) lines.push(`EMAIL:${vcEmail}`)
-        if (vcWeb)   lines.push(`URL:${vcWeb}`)
-        if (vcAddr)  lines.push(`ADR:;;${vcAddr};;;;`)
-        lines.push('END:VCARD')
-        return lines.join('\n')
-      }
-      case 'email': {
-        const params: string[] = []
-        if (emlSubject) params.push(`subject=${encodeURIComponent(emlSubject)}`)
-        if (emlBody)    params.push(`body=${encodeURIComponent(emlBody)}`)
-        return `mailto:${emlTo}${params.length ? '?' + params.join('&') : ''}`
-      }
-      case 'sms':   return `smsto:${smsPhone}:${smsMsg}`
-      case 'phone': return `tel:${telPhone}`
-      case 'geo': {
-        if (!geoLat || !geoLng) return ''
-        const q = geoQ.trim() ? `?q=${encodeURIComponent(geoQ)}` : ''
-        return `geo:${geoLat},${geoLng}${q}`
-      }
-      case 'app':    return appUrl.trim()
-      case 'social': return socialUrl.trim()
+      case 'url':   return toUrl(urlValue)
+      case 'text':  return toText(textValue)
+      case 'wifi':  return toWifi({ ssid: wifiSsid, password: wifiPassword, security: wifiSecurity, hidden: wifiHidden })
+      case 'vcard': return toVCard({ first: vcFirst, last: vcLast, phone: vcPhone, email: vcEmail, org: vcOrg, title: vcTitle, web: vcWeb, addr: vcAddr })
+      case 'email': return toEmail({ to: emlTo, subject: emlSubject, body: emlBody })
+      case 'sms':   return toSms({ phone: smsPhone, message: smsMsg })
+      case 'phone': return toPhone(telPhone)
+      case 'geo':   return toGeo({ lat: geoLat, lng: geoLng, query: geoQ })
+      case 'app':   return toApp(appUrl)
+      case 'social': return toSocial(socialUrl)
     }
   }
 
