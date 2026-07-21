@@ -16,6 +16,7 @@
     "@link/db": "workspace:*",
     "@link/qr": "workspace:*",
     "@link/shared": "workspace:*",
+    "better-auth": "^1.6.23",
     "drizzle-orm": "^0.38.3",
     "next": "16.2.10",
     "qr-code-styling": "^1.9.2",

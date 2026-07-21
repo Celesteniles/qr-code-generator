@@ -12,6 +12,11 @@
   },
   "observability": { "enabled": true },
 
+  "vars": {
+    "BETTER_AUTH_URL": "https://beta.qrcode.cg"
+  },
+  // BETTER_AUTH_SECRET : posé en secret (wrangler secret put BETTER_AUTH_SECRET).
+
   // Le dashboard écrit les liens directement via les bindings (server actions),
   // en réutilisant @link/db — pas besoin du jeton d'admin de l'API côté serveur.
   "kv_namespaces": [

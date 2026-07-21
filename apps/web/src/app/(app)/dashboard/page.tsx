@@ -1,11 +1,18 @@
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 import { listLinks } from '@link/db'
 import { getDb } from '@/server/data'
+import { getAuth } from '@/server/auth'
 import { DEFAULT_WORKSPACE } from '@/server/config'
 import { CreateLinkForm } from './CreateLinkForm'
+import { SignOutButton } from './SignOutButton'
 
 export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage() {
+  const session = await getAuth().api.getSession({ headers: await headers() })
+  if (!session) redirect('/login')
+
   const links = await listLinks(getDb(), DEFAULT_WORKSPACE)
 
   return (
@@ -14,6 +21,10 @@ export default async function DashboardPage() {
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center">
           <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">link.</span>
           <span className="ml-2 text-xs text-zinc-400">Tableau de bord · liens</span>
+          <div className="ml-auto flex items-center gap-3">
+            <span className="text-xs text-zinc-500 hidden sm:inline">{session.user.email}</span>
+            <SignOutButton />
+          </div>
         </div>
       </header>
 
