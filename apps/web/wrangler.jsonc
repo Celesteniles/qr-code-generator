@@ -1,0 +1,26 @@
+{
+  // apps/web sur Cloudflare Workers via OpenNext — qrcode.cg (bêta d'abord).
+  // Déploiement : pnpm --filter @link/web deploy
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "link-web",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-01-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": { "enabled": true },
+
+  // Le dashboard écrit les liens directement via les bindings (server actions),
+  // en réutilisant @link/db — pas besoin du jeton d'admin de l'API côté serveur.
+  "kv_namespaces": [
+    { "binding": "LINKS", "id": "41d7ebd986a141e0a5abde505aa174e2" }
+  ],
+  "d1_databases": [
+    { "binding": "DB", "database_name": "link-db", "database_id": "6798b00a-d331-488c-9e48-a38fb11654d1" }
+  ]
+
+  // Domaine bêta rattaché après le premier déploiement :
+  //   "routes": [{ "pattern": "beta.qrcode.cg", "custom_domain": true }]
+}

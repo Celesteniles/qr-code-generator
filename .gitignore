@@ -20,6 +20,11 @@ out/
 # turborepo
 .turbo/
 
+# opennext / cloudflare
+.open-next/
+.wrangler/
+# cloudflare-env.d.ts est généré mais committé : le build/typecheck en dépend.
+
 /.claude/
 
 # build
