@@ -6,6 +6,7 @@ import { getAuth } from '@/server/auth'
 import { DEFAULT_WORKSPACE } from '@/server/config'
 import { CreateLinkForm } from './CreateLinkForm'
 import { SignOutButton } from './SignOutButton'
+import { toggleLinkAction, deleteLinkAction } from '@/server/actions'
 
 export const dynamic = 'force-dynamic'
 
@@ -56,15 +57,38 @@ export default async function DashboardPage() {
                       : 'Carte de visite'}
                   </p>
                 </div>
-                <span
-                  className={`shrink-0 text-xs font-medium px-2 py-0.5 rounded-full ${
-                    l.active
-                      ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
-                      : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800'
-                  }`}
-                >
-                  {l.active ? 'actif' : 'inactif'}
+                <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
+                  {l.kind}
                 </span>
+
+                {/* Activer / désactiver */}
+                <form action={toggleLinkAction}>
+                  <input type="hidden" name="id" value={l.id} />
+                  <input type="hidden" name="active" value={(!l.active).toString()} />
+                  <button
+                    type="submit"
+                    title={l.active ? 'Désactiver' : 'Activer'}
+                    className={`shrink-0 text-xs font-medium px-2 py-0.5 rounded-full transition-colors ${
+                      l.active
+                        ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 hover:bg-green-200'
+                        : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 hover:bg-zinc-200'
+                    }`}
+                  >
+                    {l.active ? 'actif' : 'inactif'}
+                  </button>
+                </form>
+
+                {/* Supprimer */}
+                <form action={deleteLinkAction}>
+                  <input type="hidden" name="id" value={l.id} />
+                  <button
+                    type="submit"
+                    title="Supprimer"
+                    className="shrink-0 text-zinc-400 hover:text-red-600 dark:hover:text-red-400 transition-colors text-lg leading-none px-1"
+                  >
+                    ×
+                  </button>
+                </form>
               </li>
             ))}
             {links.length === 0 && (

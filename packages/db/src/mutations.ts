@@ -6,14 +6,15 @@
 
 import { eq } from 'drizzle-orm'
 import type { DrizzleD1Database } from 'drizzle-orm/d1'
-import { ruleSchema } from '@link/shared'
+import { ruleSchema, linkKey } from '@link/shared'
 import { z } from 'zod'
 import * as schema from './schema'
 import { compileLink, serializeEntry } from './compile'
 
-/** Écriture KV minimale — suffit au chemin de création, testable avec un faux. */
+/** Écriture KV minimale — suffit aux chemins de création/mise à jour/suppression. */
 export interface KVWriter {
   put(key: string, value: string): Promise<unknown>
+  delete(key: string): Promise<unknown>
 }
 
 export type Db = DrizzleD1Database<typeof schema>
@@ -109,4 +110,50 @@ export async function createLink(deps: CreateLinkDeps, raw: unknown): Promise<Cr
   await deps.kv.put(entry.key, entry.value)
 
   return { ok: true, id, key: entry.key }
+}
+
+// ── Mise à jour / suppression ─────────────────────────────────────────────────
+
+export interface MutateDeps {
+  db: Db
+  kv: KVWriter
+  now?: () => number
+}
+
+export type LinkMutation =
+  | { ok: true; key: string }
+  | { ok: false; error: 'not_found' }
+
+/** Résout le hostname d'un lien via son domaine (nécessaire à la clé KV). */
+async function linkWithHostname(db: Db, linkId: string) {
+  const link = await db.query.links.findFirst({ where: eq(schema.links.id, linkId) })
+  if (!link) return null
+  const domain = await db.query.domains.findFirst({ where: eq(schema.domains.id, link.domainId) })
+  if (!domain) return null
+  return { link, hostname: domain.hostname }
+}
+
+/** Active/désactive un lien : D1 puis KV (le lien inactif reste en KV, le routeur renvoie 410). */
+export async function setLinkActive(deps: MutateDeps, linkId: string, active: boolean): Promise<LinkMutation> {
+  const found = await linkWithHostname(deps.db, linkId)
+  if (!found) return { ok: false, error: 'not_found' }
+  const ts = (deps.now ?? (() => Date.now()))()
+
+  await deps.db.update(schema.links).set({ active, updatedAt: ts }).where(eq(schema.links.id, linkId))
+
+  const entry = serializeEntry(compileLink({ ...found.link, active, updatedAt: ts }, found.hostname))
+  await deps.kv.put(entry.key, entry.value)
+  return { ok: true, key: entry.key }
+}
+
+/** Supprime un lien : D1 puis KV (retrait de la vue de lecture). */
+export async function deleteLink(deps: MutateDeps, linkId: string): Promise<LinkMutation> {
+  const found = await linkWithHostname(deps.db, linkId)
+  if (!found) return { ok: false, error: 'not_found' }
+
+  await deps.db.delete(schema.links).where(eq(schema.links.id, linkId))
+
+  const key = linkKey(found.hostname, found.link.slug)
+  await deps.kv.delete(key)
+  return { ok: true, key }
 }

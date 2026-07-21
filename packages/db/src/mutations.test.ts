@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { createClient } from '@libsql/client'
 import { drizzle } from 'drizzle-orm/libsql'
 import * as schema from './schema'
-import { createLink, type Db, type KVWriter } from './mutations'
+import { createLink, setLinkActive, deleteLink, type Db, type KVWriter } from './mutations'
 
 // Base SQLite en mémoire (asynchrone, comme D1) avec la migration réelle appliquée.
 function freshDb(): Db {
@@ -21,7 +21,11 @@ function freshDb(): Db {
 
 function fakeKv(): KVWriter & { store: Map<string, string> } {
   const store = new Map<string, string>()
-  return { store, put: async (k, v) => void store.set(k, v) }
+  return {
+    store,
+    put: async (k, v) => void store.set(k, v),
+    delete: async (k) => void store.delete(k),
+  }
 }
 
 async function seedDomain(db: Db, hostname = 'link.cg') {
@@ -90,5 +94,36 @@ describe('createLink', () => {
       { ...base, slug: 'app', rule: { type: 'app', ios: 'https://i', android: 'https://a', fallback: 'https://f' } },
     )
     expect(checked).toEqual(['https://i', 'https://a', 'https://f'])
+  })
+})
+
+describe('setLinkActive', () => {
+  it('désactive : D1 à jour, KV conserve la clé avec active=false', async () => {
+    const kv = fakeKv()
+    await createLink(deps(kv, { newId: () => 'lid' }), { ...base, slug: 's', rule: { type: 'static', url: 'https://a.cg' } })
+    const res = await setLinkActive({ db, kv, now: () => 2000 }, 'lid', false)
+    expect(res).toEqual({ ok: true, key: 'link.cg:s' })
+    expect(JSON.parse(kv.store.get('link.cg:s')!).active).toBe(false)
+    const row = await db.query.links.findFirst()
+    expect(row!.active).toBe(false)
+  })
+
+  it('lien inexistant → not_found', async () => {
+    expect(await setLinkActive({ db, kv: fakeKv() }, 'nope', false)).toEqual({ ok: false, error: 'not_found' })
+  })
+})
+
+describe('deleteLink', () => {
+  it('supprime de D1 et retire la clé KV', async () => {
+    const kv = fakeKv()
+    await createLink(deps(kv, { newId: () => 'lid' }), { ...base, slug: 'gone', rule: { type: 'static', url: 'https://a.cg' } })
+    const res = await deleteLink({ db, kv }, 'lid')
+    expect(res).toEqual({ ok: true, key: 'link.cg:gone' })
+    expect(kv.store.has('link.cg:gone')).toBe(false)
+    expect(await db.query.links.findMany()).toHaveLength(0)
+  })
+
+  it('lien inexistant → not_found', async () => {
+    expect(await deleteLink({ db, kv: fakeKv() }, 'nope')).toEqual({ ok: false, error: 'not_found' })
   })
 })
