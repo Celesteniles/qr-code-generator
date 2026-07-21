@@ -22,8 +22,9 @@
     { "binding": "SCANS", "dataset": "link_scans" }
   ],
 
-  // Route de production. À activer une fois le domaine link.cg rattaché au compte.
-  // "routes": [
-  //   { "pattern": "link.cg/*", "zone_name": "link.cg" }
-  // ]
+  // Route de production : l'apex link.cg en custom domain (SSL + DNS gérés par CF).
+  // Couvre tous les chemins de l'hôte → parfait pour un raccourcisseur.
+  "routes": [
+    { "pattern": "link.cg", "custom_domain": true }
+  ]
 }
