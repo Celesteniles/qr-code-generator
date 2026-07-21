@@ -19,8 +19,10 @@
   ],
   "d1_databases": [
     { "binding": "DB", "database_name": "link-db", "database_id": "6798b00a-d331-488c-9e48-a38fb11654d1" }
-  ]
+  ],
 
-  // Domaine bêta rattaché après le premier déploiement :
-  //   "routes": [{ "pattern": "beta.qrcode.cg", "custom_domain": true }]
+  // Bêta d'abord ; bascule sur qrcode.cg une fois validé.
+  "routes": [
+    { "pattern": "beta.qrcode.cg", "custom_domain": true }
+  ]
 }
