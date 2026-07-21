@@ -12,11 +12,9 @@
     "CARD_BASE_URL": "https://qrcode.cg"
   },
 
-  // KV de lecture des liens. Créer avec :
-  //   wrangler kv namespace create LINKS
-  // puis coller l'id renvoyé ici.
+  // KV de lecture des liens. Créé le 2026-07-21 (wrangler kv namespace create LINKS).
   "kv_namespaces": [
-    { "binding": "LINKS", "id": "TODO_REMPLIR_APRES_CREATION" }
+    { "binding": "LINKS", "id": "41d7ebd986a141e0a5abde505aa174e2" }
   ],
 
   // Analytique des scans. Optionnelle — le Worker fonctionne sans.
