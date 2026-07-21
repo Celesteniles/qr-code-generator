@@ -1,9 +1,8 @@
-import { headers } from 'next/headers'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getCardBySlug } from '@link/db'
 import { getDb } from '@/server/data'
-import { getAuth } from '@/server/auth'
+import { getSessionContext } from '@/server/session'
 import { updateCardAction } from '@/server/actions'
 
 export const dynamic = 'force-dynamic'
@@ -12,12 +11,14 @@ const input =
   'w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 py-2 px-3 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500'
 
 export default async function EditCardPage({ params }: { params: Promise<{ slug: string }> }) {
-  const session = await getAuth().api.getSession({ headers: await headers() })
-  if (!session) redirect('/login')
+  const ctx = await getSessionContext()
+  if (!ctx) redirect('/login')
 
   const { slug } = await params
   const card = await getCardBySlug(getDb(), slug)
   if (!card) notFound()
+  // Propriété : on n'édite que ses propres cartes.
+  if (card.link.workspaceId !== ctx.workspaceId) notFound()
   const p = card.profile
 
   return (

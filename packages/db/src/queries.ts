@@ -13,6 +13,11 @@ export async function listLinks(db: Db, workspaceId: string): Promise<LinkRow[]>
   })
 }
 
+/** Un lien par id (pour vérifier la propriété avant mutation). */
+export async function getLink(db: Db, id: string): Promise<LinkRow | undefined> {
+  return db.query.links.findFirst({ where: eq(schema.links.id, id) })
+}
+
 /** Domaine par défaut d'un espace (pour préremplir la création). */
 export async function defaultDomain(db: Db, workspaceId: string) {
   return db.query.domains.findFirst({

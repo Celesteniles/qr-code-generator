@@ -1,10 +1,11 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createLink, setLinkActive, deleteLink, upsertCardProfile, type CardProfileInput } from '@link/db'
+import { createLink, setLinkActive, deleteLink, upsertCardProfile, getLink, type CardProfileInput } from '@link/db'
 import type { Rule } from '@link/shared'
 import { getDb, getKv } from './data'
-import { DEFAULT_WORKSPACE, DEFAULT_DOMAIN, type CreateState } from './config'
+import { getSessionContext } from './session'
+import { DEFAULT_DOMAIN, type CreateState } from './config'
 
 /** Champs de profil de carte lus depuis un formulaire. */
 function cardProfileFromForm(formData: FormData): CardProfileInput {
@@ -36,6 +37,9 @@ function ruleFromForm(formData: FormData): Rule | { error: string } {
 }
 
 export async function createLinkAction(_prev: CreateState, formData: FormData): Promise<CreateState> {
+  const ctx = await getSessionContext()
+  if (!ctx) return { ok: false, message: 'Session expirée.' }
+
   const slug = String(formData.get('slug') ?? '').trim()
   const rule = ruleFromForm(formData)
   if ('error' in rule) return { ok: false, message: rule.error }
@@ -43,7 +47,7 @@ export async function createLinkAction(_prev: CreateState, formData: FormData): 
   const db = getDb()
   const res = await createLink(
     { db, kv: getKv() },
-    { workspaceId: DEFAULT_WORKSPACE, domainId: DEFAULT_DOMAIN, slug, rule },
+    { workspaceId: ctx.workspaceId, domainId: DEFAULT_DOMAIN, slug, rule },
   )
 
   if (res.ok) {
@@ -64,25 +68,43 @@ export async function createLinkAction(_prev: CreateState, formData: FormData): 
   return { ok: false, message }
 }
 
+/** Vérifie que le lien appartient à l'espace de l'utilisateur connecté. */
+async function ownedLink(db: ReturnType<typeof getDb>, id: string, workspaceId: string) {
+  const link = await getLink(db, id)
+  return link && link.workspaceId === workspaceId ? link : null
+}
+
 export async function toggleLinkAction(formData: FormData): Promise<void> {
+  const ctx = await getSessionContext()
+  if (!ctx) return
+  const db = getDb()
   const id = String(formData.get('id') ?? '')
+  if (!(await ownedLink(db, id, ctx.workspaceId))) return
   const active = String(formData.get('active') ?? '') === 'true'
-  await setLinkActive({ db: getDb(), kv: getKv() }, id, active)
+  await setLinkActive({ db, kv: getKv() }, id, active)
   revalidatePath('/dashboard')
 }
 
 export async function deleteLinkAction(formData: FormData): Promise<void> {
+  const ctx = await getSessionContext()
+  if (!ctx) return
+  const db = getDb()
   const id = String(formData.get('id') ?? '')
-  await deleteLink({ db: getDb(), kv: getKv() }, id)
+  if (!(await ownedLink(db, id, ctx.workspaceId))) return
+  await deleteLink({ db, kv: getKv() }, id)
   revalidatePath('/dashboard')
 }
 
 /** Met à jour le profil d'une carte — le cœur de la proposition « on ne réimprime pas ». */
 export async function updateCardAction(formData: FormData): Promise<void> {
+  const ctx = await getSessionContext()
+  if (!ctx) return
+  const db = getDb()
   const linkId = String(formData.get('linkId') ?? '')
   const slug = String(formData.get('slug') ?? '')
   const profile = cardProfileFromForm(formData)
-  if (linkId && profile.fullName) await upsertCardProfile(getDb(), linkId, profile)
+  if (!(await ownedLink(db, linkId, ctx.workspaceId))) return
+  if (profile.fullName) await upsertCardProfile(db, linkId, profile)
   revalidatePath('/dashboard')
   revalidatePath(`/c/${slug}`)
 }

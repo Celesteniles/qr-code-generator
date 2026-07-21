@@ -23,7 +23,10 @@ export const users = sqliteTable('users', {
 export const memberships = sqliteTable(
   'memberships',
   {
-    userId: text('user_id').notNull().references(() => users.id),
+    // userId référence l'identité Better Auth (table `user`), pas la table `users`
+    // applicative. Pas de FK : l'intégrité entre auth et domaine se gère en code
+    // (D1 applique les FK, une contrainte cross-frontière casserait la création).
+    userId: text('user_id').notNull(),
     workspaceId: text('workspace_id').notNull().references(() => workspaces.id),
     role: text('role', { enum: ['owner', 'admin', 'member'] }).notNull().default('member'),
   },

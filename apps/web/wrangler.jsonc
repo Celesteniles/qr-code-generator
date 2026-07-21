@@ -14,7 +14,9 @@
 
   "vars": {
     "BETTER_AUTH_URL": "https://beta.qrcode.cg",
-    "CF_ACCOUNT_ID": "d173b721d701ab7804ac541a92709654"
+    "CF_ACCOUNT_ID": "d173b721d701ab7804ac541a92709654",
+    // Passer à "true" (puis redéployer) pour fermer les inscriptions.
+    "DISABLE_SIGNUP": "false"
   },
   // Secrets (wrangler secret put …) :
   //   BETTER_AUTH_SECRET   — signature des sessions

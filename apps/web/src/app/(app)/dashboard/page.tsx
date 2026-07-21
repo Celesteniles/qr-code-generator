@@ -1,10 +1,8 @@
-import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { listLinks } from '@link/db'
 import { getDb } from '@/server/data'
-import { getAuth } from '@/server/auth'
+import { getSessionContext } from '@/server/session'
 import { getScanCounts } from '@/server/scans'
-import { DEFAULT_WORKSPACE } from '@/server/config'
 import Link from 'next/link'
 import { CreateLinkForm } from './CreateLinkForm'
 import { SignOutButton } from './SignOutButton'
@@ -14,11 +12,11 @@ import { toggleLinkAction, deleteLinkAction } from '@/server/actions'
 export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage() {
-  const session = await getAuth().api.getSession({ headers: await headers() })
-  if (!session) redirect('/login')
+  const ctx = await getSessionContext()
+  if (!ctx) redirect('/login')
 
   const [links, scans] = await Promise.all([
-    listLinks(getDb(), DEFAULT_WORKSPACE),
+    listLinks(getDb(), ctx.workspaceId),
     getScanCounts(),
   ])
   const totalScans = Object.values(scans).reduce((a, b) => a + b, 0)
@@ -33,7 +31,7 @@ export default async function DashboardPage() {
             Générateur QR
           </Link>
           <div className="ml-auto flex items-center gap-3">
-            <span className="text-xs text-zinc-500 hidden sm:inline">{session.user.email}</span>
+            <span className="text-xs text-zinc-500 hidden sm:inline">{ctx.email}</span>
             <SignOutButton />
           </div>
         </div>

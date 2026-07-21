@@ -15,6 +15,13 @@
       "when": 1784638546836,
       "tag": "0001_eminent_beyonder",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1784647390669,
+      "tag": "0002_icy_norrin_radd",
+      "breakpoints": true
     }
   ]
 }
