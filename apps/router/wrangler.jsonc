@@ -9,7 +9,9 @@
   "observability": { "enabled": true },
 
   "vars": {
-    "CARD_BASE_URL": "https://qrcode.cg"
+    // Phase bêta : les cartes sont servies par beta.qrcode.cg.
+    // Repasser à https://qrcode.cg lors de la bascule en production.
+    "CARD_BASE_URL": "https://beta.qrcode.cg"
   },
 
   // KV de lecture des liens. Créé le 2026-07-21 (wrangler kv namespace create LINKS).

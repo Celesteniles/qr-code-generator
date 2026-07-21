@@ -5,6 +5,7 @@ import { getDb } from '@/server/data'
 import { getAuth } from '@/server/auth'
 import { getScanCounts } from '@/server/scans'
 import { DEFAULT_WORKSPACE } from '@/server/config'
+import Link from 'next/link'
 import { CreateLinkForm } from './CreateLinkForm'
 import { SignOutButton } from './SignOutButton'
 import { toggleLinkAction, deleteLinkAction } from '@/server/actions'
@@ -68,6 +69,15 @@ export default async function DashboardPage() {
                 <span className="shrink-0 text-xs text-zinc-500 tabular-nums" title="Scans (30 jours)">
                   {(scans[l.slug] ?? 0).toLocaleString('fr-FR')} <span className="text-zinc-400">scans</span>
                 </span>
+
+                {l.kind === 'card' && (
+                  <Link
+                    href={`/dashboard/card/${l.slug}`}
+                    className="shrink-0 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    éditer
+                  </Link>
+                )}
 
                 <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
                   {l.kind}

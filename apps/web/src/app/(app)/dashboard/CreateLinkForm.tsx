@@ -79,9 +79,19 @@ export function CreateLinkForm() {
       )}
 
       {type === 'card' && (
-        <p className="text-xs text-zinc-500 bg-zinc-50 dark:bg-zinc-800 rounded-lg px-3 py-2">
-          Redirige vers la page de profil <span className="font-mono">qrcode.cg/c/{'{'}raccourci{'}'}</span>. L&apos;édition du profil viendra ensuite.
-        </p>
+        <div className="space-y-2">
+          <p className="text-xs text-zinc-500">Profil affiché sur la page de la carte. Modifiable à tout moment sans réimprimer.</p>
+          <input name="fullName" required placeholder="Nom complet" className={input} />
+          <div className="grid grid-cols-2 gap-2">
+            <input name="title" placeholder="Poste" className={input} />
+            <input name="org" placeholder="Organisation" className={input} />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <input name="cardPhone" type="tel" placeholder="Téléphone" className={input} />
+            <input name="cardEmail" type="email" placeholder="Email" className={input} />
+          </div>
+          <input name="website" type="url" placeholder="Site web (optionnel)" className={input} />
+        </div>
       )}
 
       <div className="flex items-center gap-3">
