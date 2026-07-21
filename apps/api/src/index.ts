@@ -10,10 +10,13 @@
 import { drizzle } from 'drizzle-orm/d1'
 import { schema, createLink } from '@link/db'
 import { makeSafeBrowsingChecker } from './safebrowsing'
+import { checkAdmin } from './auth'
 
 export interface Env {
   DB: D1Database
   LINKS: KVNamespace
+  /** Jeton d'administration (secret). Absent → API entièrement fermée (voir auth.ts). */
+  ADMIN_TOKEN?: string
   /** Clé Google Safe Browsing. Absente → vérification désactivée (voir safebrowsing.ts). */
   SAFE_BROWSING_KEY?: string
 }
@@ -21,6 +24,10 @@ export interface Env {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url)
+
+    // Tout accès à l'API exige le jeton d'administration.
+    const denied = checkAdmin(request, env.ADMIN_TOKEN)
+    if (denied) return denied
 
     if (request.method === 'POST' && url.pathname === '/links') {
       return handleCreate(request, env)
