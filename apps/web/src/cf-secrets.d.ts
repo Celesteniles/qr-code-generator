@@ -3,4 +3,6 @@
 interface CloudflareEnv {
   /** Secret Better Auth. Posé via `wrangler secret put BETTER_AUTH_SECRET`. */
   BETTER_AUTH_SECRET: string
+  /** Jeton API "Account Analytics: Read" pour lire les scans. Optionnel (stats désactivées sans lui). */
+  CF_ANALYTICS_TOKEN?: string
 }

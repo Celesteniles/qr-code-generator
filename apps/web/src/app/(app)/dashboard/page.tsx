@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { listLinks } from '@link/db'
 import { getDb } from '@/server/data'
 import { getAuth } from '@/server/auth'
+import { getScanCounts } from '@/server/scans'
 import { DEFAULT_WORKSPACE } from '@/server/config'
 import { CreateLinkForm } from './CreateLinkForm'
 import { SignOutButton } from './SignOutButton'
@@ -14,7 +15,11 @@ export default async function DashboardPage() {
   const session = await getAuth().api.getSession({ headers: await headers() })
   if (!session) redirect('/login')
 
-  const links = await listLinks(getDb(), DEFAULT_WORKSPACE)
+  const [links, scans] = await Promise.all([
+    listLinks(getDb(), DEFAULT_WORKSPACE),
+    getScanCounts(),
+  ])
+  const totalScans = Object.values(scans).reduce((a, b) => a + b, 0)
 
   return (
     <div className="min-h-screen bg-zinc-100 dark:bg-zinc-950">
@@ -33,8 +38,11 @@ export default async function DashboardPage() {
         <CreateLinkForm />
 
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-400 mb-2">
-            {links.length} lien{links.length > 1 ? 's' : ''}
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-400 mb-2 flex items-center gap-2">
+            <span>{links.length} lien{links.length > 1 ? 's' : ''}</span>
+            {totalScans > 0 && (
+              <span className="text-blue-500 normal-case tracking-normal">· {totalScans} scan{totalScans > 1 ? 's' : ''} (30 j)</span>
+            )}
           </h2>
           <ul className="space-y-2">
             {links.map((l) => (
@@ -57,6 +65,10 @@ export default async function DashboardPage() {
                       : 'Carte de visite'}
                   </p>
                 </div>
+                <span className="shrink-0 text-xs text-zinc-500 tabular-nums" title="Scans (30 jours)">
+                  {(scans[l.slug] ?? 0).toLocaleString('fr-FR')} <span className="text-zinc-400">scans</span>
+                </span>
+
                 <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
                   {l.kind}
                 </span>
