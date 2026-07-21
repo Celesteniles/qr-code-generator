@@ -5,12 +5,26 @@ export type DotType = 'square' | 'rounded' | 'dots' | 'classy' | 'classy-rounded
 export type CornerSquareType = 'square' | 'extra-rounded' | 'dot'
 export type CornerDotType = 'square' | 'dot'
 
+export type GradientType = 'linear' | 'radial'
+
+export interface QrGradient {
+  enabled: boolean
+  color2: string
+  type: GradientType
+  angle: number
+}
+
 export interface QrDesign {
   dotColor: string
   bgColor: string
   dotType: DotType
   cornerSquareType: CornerSquareType
   cornerDotType: CornerDotType
+  gradient?: QrGradient
+  /** Logo au centre, en data URL (base64). */
+  logo?: string
+  /** Taille du logo, 0..1. */
+  logoSize?: number
 }
 
 export const DEFAULT_DESIGN: QrDesign = {
@@ -19,6 +33,40 @@ export const DEFAULT_DESIGN: QrDesign = {
   dotType: 'rounded',
   cornerSquareType: 'extra-rounded',
   cornerDotType: 'dot',
+}
+
+export const GRAD_DIRECTIONS: { label: string; angle: number; type: GradientType }[] = [
+  { label: '→', angle: 0, type: 'linear' },
+  { label: '↓', angle: 90, type: 'linear' },
+  { label: '↘', angle: 45, type: 'linear' },
+  { label: '◯', angle: 0, type: 'radial' },
+]
+
+/** Options qr-code-styling dérivées d'un design — partagées aperçu + export. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function toQrOptions(design: QrDesign, data: string, size: number): any {
+  const grad = design.gradient?.enabled
+    ? {
+        gradient: {
+          type: design.gradient.type,
+          rotation: (design.gradient.angle * Math.PI) / 180,
+          colorStops: [
+            { offset: 0, color: design.dotColor },
+            { offset: 1, color: design.gradient.color2 },
+          ],
+        },
+      }
+    : {}
+  return {
+    width: size, height: size, data, margin: 8,
+    qrOptions: { errorCorrectionLevel: 'H' },
+    image: design.logo || undefined,
+    imageOptions: { crossOrigin: 'anonymous', margin: 4, imageSize: design.logoSize ?? 0.3, hideBackgroundDots: true },
+    dotsOptions: { color: design.dotColor, type: design.dotType, ...grad },
+    backgroundOptions: { color: design.bgColor },
+    cornersSquareOptions: { type: design.cornerSquareType, color: design.dotColor, ...grad },
+    cornersDotOptions: { type: design.cornerDotType, color: design.dotColor, ...grad },
+  }
 }
 
 export const DESIGN_PRESETS: { label: string; design: QrDesign }[] = [
