@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createLink, setLinkActive, deleteLink, upsertCardProfile, getLink, getWorkspace, listLinks, type CardProfileInput } from '@link/db'
+import { createLink, setLinkActive, deleteLink, upsertCardProfile, upsertQrDesign, getLink, getWorkspace, listLinks, type CardProfileInput } from '@link/db'
 import { canCreateLink, PLANS, type Rule, type Plan } from '@link/shared'
 import { getDb, getKv } from './data'
 import { getSessionContext } from './session'
@@ -110,6 +110,17 @@ export async function deleteLinkAction(formData: FormData): Promise<void> {
   if (!(await ownedLink(db, id, ctx.workspaceId))) return
   await deleteLink({ db, kv: getKv() }, id)
   revalidatePath('/dashboard')
+}
+
+/** Enregistre le style du QR d'un lien (fusion générateur ↔ liens). */
+export async function saveQrDesignAction(linkId: string, design: unknown): Promise<{ ok: boolean }> {
+  const ctx = await getSessionContext()
+  if (!ctx) return { ok: false }
+  const db = getDb()
+  if (!(await ownedLink(db, linkId, ctx.workspaceId))) return { ok: false }
+  await upsertQrDesign(db, linkId, design)
+  revalidatePath('/dashboard')
+  return { ok: true }
 }
 
 /** Met à jour le profil d'une carte — le cœur de la proposition « on ne réimprime pas ». */

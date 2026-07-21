@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { listLinks, getWorkspace } from '@link/db'
+import { listLinks, getWorkspace, getQrDesigns } from '@link/db'
 import { PLANS, type Plan } from '@link/shared'
 import { getDb } from '@/server/data'
 import { getSessionContext } from '@/server/session'
@@ -25,6 +25,7 @@ export default async function DashboardPage() {
     getScanCounts(),
     getWorkspace(db, ctx.workspaceId),
   ])
+  const designs = await getQrDesigns(db, links.map((l) => l.id))
   const totalScans = Object.values(scans).reduce((a, b) => a + b, 0)
   const plan = (ws?.plan ?? 'free') as Plan
   const max = PLANS[plan].maxLinks
@@ -86,7 +87,7 @@ export default async function DashboardPage() {
                   <span className="text-[10px] text-[color:var(--muted)]">scans</span>
                 </span>
 
-                <LinkQr slug={l.slug} />
+                <LinkQr slug={l.slug} linkId={l.id} initialDesign={designs[l.id] ?? null} />
 
                 {l.kind === 'card' && (
                   <Link href={`/dashboard/card/${l.slug}`} className="shrink-0 text-xs font-semibold text-brand hover:underline">
