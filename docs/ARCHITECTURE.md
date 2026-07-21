@@ -192,26 +192,29 @@ complète dès le départ.
 ## 5. Structure du monorepo
 
 ```
-qrcode-platform/
+link-platform/
 ├─ apps/
-│  ├─ web/          Next.js 16 — qrcode.cg
+│  ├─ web/          Next.js 16 — qrcode.cg (Pages)
 │  │                marketing, outil gratuit, dashboard, pages /c/{slug}
-│  └─ router/       Worker — link.cg
-│                   redirection seule, zéro dépendance lourde
+│  ├─ router/       Worker — link.cg : redirection seule, KV uniquement
+│  └─ api/          Worker — écriture des liens : D1 + KV
 ├─ packages/
 │  ├─ qr/           sérialiseurs de contenu + config QR (pur, sans DOM)
-│  ├─ ui/           composants partagés (Card, OptionBtn, HexInput…)
-│  ├─ db/           schéma Drizzle, migrations, client typé
-│  └─ shared/       types, schémas Zod, union des règles de routage
+│  ├─ ui/           composants partagés (Card, OptionBtn, HexInput…) — à venir
+│  ├─ db/           schéma Drizzle, migrations, createLink (D1→KV)
+│  └─ shared/       types, schémas Zod, règles de routage + resolveLink
 ├─ docs/
 ├─ pnpm-workspace.yaml
 └─ turbo.json
 ```
 
-**Deux apps seulement, volontairement.** Le dashboard vit dans `apps/web` sous un
-route group `(app)`. Le séparer maintenant ajouterait un déploiement, un partage
-de session et une origine CORS pour zéro bénéfice. Point de séparation naturel :
-quand le dashboard aura son propre cycle de release.
+**Note d'implémentation (2026-07-21).** Le plan initial mettait l'API dans
+`apps/web`. En pratique, `apps/web` est déployé sur **Cloudflare Pages**, où
+brancher les bindings D1/KV imposerait de migrer vers l'adaptateur OpenNext dès
+maintenant. L'API a donc été isolée dans un Worker **`apps/api`** (bindings D1/KV
+natifs, même modèle que le routeur). Décision réversible : quand `apps/web`
+passera à un adaptateur Cloudflare avec bindings, l'API pourra s'y replier sous un
+route group. Le cœur métier vit de toute façon dans `@link/db`, pas dans le Worker.
 
 **`apps/router` est isolé dès le premier jour**, parce que ses contraintes n'ont
 rien à voir avec celles du reste : latence critique, déploiement indépendant,
