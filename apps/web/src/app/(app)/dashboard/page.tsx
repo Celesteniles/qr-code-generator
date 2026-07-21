@@ -28,7 +28,10 @@ export default async function DashboardPage() {
       <header className="border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md">
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center">
           <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">link.</span>
-          <span className="ml-2 text-xs text-zinc-400">Tableau de bord · liens</span>
+          <span className="ml-2 text-xs text-zinc-400 hidden sm:inline">Tableau de bord</span>
+          <Link href="/" className="ml-3 text-xs text-zinc-500 hover:text-blue-600 dark:hover:text-blue-400">
+            Générateur QR
+          </Link>
           <div className="ml-auto flex items-center gap-3">
             <span className="text-xs text-zinc-500 hidden sm:inline">{session.user.email}</span>
             <SignOutButton />

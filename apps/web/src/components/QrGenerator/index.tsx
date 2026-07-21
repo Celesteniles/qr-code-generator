@@ -166,7 +166,13 @@ export default function QrGenerator() {
             <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate">{t.title}</span>
             <span className="hidden sm:inline text-xs text-zinc-400 dark:text-zinc-500 ml-2">· {t.subtitle}</span>
           </div>
-          <div className="ml-auto flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 rounded-xl p-1 shrink-0">
+          <a
+            href="/dashboard"
+            className="ml-auto text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline shrink-0"
+          >
+            {lang === 'fr' ? 'Liens dynamiques →' : 'Dynamic links →'}
+          </a>
+          <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 rounded-xl p-1 shrink-0">
             {(['fr', 'en'] as const).map((l) => (
               <button
                 key={l}
