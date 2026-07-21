@@ -1,8 +1,8 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createLink, setLinkActive, deleteLink, upsertCardProfile, getLink, type CardProfileInput } from '@link/db'
-import type { Rule } from '@link/shared'
+import { createLink, setLinkActive, deleteLink, upsertCardProfile, getLink, getWorkspace, listLinks, type CardProfileInput } from '@link/db'
+import { canCreateLink, PLANS, type Rule, type Plan } from '@link/shared'
 import { getDb, getKv } from './data'
 import { getSessionContext } from './session'
 import { DEFAULT_DOMAIN, type CreateState } from './config'
@@ -45,6 +45,17 @@ export async function createLinkAction(_prev: CreateState, formData: FormData): 
   if ('error' in rule) return { ok: false, message: rule.error }
 
   const db = getDb()
+
+  // Limite de palier.
+  const [ws, existing] = await Promise.all([
+    getWorkspace(db, ctx.workspaceId),
+    listLinks(db, ctx.workspaceId),
+  ])
+  const plan = (ws?.plan ?? 'free') as Plan
+  if (!canCreateLink(plan, existing.length)) {
+    return { ok: false, message: `Limite du palier ${PLANS[plan].label} atteinte (${PLANS[plan].maxLinks} liens).` }
+  }
+
   const res = await createLink(
     { db, kv: getKv() },
     { workspaceId: ctx.workspaceId, domainId: DEFAULT_DOMAIN, slug, rule },

@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
-import { listLinks } from '@link/db'
+import { listLinks, getWorkspace } from '@link/db'
+import { PLANS, type Plan } from '@link/shared'
 import { getDb } from '@/server/data'
 import { getSessionContext } from '@/server/session'
 import { getScanCounts } from '@/server/scans'
@@ -15,11 +16,15 @@ export default async function DashboardPage() {
   const ctx = await getSessionContext()
   if (!ctx) redirect('/login')
 
-  const [links, scans] = await Promise.all([
-    listLinks(getDb(), ctx.workspaceId),
+  const db = getDb()
+  const [links, scans, ws] = await Promise.all([
+    listLinks(db, ctx.workspaceId),
     getScanCounts(),
+    getWorkspace(db, ctx.workspaceId),
   ])
   const totalScans = Object.values(scans).reduce((a, b) => a + b, 0)
+  const plan = (ws?.plan ?? 'free') as Plan
+  const max = PLANS[plan].maxLinks
 
   return (
     <div className="min-h-screen bg-zinc-100 dark:bg-zinc-950">
@@ -31,6 +36,9 @@ export default async function DashboardPage() {
             Générateur QR
           </Link>
           <div className="ml-auto flex items-center gap-3">
+            <Link href="/pricing" className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 hover:bg-blue-200">
+              {PLANS[plan].label}
+            </Link>
             <span className="text-xs text-zinc-500 hidden sm:inline">{ctx.email}</span>
             <SignOutButton />
           </div>
@@ -42,7 +50,7 @@ export default async function DashboardPage() {
 
         <section>
           <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-400 mb-2 flex items-center gap-2">
-            <span>{links.length} lien{links.length > 1 ? 's' : ''}</span>
+            <span>{links.length}{max !== null ? ` / ${max}` : ''} lien{links.length > 1 ? 's' : ''}</span>
             {totalScans > 0 && (
               <span className="text-blue-500 normal-case tracking-normal">· {totalScans} scan{totalScans > 1 ? 's' : ''} (30 j)</span>
             )}

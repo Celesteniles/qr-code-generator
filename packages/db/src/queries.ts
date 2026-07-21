@@ -13,6 +13,11 @@ export async function listLinks(db: Db, workspaceId: string): Promise<LinkRow[]>
   })
 }
 
+/** Un espace de travail (pour lire son palier). */
+export async function getWorkspace(db: Db, id: string) {
+  return db.query.workspaces.findFirst({ where: eq(schema.workspaces.id, id) })
+}
+
 /** Un lien par id (pour vérifier la propriété avant mutation). */
 export async function getLink(db: Db, id: string): Promise<LinkRow | undefined> {
   return db.query.links.findFirst({ where: eq(schema.links.id, id) })
