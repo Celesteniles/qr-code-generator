@@ -34,7 +34,7 @@ export function CreateLinkForm() {
             onClick={() => setType(t.value)}
             className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
               type === t.value
-                ? 'bg-grad text-white shadow-md shadow-blue-500/30'
+                ? 'bg-brand text-white'
                 : 'text-[color:var(--muted)] hover:text-brand'
             }`}
           >

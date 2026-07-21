@@ -25,11 +25,11 @@ export default function PricingPage() {
               className={`card-soft p-6 relative ${p.id === 'pro' ? 'ring-2 ring-brand md:-translate-y-2' : ''}`}
             >
               {p.id === 'pro' && (
-                <span className="absolute -top-3 left-6 bg-grad text-white text-[10px] font-bold uppercase tracking-wide px-3 py-1 rounded-full shadow-md shadow-blue-500/30">
+                <span className="absolute -top-3 left-6 bg-brand text-white text-[10px] font-bold uppercase tracking-wide px-3 py-1 rounded-full">
                   Le plus populaire
                 </span>
               )}
-              <h2 className="text-xl font-black text-[color:var(--foreground)]">{p.label}</h2>
+              <h2 className="text-lg font-bold text-[color:var(--foreground)]">{p.label}</h2>
               <p className="text-sm text-[color:var(--muted)] mb-5">
                 {p.maxLinks === null ? 'Liens illimités' : `Jusqu'à ${p.maxLinks} liens`}
               </p>

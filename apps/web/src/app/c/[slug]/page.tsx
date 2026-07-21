@@ -27,10 +27,10 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
   return (
     <Shell>
       <div className="flex flex-col items-center text-center">
-        <div className="w-24 h-24 rounded-3xl bg-grad text-white flex items-center justify-center text-3xl font-black mb-4 shadow-xl shadow-blue-500/30">
+        <div className="w-20 h-20 rounded-2xl bg-brand text-white flex items-center justify-center text-2xl font-bold mb-4">
           {initials(p.fullName) || '•'}
         </div>
-        <h1 className="text-2xl font-black text-[color:var(--foreground)]">{p.fullName}</h1>
+        <h1 className="text-xl font-bold text-[color:var(--foreground)]">{p.fullName}</h1>
         {(p.title || p.org) && (
           <p className="text-sm text-[color:var(--muted)] mt-1">
             {[p.title, p.org].filter(Boolean).join(' · ')}

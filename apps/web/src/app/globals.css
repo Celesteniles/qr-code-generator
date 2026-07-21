@@ -1,22 +1,19 @@
 @import "tailwindcss";
 
-/* ── Design system « vivant & coloré » ──────────────────────────────────────
-   Bleu NS Creative en accent, dégradé signature bleu → indigo → violet,
-   formes très arrondies, ombres colorées, fond doux. */
+/* ── Design system — sobre, net, arrondi ────────────────────────────────────
+   Bleu NS Creative en accent unique. Pas de dégradés omniprésents, pas d'effets
+   « glow ». Surfaces claires, ombres neutres discrètes, coins arrondis. */
 
 :root {
-  --background: #f7f8ff;      /* blanc lavande très doux */
+  --background: #f6f7f9;
   --surface: #ffffff;
-  --foreground: #14152b;
-  --muted: #6b6f8d;
-  --border: #e9e9f6;
+  --foreground: #16181d;
+  --muted: #6a7080;
+  --border: #e7e8ec;
 
-  --brand: #0060ff;          /* accent NS Creative */
-  --brand-2: #6d28d9;        /* violet du dégradé */
-  --brand-3: #00b8d9;        /* cyan d'appoint */
-
-  --grad: linear-gradient(135deg, #0060ff 0%, #5b30e6 55%, #8b2fd6 100%);
-  --grad-soft: linear-gradient(135deg, #4d8bff22 0%, #8b2fd622 100%);
+  --brand: #0060ff;
+  --brand-ink: #0a4fd6;      /* survol/pressé */
+  --brand-soft: #eef4ff;     /* fond teinté léger */
 }
 
 @theme inline {
@@ -24,36 +21,28 @@
   --color-surface: var(--surface);
   --color-foreground: var(--foreground);
   --color-brand: var(--brand);
-  --color-brand-2: var(--brand-2);
-  --color-brand-3: var(--brand-3);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0b0b1a;
-    --surface: #14152a;
-    --foreground: #ececff;
-    --muted: #9a9cc4;
-    --border: #262845;
-    --grad-soft: linear-gradient(135deg, #4d8bff18 0%, #8b2fd618 100%);
+    --background: #0d0f14;
+    --surface: #161922;
+    --foreground: #eceef3;
+    --muted: #9096a4;
+    --border: #262a35;
+    --brand-soft: #10203f;
   }
 }
 
 :root[data-theme="dark"] {
-  --background: #0b0b1a;
-  --surface: #14152a;
-  --foreground: #ececff;
-  --muted: #9a9cc4;
-  --border: #262845;
+  --background: #0d0f14; --surface: #161922; --foreground: #eceef3;
+  --muted: #9096a4; --border: #262a35; --brand-soft: #10203f;
 }
 :root[data-theme="light"] {
-  --background: #f7f8ff;
-  --surface: #ffffff;
-  --foreground: #14152b;
-  --muted: #6b6f8d;
-  --border: #e9e9f6;
+  --background: #f6f7f9; --surface: #ffffff; --foreground: #16181d;
+  --muted: #6a7080; --border: #e7e8ec; --brand-soft: #eef4ff;
 }
 
 body {
@@ -63,47 +52,33 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Utilitaires réutilisables ───────────────────────────────────────────── */
+/* ── Utilitaires ─────────────────────────────────────────────────────────── */
 
-.bg-grad { background-image: var(--grad); }
-.bg-grad-soft { background-image: var(--grad-soft); }
+/* Accents : désormais SOBRES. Le bleu solide remplace les dégradés. */
+.bg-grad { background-color: var(--brand); }
+.bg-grad-soft { background-color: var(--brand-soft); }
+.text-grad { color: var(--brand); }
 
-.text-grad {
-  background-image: var(--grad);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
+/* Les blobs sont neutralisés (design assaini). */
+.blob { display: none; }
 
-/* Bulles de couleur floues en arrière-plan */
-.blob {
-  position: absolute;
-  border-radius: 9999px;
-  filter: blur(72px);
-  opacity: 0.5;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Carte molle : surface, coins très arrondis, ombre colorée douce */
+/* Carte : surface, coins arrondis, bordure + ombre neutre très discrète. */
 .card-soft {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 1.5rem;
-  box-shadow: 0 8px 30px -12px rgba(59, 47, 214, 0.18);
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px rgba(16, 18, 29, 0.04), 0 6px 20px -14px rgba(16, 18, 29, 0.15);
 }
 
-/* Bouton principal en dégradé */
+/* Bouton principal : bleu solide, propre. */
 .btn-grad {
-  background-image: var(--grad);
+  background-color: var(--brand);
   color: #fff;
-  border-radius: 9999px;
+  border-radius: 0.75rem;
   font-weight: 600;
-  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
-  box-shadow: 0 10px 24px -8px rgba(0, 96, 255, 0.5);
+  transition: background-color .15s ease;
 }
-.btn-grad:hover { transform: translateY(-1px); filter: brightness(1.05); }
-.btn-grad:active { transform: translateY(0); }
-.btn-grad:disabled { opacity: .5; filter: grayscale(.3); transform: none; }
+.btn-grad:hover { background-color: var(--brand-ink); }
+.btn-grad:disabled { opacity: .5; }
 
-.focus-brand:focus { outline: none; box-shadow: 0 0 0 3px rgba(0, 96, 255, .25); }
+.focus-brand:focus { outline: none; box-shadow: 0 0 0 3px rgba(0, 96, 255, .22); }

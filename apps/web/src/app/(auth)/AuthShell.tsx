@@ -10,10 +10,10 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
       <Blobs />
       <div className="w-full max-w-sm relative z-10">
         <div className="text-center mb-6">
-          <div className="inline-flex w-12 h-12 bg-grad rounded-2xl items-center justify-center mb-3 shadow-lg shadow-blue-500/30">
-            <span className="text-white font-black text-lg">l.</span>
+          <div className="inline-flex w-11 h-11 bg-brand rounded-xl items-center justify-center mb-3">
+            <span className="text-white font-bold">l.</span>
           </div>
-          <h1 className="text-xl font-black text-[color:var(--foreground)]">{title}</h1>
+          <h1 className="text-lg font-bold text-[color:var(--foreground)]">{title}</h1>
           <p className="text-sm text-[color:var(--muted)]">{subtitle}</p>
         </div>
         <div className="card-soft p-6">

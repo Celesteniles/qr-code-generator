@@ -7,7 +7,7 @@ import {
 } from './config'
 import { T } from './translations'
 import { Card, SectionLabel, OptionBtn, IconDownload } from './atoms'
-import { Blobs, Logo } from '../ui'
+import { Nav } from '../ui'
 import { ColorsCard } from './ColorsCard'
 import { ImageCard } from './ImageCard'
 import { ContentCard } from './ContentCard'
@@ -155,49 +155,40 @@ export default function QrGenerator() {
   }
 
   return (
-    <div className="min-h-screen relative">
-      <Blobs />
-
-      {/* ── Header flottant ── */}
-      <header className="sticky top-0 z-30">
-        <div className="max-w-5xl mx-auto px-4 py-3">
-          <div className="card-soft !rounded-full px-4 py-2 flex items-center gap-3 backdrop-blur-xl">
-            <Logo />
-            <a
-              href="/dashboard"
-              className="ml-auto text-xs font-bold text-white bg-grad px-3.5 py-1.5 rounded-full shadow-md shadow-blue-500/30 hover:brightness-105 transition shrink-0"
-            >
-              {lang === 'fr' ? 'Liens dynamiques →' : 'Dynamic links →'}
-            </a>
-            <div className="flex items-center gap-1 bg-black/5 dark:bg-white/10 rounded-full p-1 shrink-0">
+    <div className="min-h-screen">
+      <Nav
+        right={
+          <>
+            <div className="flex items-center gap-1 bg-black/5 dark:bg-white/10 rounded-lg p-0.5">
               {(['fr', 'en'] as const).map((l) => (
                 <button
                   key={l}
                   type="button"
                   onClick={() => setLang(l)}
-                  className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide transition-all ${
-                    lang === l
-                      ? 'bg-[color:var(--surface)] text-brand shadow-sm'
-                      : 'text-[color:var(--muted)] hover:text-brand'
+                  className={`px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wide transition-all ${
+                    lang === l ? 'bg-[color:var(--surface)] text-brand shadow-sm' : 'text-[color:var(--muted)] hover:text-brand'
                   }`}
                 >
                   {l === 'fr' ? 'FR' : 'EN'}
                 </button>
               ))}
             </div>
-          </div>
-        </div>
-      </header>
+            <a href="/dashboard" className="btn-grad px-4 py-2 text-sm shrink-0">
+              {lang === 'fr' ? 'Liens dynamiques' : 'Dynamic links'}
+            </a>
+          </>
+        }
+      />
 
       {/* ── Hero ── */}
-      <div className="relative z-10 max-w-5xl mx-auto px-4 pt-6 pb-2 text-center">
-        <h1 className="text-3xl sm:text-4xl font-black tracking-tight">
-          {lang === 'fr' ? 'Créez des QR codes ' : 'Create '}<span className="text-grad">{lang === 'fr' ? 'magnifiques' : 'beautiful QR codes'}</span>
+      <div className="max-w-5xl mx-auto px-4 pt-8 pb-2 text-center">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[color:var(--foreground)]">
+          {lang === 'fr' ? 'Générateur de QR Code' : 'QR Code Generator'}
         </h1>
-        <p className="text-[color:var(--muted)] mt-2 text-sm sm:text-base">{t.subtitle}</p>
+        <p className="text-[color:var(--muted)] mt-2 text-sm">{t.subtitle}</p>
       </div>
 
-      <main className="relative z-10 max-w-5xl mx-auto px-4 py-6">
+      <main className="max-w-5xl mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-5 items-start">
 
           {/* ── Controls ── */}

@@ -34,7 +34,7 @@ export function OptionBtn({ active, onClick, children }: { active: boolean; onCl
       onClick={onClick}
       className={`py-2 px-3 rounded-xl text-xs font-semibold border transition-all ${
         active
-          ? 'bg-grad text-white border-transparent shadow-md shadow-blue-500/30 scale-[1.02]'
+          ? 'bg-brand text-white border-transparent'
           : 'bg-[color:var(--surface)] border-[color:var(--border)] text-[color:var(--muted)] hover:border-brand hover:text-brand'
       }`}
     >

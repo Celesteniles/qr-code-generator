@@ -104,7 +104,7 @@ export function LinkQr({ slug, linkId, initialDesign }: { slug: string; linkId: 
             {DOT_TYPES.map((d) => (
               <button key={d.value} type="button" onClick={() => set({ dotType: d.value })}
                 className={`py-1 rounded-lg text-[11px] font-semibold border transition ${
-                  design.dotType === d.value ? 'bg-grad text-white border-transparent' : 'border-[color:var(--border)] text-[color:var(--muted)] hover:border-brand'
+                  design.dotType === d.value ? 'bg-brand text-white border-transparent' : 'border-[color:var(--border)] text-[color:var(--muted)] hover:border-brand'
                 }`}>
                 {d.label}
               </button>
@@ -116,7 +116,7 @@ export function LinkQr({ slug, linkId, initialDesign }: { slug: string; linkId: 
             {CORNER_TYPES.map((c) => (
               <button key={c.value} type="button" onClick={() => set({ cornerSquareType: c.value })}
                 className={`py-1 rounded-lg text-[11px] font-semibold border transition ${
-                  design.cornerSquareType === c.value ? 'bg-grad text-white border-transparent' : 'border-[color:var(--border)] text-[color:var(--muted)] hover:border-brand'
+                  design.cornerSquareType === c.value ? 'bg-brand text-white border-transparent' : 'border-[color:var(--border)] text-[color:var(--muted)] hover:border-brand'
                 }`}>
                 {c.label}
               </button>
