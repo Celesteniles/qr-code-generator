@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getCardBySlug } from '@link/db'
 import { getDb } from '@/server/data'
+import { Blobs } from '@/components/ui'
 import { VCardButton } from './VCardButton'
 
 export const dynamic = 'force-dynamic'
@@ -26,12 +27,12 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
   return (
     <Shell>
       <div className="flex flex-col items-center text-center">
-        <div className="w-20 h-20 rounded-full bg-blue-500 text-white flex items-center justify-center text-2xl font-bold mb-4">
+        <div className="w-24 h-24 rounded-3xl bg-grad text-white flex items-center justify-center text-3xl font-black mb-4 shadow-xl shadow-blue-500/30">
           {initials(p.fullName) || '•'}
         </div>
-        <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">{p.fullName}</h1>
+        <h1 className="text-2xl font-black text-[color:var(--foreground)]">{p.fullName}</h1>
         {(p.title || p.org) && (
-          <p className="text-sm text-zinc-500 mt-0.5">
+          <p className="text-sm text-[color:var(--muted)] mt-1">
             {[p.title, p.org].filter(Boolean).join(' · ')}
           </p>
         )}
@@ -57,8 +58,9 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-100 dark:bg-zinc-950 px-4 py-10">
-      <div className="w-full max-w-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 shadow-sm">
+    <div className="min-h-screen flex items-center justify-center px-4 py-10 relative">
+      <Blobs />
+      <div className="w-full max-w-sm card-soft p-7 relative z-10">
         {children}
       </div>
     </div>
@@ -70,10 +72,10 @@ function Action({ href, label, value, external }: { href: string; label: string;
     <a
       href={href}
       {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-      className="flex items-center justify-between gap-3 rounded-xl border border-zinc-200 dark:border-zinc-800 px-4 py-3 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 transition-colors"
+      className="flex items-center justify-between gap-3 rounded-2xl border border-[color:var(--border)] px-4 py-3 hover:border-brand hover:bg-grad-soft transition-colors"
     >
-      <span className="text-xs font-semibold uppercase tracking-wide text-zinc-400">{label}</span>
-      <span className="text-sm text-zinc-700 dark:text-zinc-300 truncate">{value}</span>
+      <span className="text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">{label}</span>
+      <span className="text-sm font-medium text-[color:var(--foreground)] truncate">{value}</span>
     </a>
   )
 }

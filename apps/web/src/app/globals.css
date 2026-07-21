@@ -1,26 +1,109 @@
 @import "tailwindcss";
 
+/* ── Design system « vivant & coloré » ──────────────────────────────────────
+   Bleu NS Creative en accent, dégradé signature bleu → indigo → violet,
+   formes très arrondies, ombres colorées, fond doux. */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f8ff;      /* blanc lavande très doux */
+  --surface: #ffffff;
+  --foreground: #14152b;
+  --muted: #6b6f8d;
+  --border: #e9e9f6;
+
+  --brand: #0060ff;          /* accent NS Creative */
+  --brand-2: #6d28d9;        /* violet du dégradé */
+  --brand-3: #00b8d9;        /* cyan d'appoint */
+
+  --grad: linear-gradient(135deg, #0060ff 0%, #5b30e6 55%, #8b2fd6 100%);
+  --grad-soft: linear-gradient(135deg, #4d8bff22 0%, #8b2fd622 100%);
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
+  --color-brand: var(--brand);
+  --color-brand-2: var(--brand-2);
+  --color-brand-3: var(--brand-3);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0b0b1a;
+    --surface: #14152a;
+    --foreground: #ececff;
+    --muted: #9a9cc4;
+    --border: #262845;
+    --grad-soft: linear-gradient(135deg, #4d8bff18 0%, #8b2fd618 100%);
   }
+}
+
+:root[data-theme="dark"] {
+  --background: #0b0b1a;
+  --surface: #14152a;
+  --foreground: #ececff;
+  --muted: #9a9cc4;
+  --border: #262845;
+}
+:root[data-theme="light"] {
+  --background: #f7f8ff;
+  --surface: #ffffff;
+  --foreground: #14152b;
+  --muted: #6b6f8d;
+  --border: #e9e9f6;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
+
+/* ── Utilitaires réutilisables ───────────────────────────────────────────── */
+
+.bg-grad { background-image: var(--grad); }
+.bg-grad-soft { background-image: var(--grad-soft); }
+
+.text-grad {
+  background-image: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Bulles de couleur floues en arrière-plan */
+.blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(72px);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Carte molle : surface, coins très arrondis, ombre colorée douce */
+.card-soft {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 30px -12px rgba(59, 47, 214, 0.18);
+}
+
+/* Bouton principal en dégradé */
+.btn-grad {
+  background-image: var(--grad);
+  color: #fff;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+  box-shadow: 0 10px 24px -8px rgba(0, 96, 255, 0.5);
+}
+.btn-grad:hover { transform: translateY(-1px); filter: brightness(1.05); }
+.btn-grad:active { transform: translateY(0); }
+.btn-grad:disabled { opacity: .5; filter: grayscale(.3); transform: none; }
+
+.focus-brand:focus { outline: none; box-shadow: 0 0 0 3px rgba(0, 96, 255, .25); }

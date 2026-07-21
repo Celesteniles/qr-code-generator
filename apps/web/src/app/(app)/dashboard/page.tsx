@@ -1,16 +1,19 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { listLinks, getWorkspace } from '@link/db'
 import { PLANS, type Plan } from '@link/shared'
 import { getDb } from '@/server/data'
 import { getSessionContext } from '@/server/session'
 import { getScanCounts } from '@/server/scans'
-import Link from 'next/link'
+import { Blobs, Nav, SoftCard, Badge } from '@/components/ui'
 import { CreateLinkForm } from './CreateLinkForm'
 import { SignOutButton } from './SignOutButton'
 import { LinkQr } from './LinkQr'
 import { toggleLinkAction, deleteLinkAction } from '@/server/actions'
 
 export const dynamic = 'force-dynamic'
+
+const kindLabel: Record<string, string> = { static: 'Lien', app: 'App', card: 'Carte' }
 
 export default async function DashboardPage() {
   const ctx = await getSessionContext()
@@ -27,112 +30,112 @@ export default async function DashboardPage() {
   const max = PLANS[plan].maxLinks
 
   return (
-    <div className="min-h-screen bg-zinc-100 dark:bg-zinc-950">
-      <header className="border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md">
-        <div className="max-w-3xl mx-auto px-4 h-14 flex items-center">
-          <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">link.</span>
-          <span className="ml-2 text-xs text-zinc-400 hidden sm:inline">Tableau de bord</span>
-          <Link href="/" className="ml-3 text-xs text-zinc-500 hover:text-blue-600 dark:hover:text-blue-400">
-            Générateur QR
-          </Link>
-          <div className="ml-auto flex items-center gap-3">
-            <Link href="/pricing" className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 hover:bg-blue-200">
-              {PLANS[plan].label}
+    <div className="min-h-screen relative">
+      <Blobs />
+      <Nav
+        right={
+          <>
+            <Link href="/" className="hidden sm:inline text-sm font-semibold text-[color:var(--muted)] hover:text-brand transition-colors px-2">
+              Générateur QR
             </Link>
-            <span className="text-xs text-zinc-500 hidden sm:inline">{ctx.email}</span>
+            <Link href="/pricing"><Badge>{PLANS[plan].label}</Badge></Link>
+            <span className="hidden md:inline text-xs text-[color:var(--muted)]">{ctx.email}</span>
             <SignOutButton />
-          </div>
-        </div>
-      </header>
+          </>
+        }
+      />
 
-      <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+      <main className="relative z-10 max-w-3xl mx-auto px-4 py-6 space-y-6">
+        {/* Bandeau stats */}
+        <div className="grid grid-cols-3 gap-3">
+          <Stat value={`${links.length}${max !== null ? `/${max}` : ''}`} label="liens" />
+          <Stat value={totalScans.toLocaleString('fr-FR')} label="scans · 30 j" />
+          <Stat value={links.filter((l) => l.active).length.toString()} label="actifs" />
+        </div>
+
         <CreateLinkForm />
 
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-400 mb-2 flex items-center gap-2">
-            <span>{links.length}{max !== null ? ` / ${max}` : ''} lien{links.length > 1 ? 's' : ''}</span>
-            {totalScans > 0 && (
-              <span className="text-blue-500 normal-case tracking-normal">· {totalScans} scan{totalScans > 1 ? 's' : ''} (30 j)</span>
-            )}
+          <h2 className="text-xs font-bold uppercase tracking-widest text-[color:var(--muted)] mb-3 px-1">
+            Vos liens
           </h2>
-          <ul className="space-y-2">
+          <ul className="space-y-2.5">
             {links.map((l) => (
-              <li
-                key={l.id}
-                className="relative flex items-center gap-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3"
-              >
+              <li key={l.id} className="card-soft relative flex items-center gap-3 px-4 py-3">
+                <span className="shrink-0 w-9 h-9 rounded-2xl bg-grad-soft flex items-center justify-center text-sm">
+                  {l.kind === 'card' ? '👤' : l.kind === 'app' ? '📱' : '🔗'}
+                </span>
                 <div className="min-w-0 flex-1">
                   <a
                     href={`https://link.cg/${l.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                    className="text-sm font-bold text-[color:var(--foreground)] hover:text-brand transition-colors"
                   >
-                    link.cg/{l.slug}
+                    link.cg/<span className="text-grad">{l.slug}</span>
                   </a>
-                  <p className="text-xs text-zinc-500 truncate">
+                  <p className="text-xs text-[color:var(--muted)] truncate">
                     {l.rule.type === 'static' ? l.rule.url
                       : l.rule.type === 'app' ? `App · ${l.rule.fallback}`
-                      : 'Carte de visite'}
+                      : `Carte de visite · ${kindLabel[l.kind]}`}
                   </p>
                 </div>
-                <span className="shrink-0 text-xs text-zinc-500 tabular-nums" title="Scans (30 jours)">
-                  {(scans[l.slug] ?? 0).toLocaleString('fr-FR')} <span className="text-zinc-400">scans</span>
+
+                <span className="shrink-0 hidden sm:flex flex-col items-end leading-tight" title="Scans (30 jours)">
+                  <span className="text-sm font-bold text-[color:var(--foreground)] tabular-nums">{(scans[l.slug] ?? 0).toLocaleString('fr-FR')}</span>
+                  <span className="text-[10px] text-[color:var(--muted)]">scans</span>
                 </span>
 
                 <LinkQr slug={l.slug} />
 
                 {l.kind === 'card' && (
-                  <Link
-                    href={`/dashboard/card/${l.slug}`}
-                    className="shrink-0 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
-                  >
+                  <Link href={`/dashboard/card/${l.slug}`} className="shrink-0 text-xs font-semibold text-brand hover:underline">
                     éditer
                   </Link>
                 )}
 
-                <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
-                  {l.kind}
-                </span>
-
-                {/* Activer / désactiver */}
                 <form action={toggleLinkAction}>
                   <input type="hidden" name="id" value={l.id} />
                   <input type="hidden" name="active" value={(!l.active).toString()} />
                   <button
                     type="submit"
                     title={l.active ? 'Désactiver' : 'Activer'}
-                    className={`shrink-0 text-xs font-medium px-2 py-0.5 rounded-full transition-colors ${
+                    className={`shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full transition-colors ${
                       l.active
-                        ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 hover:bg-green-200'
-                        : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 hover:bg-zinc-200'
+                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 hover:bg-emerald-500/20'
+                        : 'bg-black/5 dark:bg-white/10 text-[color:var(--muted)]'
                     }`}
                   >
                     {l.active ? 'actif' : 'inactif'}
                   </button>
                 </form>
 
-                {/* Supprimer */}
                 <form action={deleteLinkAction}>
                   <input type="hidden" name="id" value={l.id} />
-                  <button
-                    type="submit"
-                    title="Supprimer"
-                    className="shrink-0 text-zinc-400 hover:text-red-600 dark:hover:text-red-400 transition-colors text-lg leading-none px-1"
-                  >
+                  <button type="submit" title="Supprimer" className="shrink-0 text-[color:var(--muted)] hover:text-red-500 transition-colors text-xl leading-none px-1">
                     ×
                   </button>
                 </form>
               </li>
             ))}
             {links.length === 0 && (
-              <li className="text-sm text-zinc-400 text-center py-8">
-                Aucun lien pour l&apos;instant. Créez le premier ci-dessus.
-              </li>
+              <SoftCard className="text-center py-10">
+                <p className="text-4xl mb-2">✨</p>
+                <p className="text-sm text-[color:var(--muted)]">Aucun lien pour l&apos;instant.<br />Créez le premier ci-dessus.</p>
+              </SoftCard>
             )}
           </ul>
         </section>
       </main>
+    </div>
+  )
+}
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="card-soft px-4 py-3 text-center">
+      <div className="text-xl font-black text-grad tabular-nums">{value}</div>
+      <div className="text-[10px] font-semibold uppercase tracking-wide text-[color:var(--muted)]">{label}</div>
     </div>
   )
 }

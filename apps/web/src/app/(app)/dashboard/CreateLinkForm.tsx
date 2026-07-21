@@ -13,7 +13,7 @@ const TYPES: { value: LinkType; label: string }[] = [
 ]
 
 const input =
-  'w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 py-2 px-3 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500'
+  'w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] py-2.5 px-3.5 text-sm focus-brand'
 
 export function CreateLinkForm() {
   const [state, action, pending] = useActionState<CreateState, FormData>(createLinkAction, null)
@@ -24,21 +24,18 @@ export function CreateLinkForm() {
   const v = state && !state.ok ? state.values : undefined
 
   return (
-    <form
-      action={action}
-      className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 space-y-3"
-    >
+    <form action={action} className="card-soft p-5 space-y-3">
       {/* Sélecteur de type */}
-      <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-800 rounded-xl p-1 w-fit">
+      <div className="flex gap-1 bg-black/5 dark:bg-white/10 rounded-full p-1 w-fit">
         {TYPES.map((t) => (
           <button
             key={t.value}
             type="button"
             onClick={() => setType(t.value)}
-            className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
               type === t.value
-                ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm'
-                : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+                ? 'bg-grad text-white shadow-md shadow-blue-500/30'
+                : 'text-[color:var(--muted)] hover:text-brand'
             }`}
           >
             {t.label}
@@ -50,10 +47,10 @@ export function CreateLinkForm() {
       {/* Raccourci (commun) */}
       <div>
         <label htmlFor="slug" className="block text-xs font-semibold text-zinc-500 mb-1">Raccourci</label>
-        <div className="flex items-center rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 focus-within:ring-1 focus-within:ring-blue-500">
-          <span className="pl-3 pr-1 text-sm text-zinc-400 select-none">link.cg/</span>
+        <div className="flex items-center rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] focus-within:shadow-[0_0_0_3px_rgba(0,96,255,.25)]">
+          <span className="pl-3.5 pr-1 text-sm text-[color:var(--muted)] select-none">link.cg/</span>
           <input id="slug" name="slug" required pattern="[a-zA-Z0-9_-]+" placeholder="promo" defaultValue={v?.slug}
-            className="flex-1 bg-transparent py-2 pr-3 text-sm focus:outline-none min-w-0" />
+            className="flex-1 bg-transparent py-2.5 pr-3 text-sm focus:outline-none min-w-0" />
         </div>
       </div>
 
@@ -99,12 +96,11 @@ export function CreateLinkForm() {
       )}
 
       <div className="flex items-center gap-3">
-        <button type="submit" disabled={pending}
-          className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 disabled:opacity-40 text-white text-sm font-semibold py-2 px-5 rounded-xl transition-colors">
-          {pending ? 'Création…' : 'Créer le lien'}
+        <button type="submit" disabled={pending} className="btn-grad py-2.5 px-6 text-sm">
+          {pending ? 'Création…' : '✨ Créer le lien'}
         </button>
-        {state?.ok && <span className="text-sm text-green-600 dark:text-green-400">Créé : link.cg/{state.slug}</span>}
-        {state && !state.ok && <span className="text-sm text-red-600 dark:text-red-400">{state.message}</span>}
+        {state?.ok && <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">Créé : link.cg/{state.slug}</span>}
+        {state && !state.ok && <span className="text-sm text-red-500">{state.message}</span>}
       </div>
     </form>
   )

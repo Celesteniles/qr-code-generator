@@ -13,7 +13,7 @@ import {
 
 export function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-3">
+    <p className="text-[10px] font-bold uppercase tracking-widest text-[color:var(--muted)] mb-3">
       {children}
     </p>
   )
@@ -21,7 +21,7 @@ export function SectionLabel({ children }: { children: React.ReactNode }) {
 
 export function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`bg-white dark:bg-zinc-900 rounded-2xl p-5 border border-zinc-200 dark:border-zinc-800 ${className}`}>
+    <div className={`card-soft p-5 ${className}`}>
       {children}
     </div>
   )
@@ -32,10 +32,10 @@ export function OptionBtn({ active, onClick, children }: { active: boolean; onCl
     <button
       type="button"
       onClick={onClick}
-      className={`py-2 px-3 rounded-lg text-xs font-medium border transition-all ${
+      className={`py-2 px-3 rounded-xl text-xs font-semibold border transition-all ${
         active
-          ? 'bg-blue-500 text-white border-blue-500 shadow-sm'
-          : 'bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-blue-400 dark:hover:border-blue-600 hover:text-zinc-900 dark:hover:text-zinc-200'
+          ? 'bg-grad text-white border-transparent shadow-md shadow-blue-500/30 scale-[1.02]'
+          : 'bg-[color:var(--surface)] border-[color:var(--border)] text-[color:var(--muted)] hover:border-brand hover:text-brand'
       }`}
     >
       {children}

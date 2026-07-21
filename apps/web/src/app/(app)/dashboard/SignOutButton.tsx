@@ -12,7 +12,7 @@ export function SignOutButton() {
         await signOut()
         router.push('/login')
       }}
-      className="text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors"
+      className="text-xs font-semibold text-[color:var(--muted)] hover:text-red-500 transition-colors"
     >
       Déconnexion
     </button>

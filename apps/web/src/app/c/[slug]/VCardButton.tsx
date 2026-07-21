@@ -30,7 +30,7 @@ export function VCardButton({ profile }: { profile: CardProfile }) {
     <button
       type="button"
       onClick={download}
-      className="w-full mt-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white text-sm font-semibold py-3 rounded-xl transition-colors"
+      className="btn-grad w-full mt-4 py-3 text-sm"
     >
       Ajouter aux contacts
     </button>

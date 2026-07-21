@@ -6,7 +6,8 @@ import {
   type Lang, type DotType, type CornerSquareType, type CornerDotType, type GradientType, type QrConfig,
 } from './config'
 import { T } from './translations'
-import { Card, SectionLabel, OptionBtn, IconDownload, IconQr } from './atoms'
+import { Card, SectionLabel, OptionBtn, IconDownload } from './atoms'
+import { Blobs, Logo } from '../ui'
 import { ColorsCard } from './ColorsCard'
 import { ImageCard } from './ImageCard'
 import { ContentCard } from './ContentCard'
@@ -154,44 +155,49 @@ export default function QrGenerator() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-100 dark:bg-zinc-950">
+    <div className="min-h-screen relative">
+      <Blobs />
 
-      {/* ── Header ── */}
-      <header className="sticky top-0 z-10 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800">
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center gap-3">
-          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shrink-0">
-            <IconQr />
-          </div>
-          <div className="min-w-0">
-            <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate">{t.title}</span>
-            <span className="hidden sm:inline text-xs text-zinc-400 dark:text-zinc-500 ml-2">· {t.subtitle}</span>
-          </div>
-          <a
-            href="/dashboard"
-            className="ml-auto text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline shrink-0"
-          >
-            {lang === 'fr' ? 'Liens dynamiques →' : 'Dynamic links →'}
-          </a>
-          <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 rounded-xl p-1 shrink-0">
-            {(['fr', 'en'] as const).map((l) => (
-              <button
-                key={l}
-                type="button"
-                onClick={() => setLang(l)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${
-                  lang === l
-                    ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm'
-                    : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
-                }`}
-              >
-                {l === 'fr' ? 'FR' : 'EN'}
-              </button>
-            ))}
+      {/* ── Header flottant ── */}
+      <header className="sticky top-0 z-30">
+        <div className="max-w-5xl mx-auto px-4 py-3">
+          <div className="card-soft !rounded-full px-4 py-2 flex items-center gap-3 backdrop-blur-xl">
+            <Logo />
+            <a
+              href="/dashboard"
+              className="ml-auto text-xs font-bold text-white bg-grad px-3.5 py-1.5 rounded-full shadow-md shadow-blue-500/30 hover:brightness-105 transition shrink-0"
+            >
+              {lang === 'fr' ? 'Liens dynamiques →' : 'Dynamic links →'}
+            </a>
+            <div className="flex items-center gap-1 bg-black/5 dark:bg-white/10 rounded-full p-1 shrink-0">
+              {(['fr', 'en'] as const).map((l) => (
+                <button
+                  key={l}
+                  type="button"
+                  onClick={() => setLang(l)}
+                  className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide transition-all ${
+                    lang === l
+                      ? 'bg-[color:var(--surface)] text-brand shadow-sm'
+                      : 'text-[color:var(--muted)] hover:text-brand'
+                  }`}
+                >
+                  {l === 'fr' ? 'FR' : 'EN'}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-6">
+      {/* ── Hero ── */}
+      <div className="relative z-10 max-w-5xl mx-auto px-4 pt-6 pb-2 text-center">
+        <h1 className="text-3xl sm:text-4xl font-black tracking-tight">
+          {lang === 'fr' ? 'Créez des QR codes ' : 'Create '}<span className="text-grad">{lang === 'fr' ? 'magnifiques' : 'beautiful QR codes'}</span>
+        </h1>
+        <p className="text-[color:var(--muted)] mt-2 text-sm sm:text-base">{t.subtitle}</p>
+      </div>
+
+      <main className="relative z-10 max-w-5xl mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-5 items-start">
 
           {/* ── Controls ── */}
@@ -299,9 +305,9 @@ export default function QrGenerator() {
 
           {/* ── Preview + Download ── */}
           <div className="flex flex-col items-center gap-3 order-1 lg:order-2 lg:sticky lg:top-20 w-full lg:w-auto">
-            <Card className="w-full flex justify-center">
-              {!ready && <div className="w-70 h-70 rounded-xl bg-zinc-100 dark:bg-zinc-800 animate-pulse" />}
-              <div ref={containerRef} className="leading-none" />
+            <Card className="w-full flex justify-center p-6">
+              {!ready && <div className="w-70 h-70 rounded-2xl bg-black/5 dark:bg-white/10 animate-pulse" />}
+              <div ref={containerRef} className="leading-none [&>*]:rounded-2xl [&_canvas]:rounded-2xl" />
             </Card>
 
             <div className="flex gap-2 w-full">
@@ -309,7 +315,7 @@ export default function QrGenerator() {
                 type="button"
                 onClick={() => download('png')}
                 disabled={!ready}
-                className="flex-1 flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white py-2.5 px-4 rounded-xl font-semibold text-sm transition-colors shadow-sm"
+                className="btn-grad flex-1 flex items-center justify-center gap-2 py-2.5 px-4 text-sm disabled:cursor-not-allowed"
               >
                 <IconDownload />PNG
               </button>
@@ -317,20 +323,27 @@ export default function QrGenerator() {
                 type="button"
                 onClick={() => download('svg')}
                 disabled={!ready}
-                className="flex-1 flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600 disabled:opacity-40 disabled:cursor-not-allowed text-white py-2.5 px-4 rounded-xl font-semibold text-sm transition-colors shadow-sm"
+                className="flex-1 flex items-center justify-center gap-2 border border-[color:var(--border)] bg-[color:var(--surface)] hover:border-brand hover:text-brand disabled:opacity-40 disabled:cursor-not-allowed text-[color:var(--foreground)] py-2.5 px-4 rounded-full font-semibold text-sm transition-colors"
               >
                 <IconDownload />SVG
               </button>
             </div>
 
-            <p className="text-xs text-zinc-400 text-center">
+            {/* Passerelle vers les liens dynamiques */}
+            <a href="/dashboard" className="w-full text-center text-xs bg-grad-soft rounded-2xl px-4 py-3 text-[color:var(--foreground)] hover:brightness-95 transition">
+              💡 {lang === 'fr'
+                ? 'Rendez ce QR dynamique — changez sa destination sans réimprimer.'
+                : 'Make this QR dynamic — change its destination without reprinting.'}
+            </a>
+
+            <p className="text-xs text-[color:var(--muted)] text-center">
               {t.previewInfo(PREVIEW_SIZE, exportSize)}
             </p>
           </div>
         </div>
       </main>
 
-      <footer className="text-center py-8 text-xs text-zinc-400 dark:text-zinc-600 space-y-1">
+      <footer className="relative z-10 text-center py-8 text-xs text-[color:var(--muted)] space-y-1">
         <p>{t.footer}</p>
         <p>
           Un outil par{' '}
@@ -338,7 +351,7 @@ export default function QrGenerator() {
             href="https://nscreative.cg"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-zinc-500 dark:text-zinc-400 hover:text-blue-500 dark:hover:text-blue-400 underline underline-offset-2 transition-colors"
+            className="text-grad font-semibold hover:underline underline-offset-2"
           >
             nscreative.cg
           </a>
