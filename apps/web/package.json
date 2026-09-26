@@ -19,9 +19,9 @@
     "@link/qr": "workspace:*",
     "@link/shared": "workspace:*",
     "better-auth": "^1.6.23",
-    "drizzle-orm": "^0.38.3",
+    "drizzle-orm": "^0.45.3",
     "libphonenumber-js": "^1.13.14",
-    "next": "16.2.10",
+    "next": "16.3.6",
     "qr-code-styling": "^1.9.2",
     "react": "19.2.3",
     "react-dom": "19.2.3"
@@ -33,7 +33,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.10",
+    "eslint-config-next": "16.3.6",
     "tailwindcss": "^4",
     "typescript": "^5",
     "wrangler": "^4.86.0"
