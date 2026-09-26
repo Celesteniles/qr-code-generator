@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { SparklesIcon } from '@heroicons/react/24/outline'
 import { getViewer } from '@/server/viewer'
 import { GuestHome } from '@/components/accueil/GuestHome'
+import { TourPrompt } from '@/components/accueil/TourPrompt'
 import { MemberHome } from '@/components/accueil/MemberHome'
 
 // Accueil de l'espace (proposition D) : visiteur et inscrit sur la même adresse.
@@ -44,7 +45,7 @@ export default async function AccueilPage() {
         )}
       </div>
       <div className="px-4 pb-14 pt-1 lg:px-8 lg:pt-2">
-        {ctx ? <MemberHome ctx={ctx} viewer={viewer} /> : <GuestHome />}
+        {ctx ? <MemberHome ctx={ctx} viewer={viewer} /> : <><GuestHome /><TourPrompt /></>}
       </div>
     </>
   )

@@ -7,6 +7,7 @@ import { PLANS } from '@link/shared'
 import { Logo } from '@/components/kit/Logo'
 import { Illustration } from '@/components/kit/Illustration'
 import { CHOICES, type Kind } from './choices'
+import { rememberTour } from '@/lib/tour-prompt'
 
 // Visite guidée : 4 étapes (bienvenue, intention, fixe ou modifiable, prêt).
 // Mène à l'écran Créer préparé selon les réponses (contrat /creer?mode=…&type=…).
@@ -24,6 +25,9 @@ export function Tour() {
   const effectiveKind: Kind | null = choice
     ? (kind && choice.allowed.includes(kind) ? kind : choice.recommended)
     : null
+
+  // La visite a été vue : ne plus la proposer en pop-up à l'accueil.
+  useEffect(() => { rememberTour('seen') }, [])
 
   // Déplace le focus sur le titre de l'étape (lecteurs d'écran, clavier).
   useEffect(() => {
