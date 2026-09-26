@@ -61,6 +61,9 @@ jobs:
       - uses: dorny/paths-filter@v3
         id: filter
         with:
+          # Comparer au commit d'avant ce push (et non à la branche par défaut, qui
+          # peut avoir des dizaines de commits de retard : tout paraîtrait modifié).
+          base: ${{ github.ref_name }}
           filters: |
             router:
               - 'apps/router/**'
