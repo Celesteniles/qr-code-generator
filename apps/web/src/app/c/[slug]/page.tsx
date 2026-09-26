@@ -61,7 +61,7 @@ export default async function PublicCardPage({ params }: { params: Promise<{ slu
   return (
     <main className="min-h-screen bg-[#f6f3ee] sm:grid sm:place-items-start sm:bg-[#e9e3d8] sm:px-4 sm:py-10">
       <div className="mx-auto w-full max-w-[440px] sm:overflow-hidden sm:rounded-[32px] sm:shadow-[0_30px_70px_-30px_rgba(22,22,29,.45)]">
-        <CardView fields={fields} saveButton={<SaveContactButton fields={fields} />} />
+        <CardView fields={fields} saveButton={<SaveContactButton slug={card.link.slug} />} />
       </div>
     </main>
   )
