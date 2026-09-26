@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createLink, setLinkActive, deleteLink, updateLinkRule, upsertCardProfile, upsertQrDesign, getLink, getWorkspace, listLinks, takenSlugs, checkLinkCreationRate, checkLinkUpdateRate, type CardProfileInput, type SocialLink, type ThrottleResult } from '@link/db'
+import { createLink, setLinkActive, deleteLink, updateLinkRule, upsertCardProfile, upsertQrDesign, validateCardProfile, QrDesignError, getLink, getWorkspace, listLinks, takenSlugs, checkLinkCreationRate, checkLinkUpdateRate, type CardProfileInput, type SocialLink, type ThrottleResult } from '@link/db'
 import { canCreateLink, PLANS, type Rule, type Plan } from '@link/shared'
 import { getDb, getKv } from './data'
 import { getSessionContext } from './session'
@@ -126,7 +126,9 @@ export async function createLinkAction(_prev: CreateState, formData: FormData): 
     // invalide ne doit pas faire échouer la création déjà faite : on l'ignore.
     if (rule.type === 'card') {
       const profile = cardProfileFromForm(formData)
-      if (!('error' in profile) && profile.fullName) await upsertCardProfile(db, res.id, profile)
+      if (!('error' in profile) && profile.fullName && validateCardProfile(profile).ok) {
+        await upsertCardProfile(db, res.id, profile)
+      }
     }
     revalidatePath('/')
     revalidatePath('/liens')
@@ -183,7 +185,13 @@ export async function saveQrDesignAction(linkId: string, design: unknown): Promi
   if (!ctx) return { ok: false }
   const db = getDb()
   if (!(await ownedLink(db, linkId, ctx.workspaceId))) return { ok: false }
-  await upsertQrDesign(db, linkId, design)
+  try {
+    await upsertQrDesign(db, linkId, design)
+  } catch (e) {
+    // Style refusé (trop lourd, logo non conforme) : l'écran garde l'ancien style.
+    if (e instanceof QrDesignError) return { ok: false }
+    throw e
+  }
   revalidateLink(linkId)
   return { ok: true }
 }
@@ -200,6 +208,10 @@ export async function updateCardAction(formData: FormData): Promise<{ ok: boolea
   const profile = cardProfileFromForm(formData)
   if ('error' in profile) return { ok: false, message: profile.error }
   if (!profile.fullName) return { ok: false, message: 'Indiquez au moins votre nom.' }
+  // Longueurs et caractères vérifiés aussi par @link/db ; ici pour un message lisible.
+  if (!validateCardProfile(profile).ok) {
+    return { ok: false, message: 'Un des champs est trop long ou contient des caractères non acceptés. Vérifiez la carte puis réessayez.' }
+  }
 
   await upsertCardProfile(db, linkId, profile)
   // Le slug vient de la base, pas du formulaire : on revalide la vraie page publique.
