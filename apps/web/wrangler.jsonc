@@ -21,6 +21,8 @@
   // Secrets (wrangler secret put …) :
   //   BETTER_AUTH_SECRET   — signature des sessions
   //   CF_ANALYTICS_TOKEN   — jeton API "Account Analytics: Read" pour lire les scans
+  //   SAFE_BROWSING_KEY    — clé Google Safe Browsing : vérifie chaque destination de
+  //                          lien (création, changement). Sans elle, rien n'est vérifié.
 
   // Le dashboard écrit les liens directement via les bindings (server actions),
   // en réutilisant @link/db — pas besoin du jeton d'admin de l'API côté serveur.
@@ -48,7 +50,7 @@
   // Les vars et bindings ne sont pas hérités : les répéter ici. Même base et même KV
   // que la bêta (les liens et les comptes sont les mêmes).
   // Secrets à poser une fois sur ce Worker (wrangler secret put … --env production) :
-  //   BETTER_AUTH_SECRET, CF_ANALYTICS_TOKEN
+  //   BETTER_AUTH_SECRET, CF_ANALYTICS_TOKEN, SAFE_BROWSING_KEY
   "env": {
     "production": {
       "vars": {

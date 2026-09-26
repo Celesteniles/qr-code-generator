@@ -5,4 +5,6 @@ interface CloudflareEnv {
   BETTER_AUTH_SECRET: string
   /** Jeton API "Account Analytics: Read" pour lire les scans. Optionnel (stats désactivées sans lui). */
   CF_ANALYTICS_TOKEN?: string
+  /** Clé API Google Safe Browsing. Optionnelle : sans elle, les URLs ne sont pas vérifiées (log d'avertissement). */
+  SAFE_BROWSING_KEY?: string
 }
