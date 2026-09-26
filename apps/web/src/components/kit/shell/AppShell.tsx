@@ -28,6 +28,23 @@ const NAV_SECONDARY: NavItem[] = [
   { href: '/offres', label: 'Offres', icon: CreditCardIcon },
 ]
 
+const TABS = [
+  { href: '/', label: 'Accueil', icon: HomeIcon },
+  { href: '/liens', label: 'Mes liens', icon: LinkIcon },
+  { href: '/carte', label: 'Carte', icon: UserIcon },
+  { href: '/offres', label: 'Offres', icon: CreditCardIcon },
+]
+
+/** Onglet de la barre mobile. */
+function Tab({ href, label, icon, current }: { href: string; label: string; icon: typeof HomeIcon; current: boolean }) {
+  return (
+    <Link href={href} aria-current={current ? 'page' : undefined}
+      className={`grid min-w-0 place-items-center gap-0.5 py-1 text-[11px] font-semibold ${current ? 'text-ink' : 'text-subtle'}`}>
+      <NavIcon icon={icon} className="h-5 w-5" />{label}
+    </Link>
+  )
+}
+
 /**
  * Icône d'un lien de navigation : remplacée par un spinner dès le clic, le temps
  * que la page arrive (retour immédiat, même sur une connexion lente).
@@ -161,23 +178,13 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
       </div>
 
       {/* ── Barre d'onglets (mobile) ── */}
-      <nav className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-4 items-end rounded-[22px] bg-surface p-2 shadow-[0_0_0_1px_var(--line),var(--shadow-lg)] lg:hidden" aria-label="Navigation">
-        {[
-          { href: '/', label: 'Accueil', icon: HomeIcon },
-          { href: '/liens', label: 'Mes liens', icon: LinkIcon },
-        ].map(({ href, label, icon: Icon }) => (
-          <Link key={href} href={href} aria-current={isCurrent(pathname, href) ? 'page' : undefined}
-            className={`grid place-items-center gap-0.5 py-1 text-[11px] font-semibold ${isCurrent(pathname, href) ? 'text-ink' : 'text-subtle'}`}>
-            <NavIcon icon={Icon} className="h-5 w-5" />{label}
-          </Link>
-        ))}
+      {/* 5 colonnes, « + » au centre. Connexion et compte : en-tête (bouton ou avatar). */}
+      <nav className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-5 items-end rounded-[22px] bg-surface p-2 shadow-[0_0_0_1px_var(--line),var(--shadow-lg)] lg:hidden" aria-label="Navigation">
+        {TABS.slice(0, 2).map((t) => <Tab key={t.href} {...t} current={isCurrent(pathname, t.href)} />)}
         <Link href="/creer" aria-label="Créer un lien ou un QR" className="grid place-items-center">
           <span className="-mt-[22px] grid h-12 w-12 place-items-center rounded-2xl bg-ink text-bg shadow-[0_12px_24px_-10px_rgba(22,22,29,.6)]"><NavIcon icon={PlusIcon} className="h-6 w-6" /></span>
         </Link>
-        <Link href={guest ? '/connexion' : '/carte'} aria-current={isCurrent(pathname, guest ? '/connexion' : '/carte') ? 'page' : undefined}
-          className={`grid place-items-center gap-0.5 py-1 text-[11px] font-semibold ${isCurrent(pathname, '/carte') ? 'text-ink' : 'text-subtle'}`}>
-          <NavIcon icon={UserIcon} className="h-5 w-5" />{guest ? 'Compte' : 'Carte'}
-        </Link>
+        {TABS.slice(2).map((t) => <Tab key={t.href} {...t} current={isCurrent(pathname, t.href)} />)}
       </nav>
     </div>
   )

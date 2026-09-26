@@ -39,10 +39,14 @@ export function QrPanel({ linkId, slug, url, initialDesign }: {
   }
 
   return (
-    <div className="grid gap-3.5">
+    // Tablette : QR à gauche, actions à droite (pas de boutons étirés sur toute la
+    // largeur) ; téléphone et grand écran (colonne latérale) : l'un sous l'autre.
+    <div className="grid gap-3.5 md:grid-cols-[minmax(0,300px)_minmax(0,1fr)] md:items-center md:gap-6 xl:grid-cols-1 xl:gap-3.5">
       <div className="board">
         <div className="qrbox"><QrCanvas ref={qr} data={qrLinkUrl(slug)} design={design} size={240} /></div>
       </div>
+
+      <div className="grid min-w-0 gap-3.5">
 
       <div className="flex items-center gap-1.5 rounded-full bg-soft py-1.5 pl-4 pr-1.5 font-mono text-[13px]">
         <span className="min-w-0 flex-1 truncate">{SHORT_HOST}/{slug}</span>
@@ -75,6 +79,7 @@ export function QrPanel({ linkId, slug, url, initialDesign }: {
           ? 'Nouveau style enregistré. Les QR déjà imprimés continuent de fonctionner.'
           : 'Changer le style crée un nouveau visuel : réimprimez seulement si vous le souhaitez. Le lien, lui, ne change jamais.'}
       </p>
+      </div>
 
       {styling && <StyleDrawer linkId={linkId} data={qrLinkUrl(slug)} initial={design} onClose={close} onSaved={onSaved} />}
     </div>

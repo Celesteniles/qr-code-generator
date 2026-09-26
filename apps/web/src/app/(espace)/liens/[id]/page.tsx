@@ -66,21 +66,22 @@ export default async function LienPage({ params }: { params: Promise<{ id: strin
           </span>
         </div>
 
-        <div className="mt-6 grid items-start gap-8 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[360px_minmax(0,1fr)]">
-          <aside className="lg:sticky lg:top-6" aria-label="QR et partage">
+        {/* Deux colonnes seulement à partir de xl : à lg, la barre latérale laisse trop peu de place. */}
+        <div className="mt-6 grid grid-cols-1 items-start gap-8 xl:grid-cols-[340px_minmax(0,1fr)] 2xl:grid-cols-[360px_minmax(0,1fr)]">
+          <aside className="xl:sticky xl:top-6" aria-label="QR et partage">
             <QrPanel linkId={link.id} slug={link.slug} url={url} initialDesign={rawDesign ? toDesign(rawDesign) : null} />
           </aside>
 
-          <div className="grid gap-4">
+          <div className="grid min-w-0 gap-4">
             <section className="card p-[26px]" aria-labelledby="ou-mene">
-              <SectionHead icon={<LinkIcon />} tone="bg-brand-tint text-brand" id="ou-mene" title="Où mène ce lien ?">
+              <SectionHead icon={<LinkIcon />} tone="bg-brand-tint text-brand" id="ou-mene" title="Où mène ce lien ?">
                 Changez la destination quand vous voulez : le lien partagé et le QR imprimé suivent immédiatement.
               </SectionHead>
               <DestinationForm linkId={link.id} initial={destination} />
             </section>
 
             <section className="card p-[26px]" aria-labelledby="qui-ouvre">
-              <SectionHead icon={<ChartBarIcon />} tone="bg-sun text-[#7a4b00]" id="qui-ouvre" title="Qui l'ouvre ?">
+              <SectionHead icon={<ChartBarIcon />} tone="bg-sun text-[#7a4b00]" id="qui-ouvre" title="Qui l'ouvre ?">
                 Clics sur le lien et scans du QR, hors robots et aperçus de lien, comptés sans collecter de données personnelles.
               </SectionHead>
               <div className="inline-block rounded-2xl bg-soft px-4 py-3.5">

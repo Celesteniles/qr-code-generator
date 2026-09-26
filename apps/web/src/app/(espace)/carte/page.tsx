@@ -39,9 +39,9 @@ export default async function CartePage({ searchParams }: { searchParams: Promis
         Un lien et un QR qui mènent à vos coordonnées. Vos contacts vous appellent, vous écrivent ou vous enregistrent en un geste.
       </p>
 
-      <div className="mt-8 grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_420px]">
+      <div className="mt-8 grid grid-cols-1 items-start gap-8 xl:grid-cols-[minmax(0,1fr)_420px]">
         {cards.length > 0 ? (
-          <ul className="grid gap-3" aria-label="Vos cartes">
+          <ul className="grid min-w-0 grid-cols-1 gap-3" aria-label="Vos cartes">
             {cards.map(({ link, profile }) => {
               const theme = safeTheme(profile?.theme)
               const name = profile?.fullName || 'Carte sans nom'
@@ -54,7 +54,7 @@ export default async function CartePage({ searchParams }: { searchParams: Promis
                     </span>
                     <span className="min-w-0 grow">
                       <span className="block truncate font-semibold">{name}</span>
-                      <span className="linkchip text-[13px]"><span className="host">link.cg/</span>{link.slug}</span>
+                      <span className="linkchip !block truncate text-[13px]"><span className="host">link.cg/</span>{link.slug}</span>
                     </span>
                     {!link.active && <span className="pill pill-soft">En pause</span>}
                     <span className="hidden text-sm font-semibold text-brand sm:inline">Modifier</span>

@@ -29,7 +29,7 @@ const MODES: { id: Mode; title: string; desc: string; icon: typeof LinkIcon; bg:
   { id: 'qr', title: 'QR code', desc: 'À imprimer : affiche, menu, emballage', icon: QrCodeIcon, bg: 'bg-sun' },
 ]
 // Mobile : trois colonnes, icône et titre seulement ; à partir de md, icône + titre + description.
-const modeCls = 'flex flex-col items-center gap-2 rounded-[18px] bg-surface px-2 py-3 text-center shadow-[inset_0_0_0_1px_var(--line-strong)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--subtle)] md:flex-row md:gap-3.5 md:rounded-[20px] md:px-4 md:py-3.5 md:text-left'
+const modeCls = 'flex flex-col items-center gap-2 rounded-[18px] bg-surface px-2 py-3 text-center shadow-[inset_0_0_0_1px_var(--line)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--line-strong)] md:flex-row md:gap-3.5 md:rounded-[20px] md:px-4 md:py-3.5 md:text-left'
 
 export function Creer({ initialMode, initialUrl, initialType, deviceRoute, viewer }: CreerProps) {
   const guest = !viewer.user
@@ -63,10 +63,10 @@ export function Creer({ initialMode, initialUrl, initialType, deviceRoute, viewe
       </div>
 
       <div className="px-4 pb-16 pt-1 lg:px-8 lg:pb-14 lg:pt-2">
-        <h1 className="h1">Que voulez-vous créer ?</h1>
+        <h1 className="h1">Que voulez-vous créer ?</h1>
         <p className="lead mt-2">Quelques questions simples. L&apos;aperçu se met à jour pendant que vous répondez.</p>
 
-        <div className="mt-6 grid grid-cols-3 gap-2 md:gap-3" role="group" aria-label="Que voulez-vous créer ?">
+        <div className="mt-6 grid grid-cols-3 gap-2 md:gap-3" role="group" aria-label="Que voulez-vous créer ?">
           {MODES.map((m) => {
             const active = mode === m.id
             return (

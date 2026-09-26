@@ -27,8 +27,8 @@ export default async function ComptePage() {
       <p className="lead mt-2 max-w-[60ch]">Vos informations, votre mot de passe et les appareils connectés à votre espace.</p>
       <CompteTabs current="/compte" />
 
-      <div className="mt-8 grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="grid min-w-0 gap-4">
+      <div className="mt-8 grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="grid min-w-0 grid-cols-1 gap-4">
           <section className="card p-5 sm:p-[26px]" aria-labelledby="c-infos">
             <SectionHead icon={<UserCircleIcon />} tone="bg-brand-tint text-brand" id="c-infos" title="Vos informations">
               Le nom affiché dans votre espace et l&apos;adresse qui vous sert à vous connecter.
@@ -51,7 +51,7 @@ export default async function ComptePage() {
           </section>
         </div>
 
-        <div className="grid min-w-0 gap-4 xl:sticky xl:top-6">
+        <div className="grid min-w-0 grid-cols-1 gap-4 xl:sticky xl:top-6">
           {plan && (
             <section className="card p-5 sm:p-[26px]" aria-labelledby="c-offre">
               <SectionHead icon={<SparklesIcon />} tone="bg-lilac text-ink" id="c-offre" title="Votre offre" />
