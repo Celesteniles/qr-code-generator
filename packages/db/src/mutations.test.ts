@@ -110,6 +110,38 @@ describe('createLink', () => {
   })
 })
 
+describe('createLink — plafond du palier (maxLinks)', () => {
+  const rule = { type: 'static' as const, url: 'https://a.cg' }
+
+  it('crée sous le plafond, avec une ligne D1 identique au chemin normal', async () => {
+    const kv = fakeKv()
+    const res = await createLink(deps(kv), { ...base, slug: 'sous', rule, maxLinks: 1 })
+    expect(res).toEqual({ ok: true, id: 'lnk_fixed', key: 'link.cg:sous' })
+    const [row] = await db.query.links.findMany()
+    expect(row).toMatchObject({ slug: 'sous', kind: 'static', rule, active: true, expiresAt: null })
+  })
+
+  it('refuse au plafond, sans rien écrire en D1 ni en KV', async () => {
+    const kv = fakeKv()
+    await createLink(deps(kv, { newId: () => 'id1' }), { ...base, slug: 'un', rule, maxLinks: 1 })
+    const res = await createLink(deps(kv, { newId: () => 'id2' }), { ...base, slug: 'deux', rule, maxLinks: 1 })
+    expect(res).toEqual({ ok: false, error: 'limit_reached' })
+    expect(await db.query.links.findMany()).toHaveLength(1)
+    expect(kv.store.has('link.cg:deux')).toBe(false)
+  })
+
+  it('des créations simultanées ne dépassent pas le plafond', async () => {
+    const kv = fakeKv()
+    let n = 0
+    const results = await Promise.all(
+      Array.from({ length: 5 }, (_, i) =>
+        createLink(deps(kv, { newId: () => `id${n++}` }), { ...base, slug: `s${i}`, rule, maxLinks: 2 })),
+    )
+    expect(results.filter((r) => r.ok)).toHaveLength(2)
+    expect(await db.query.links.findMany()).toHaveLength(2)
+  })
+})
+
 describe('setLinkActive', () => {
   it('désactive : D1 à jour, KV conserve la clé avec active=false', async () => {
     const kv = fakeKv()

@@ -116,19 +116,24 @@ export async function createLinkAction(_prev: CreateState, formData: FormData): 
   if (!rate.ok) return fail(throttleMessage(rate, 'créé'))
 
   // Toute destination passe par Safe Browsing (si SAFE_BROWSING_KEY est posée).
+  // Lien carte : le site web affiché sur la carte passe aussi par Safe Browsing.
+  const cardProfile = rule.type === 'card' ? cardProfileFromForm(formData) : null
+  if (cardProfile && !('error' in cardProfile) && !(await cardSiteIsSafe(cardProfile))) {
+    return fail(UNSAFE_SITE)
+  }
+
+  // Le plafond est revérifié à l'insertion (maxLinks) : deux créations simultanées
+  // passeraient toutes deux le contrôle ci-dessus.
   const res = await createLink(
     { db, kv: getKv(), checkUrl: getUrlChecker() },
-    { workspaceId: ctx.workspaceId, domainId: DEFAULT_DOMAIN, slug, rule },
+    { workspaceId: ctx.workspaceId, domainId: DEFAULT_DOMAIN, slug, rule, maxLinks: PLANS[plan].maxLinks ?? undefined },
   )
 
   if (res.ok) {
     // Lien carte : enregistrer le profil dans la foulée. Un champ de profil
     // invalide ne doit pas faire échouer la création déjà faite : on l'ignore.
-    if (rule.type === 'card') {
-      const profile = cardProfileFromForm(formData)
-      if (!('error' in profile) && profile.fullName && validateCardProfile(profile).ok) {
-        await upsertCardProfile(db, res.id, profile)
-      }
+    if (cardProfile && !('error' in cardProfile) && cardProfile.fullName && validateCardProfile(cardProfile).ok) {
+      await upsertCardProfile(db, res.id, cardProfile)
     }
     revalidatePath('/')
     revalidatePath('/liens')
@@ -139,6 +144,7 @@ export async function createLinkAction(_prev: CreateState, formData: FormData): 
     : res.error === 'domain_not_found' ? 'Domaine introuvable.'
     : res.error === 'unsafe_url' ? 'Cette adresse a été signalée comme dangereuse, ou n\'a pas pu être vérifiée. Réessayez dans un instant, ou choisissez une autre adresse.'
     : res.error === 'invalid' ? res.issues[0] ?? 'Entrée invalide.'
+    : res.error === 'limit_reached' ? `Limite du palier ${PLANS[plan].label} atteinte (${PLANS[plan].maxLinks} liens).`
     : 'Erreur inconnue.',
   )
 }
@@ -150,6 +156,18 @@ function revalidateLink(id: string) {
   revalidatePath(`/liens/${id}`)
   // Cartes : liste et éditeurs (/carte, /carte/[slug]).
   revalidatePath('/carte', 'layout')
+}
+
+const UNSAFE_SITE = 'Ce site web a été signalé comme dangereux, ou n\'a pas pu être vérifié. Réessayez dans un instant, ou indiquez une autre adresse.'
+
+/**
+ * Site web d'une carte soumis à Safe Browsing. Les profils sociaux n'y passent
+ * pas : ils ne peuvent pointer que vers les réseaux reconnus (socialHref).
+ */
+async function cardSiteIsSafe(profile: CardProfileInput): Promise<boolean> {
+  const check = getUrlChecker()
+  const site = profile.socials?.find((s) => s.label === 'Site web')
+  return !check || !site || (await check(site.url))
 }
 
 /** Vérifie que le lien appartient à l'espace de l'utilisateur connecté. */
@@ -212,6 +230,7 @@ export async function updateCardAction(formData: FormData): Promise<{ ok: boolea
   if (!validateCardProfile(profile).ok) {
     return { ok: false, message: 'Un des champs est trop long ou contient des caractères non acceptés. Vérifiez la carte puis réessayez.' }
   }
+  if (!(await cardSiteIsSafe(profile))) return { ok: false, message: UNSAFE_SITE }
 
   await upsertCardProfile(db, linkId, profile)
   // Le slug vient de la base, pas du formulaire : on revalide la vraie page publique.

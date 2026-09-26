@@ -4,7 +4,7 @@
 // Le cœur vit ici, pas dans le Worker HTTP, pour être testable en base réelle et
 // réutilisable par le futur dashboard.
 
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import type { DrizzleD1Database } from 'drizzle-orm/d1'
 import { ruleSchema, linkKey } from '@link/shared'
 import { z } from 'zod'
@@ -27,6 +27,8 @@ export const createLinkInput = z.object({
   slug: z.string().min(1).max(40, 'slug de 40 caractères maximum').regex(/^[a-zA-Z0-9_-]+$/, 'slug alphanumérique (- et _ autorisés)'),
   rule: ruleSchema,
   expiresAt: z.number().int().positive().optional(),
+  /** Plafond de liens de l'espace (palier). Vérifié dans la même requête que l'insertion. */
+  maxLinks: z.number().int().nonnegative().optional(),
 })
 export type CreateLinkInput = z.infer<typeof createLinkInput>
 
@@ -49,6 +51,7 @@ export type CreateLinkResult =
   | { ok: false; error: 'domain_not_found' }
   | { ok: false; error: 'slug_taken' }
   | { ok: false; error: 'unsafe_url'; url: string }
+  | { ok: false; error: 'limit_reached' }
 
 /** URLs contenues dans une règle, à soumettre à la vérification anti-abus. */
 function urlsOf(rule: CreateLinkInput['rule']): string[] {
@@ -87,18 +90,30 @@ export async function createLink(deps: CreateLinkDeps, raw: unknown): Promise<Cr
   const ts = (deps.now ?? (() => Date.now()))()
 
   // 1. Vérité D1.
-  await deps.db.insert(schema.links).values({
-    id,
-    workspaceId: input.workspaceId,
-    domainId: input.domainId,
-    slug: input.slug,
-    kind: input.rule.type,
-    rule: input.rule,
-    active: true,
-    expiresAt: input.expiresAt ?? null,
-    createdAt: ts,
-    updatedAt: ts,
-  })
+  if (input.maxLinks === undefined) {
+    await deps.db.insert(schema.links).values({
+      id,
+      workspaceId: input.workspaceId,
+      domainId: input.domainId,
+      slug: input.slug,
+      kind: input.rule.type,
+      rule: input.rule,
+      active: true,
+      expiresAt: input.expiresAt ?? null,
+      createdAt: ts,
+      updatedAt: ts,
+    })
+  } else {
+    // Plafond du palier : compté ET inséré en une seule instruction. Compter puis
+    // insérer en deux temps laisserait deux créations simultanées dépasser la limite.
+    const inserted = await deps.db.all<{ id: string }>(sql`
+      INSERT INTO links (id, workspace_id, domain_id, slug, kind, rule, active, expires_at, created_at, updated_at)
+      SELECT ${id}, ${input.workspaceId}, ${input.domainId}, ${input.slug}, ${input.rule.type},
+             ${JSON.stringify(input.rule)}, 1, ${input.expiresAt ?? null}, ${ts}, ${ts}
+      WHERE (SELECT count(*) FROM links WHERE workspace_id = ${input.workspaceId}) < ${input.maxLinks}
+      RETURNING id`)
+    if (inserted.length === 0) return { ok: false, error: 'limit_reached' }
+  }
 
   // 2. Propagation KV (vue de lecture). Après D1, jamais avant.
   const entry = serializeEntry(
