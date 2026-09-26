@@ -22,7 +22,9 @@ export type Db = DrizzleD1Database<typeof schema>
 export const createLinkInput = z.object({
   workspaceId: z.string().min(1),
   domainId: z.string().min(1),
-  slug: z.string().min(1).regex(/^[a-zA-Z0-9_-]+$/, 'slug alphanumérique (- et _ autorisés)'),
+  // 40 caractères max (comme SLUG_MAX côté app) : la clé KV (hostname/slug) doit
+  // rester sous 512 octets, sinon le put échouerait APRÈS l'insertion D1.
+  slug: z.string().min(1).max(40, 'slug de 40 caractères maximum').regex(/^[a-zA-Z0-9_-]+$/, 'slug alphanumérique (- et _ autorisés)'),
   rule: ruleSchema,
   expiresAt: z.number().int().positive().optional(),
 })
