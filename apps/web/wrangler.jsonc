@@ -27,12 +27,51 @@
   "kv_namespaces": [
     { "binding": "LINKS", "id": "41d7ebd986a141e0a5abde505aa174e2" }
   ],
+  // Migrations : générées par Drizzle dans packages/db, appliquées par la CI avant
+  // chaque déploiement (wrangler d1 migrations apply, suivi dans la table d1_migrations).
   "d1_databases": [
-    { "binding": "DB", "database_name": "link-db", "database_id": "6798b00a-d331-488c-9e48-a38fb11654d1" }
+    {
+      "binding": "DB",
+      "database_name": "link-db",
+      "database_id": "6798b00a-d331-488c-9e48-a38fb11654d1",
+      "migrations_dir": "../../packages/db/migrations"
+    }
   ],
 
-  // Bêta d'abord ; bascule sur qrcode.cg une fois validé.
+  // Configuration par défaut = bêta (branche staging).
   "routes": [
     { "pattern": "beta.qrcode.cg", "custom_domain": true }
-  ]
+  ],
+
+  // Production (branche main) : Worker distinct `link-web-production` sur qrcode.cg.
+  // Déploiement : opennextjs-cloudflare deploy --env production
+  // Les vars et bindings ne sont pas hérités : les répéter ici. Même base et même KV
+  // que la bêta (les liens et les comptes sont les mêmes).
+  // Secrets à poser une fois sur ce Worker (wrangler secret put … --env production) :
+  //   BETTER_AUTH_SECRET, CF_ANALYTICS_TOKEN
+  "env": {
+    "production": {
+      "vars": {
+        "BETTER_AUTH_URL": "https://qrcode.cg",
+        "CF_ACCOUNT_ID": "d173b721d701ab7804ac541a92709654",
+        "DISABLE_SIGNUP": "false"
+      },
+      "kv_namespaces": [
+        { "binding": "LINKS", "id": "41d7ebd986a141e0a5abde505aa174e2" }
+      ],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "link-db",
+          "database_id": "6798b00a-d331-488c-9e48-a38fb11654d1",
+          "migrations_dir": "../../packages/db/migrations"
+        }
+      ],
+      // www redirige vers l'apex (next.config.ts).
+      "routes": [
+        { "pattern": "qrcode.cg", "custom_domain": true },
+        { "pattern": "www.qrcode.cg", "custom_domain": true }
+      ]
+    }
+  }
 }

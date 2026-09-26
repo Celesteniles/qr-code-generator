@@ -1,28 +1,27 @@
-# Déploiement continu de la branche staging.
+# Déploiement continu de la branche main (production).
 #
-#   push sur staging ─► contrôles (tests, types, lint)
-#                        ├─► migrations D1 (link-db), si packages/db/migrations a changé
-#                        │     └─► app (link-web) → beta.qrcode.cg, automatique
-#                        └─► routeur (link-router) → link.cg, seulement s'il a changé,
-#                            APRÈS validation manuelle (environnement « link-router » :
-#                            il sert toutes les adresses link.cg en production)
+#   push sur main ─► contrôles (tests, types, lint)
+#                     ├─► migrations D1 (link-db), si packages/db/migrations a changé
+#                     │     └─► app (link-web-production) → qrcode.cg, automatique
+#                     └─► routeur (link-router) → link.cg, s'il a changé, automatique
 #
-# Migrations : `wrangler d1 migrations apply`, suivi dans la table d1_migrations.
-# ATTENTION : beta et production partagent la MÊME base link-db. Une migration poussée
-# sur staging s'applique donc tout de suite à la production : elle doit rester
-# compatible avec le code déjà en ligne (ajouter, pas renommer ni supprimer).
-# Secret requis : CLOUDFLARE_API_TOKEN (Workers Scripts: Edit, D1: Edit, …).
+# Pousser sur main VAUT validation : pas d'étape manuelle ici (le passage par staging
+# et beta.qrcode.cg sert de répétition). La base link-db est partagée avec la bêta :
+# une migration est en général déjà appliquée depuis staging, et `apply` ne rejoue
+# jamais une migration déjà suivie dans d1_migrations.
+#
+# Secret requis : CLOUDFLARE_API_TOKEN (Workers Scripts: Edit, D1: Edit, Workers
+# Routes / Custom Domains sur qrcode.cg et link.cg, KV).
 
-name: Staging
+name: Production
 
 on:
   push:
-    branches: [staging]
+    branches: [main]
   workflow_dispatch:
 
-# Un déploiement à la fois ; le suivant attend au lieu d'annuler celui en cours.
 concurrency:
-  group: staging-deploy
+  group: production-deploy
   cancel-in-progress: false
 
 permissions:
@@ -85,17 +84,17 @@ jobs:
         working-directory: apps/web
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: pnpm exec wrangler d1 migrations apply link-db --remote
+        run: pnpm exec wrangler d1 migrations apply link-db --remote --env production
 
   deploy-web:
-    name: App → beta.qrcode.cg
+    name: App → qrcode.cg
     needs: [checks, migrate]
     # Part aussi quand il n'y avait pas de migration (job ignoré), jamais après un échec.
     if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     environment:
-      name: beta
-      url: https://beta.qrcode.cg
+      name: qrcode.cg
+      url: https://qrcode.cg
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -111,22 +110,22 @@ jobs:
         working-directory: apps/web
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: pnpm exec opennextjs-cloudflare deploy
+        run: pnpm exec opennextjs-cloudflare deploy --env production
       - name: Vérification
         run: |
           for p in / /connexion /offres /creer; do
-            code=$(curl -s -o /dev/null -w '%{http_code}' "https://beta.qrcode.cg$p")
+            code=$(curl -s -o /dev/null -w '%{http_code}' "https://qrcode.cg$p")
             echo "$p → $code"
             [ "$code" = "200" ] || exit 1
           done
 
   deploy-router:
-    name: Routeur → link.cg (validation requise)
+    name: Routeur → link.cg
     needs: [checks, changes]
     if: needs.changes.outputs.router == 'true'
     runs-on: ubuntu-latest
     environment:
-      name: link-router
+      name: link.cg
       url: https://link.cg
     steps:
       - uses: actions/checkout@v4

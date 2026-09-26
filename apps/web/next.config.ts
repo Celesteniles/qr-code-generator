@@ -12,7 +12,14 @@ const nextConfig: NextConfig = {
   // de fonctionner. Permanentes, car les nouvelles routes sont définitives.
   async redirects() {
     return [
-      { source: '/dashboard', destination: '/liens', permanent: true },
+      // www.qrcode.cg → qrcode.cg (même Worker en production, une seule adresse canonique).
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.qrcode.cg' }],
+        destination: 'https://qrcode.cg/:path*',
+        permanent: true,
+      },
+      { source: '/dashboard',destination: '/liens', permanent: true },
       { source: '/dashboard/card/:slug', destination: '/carte/:slug', permanent: true },
       { source: '/pricing', destination: '/offres', permanent: true },
       { source: '/login', destination: '/connexion', permanent: true },
