@@ -1,8 +1,11 @@
 import Link from 'next/link'
-import type { ReactNode } from 'react'
-import { PhoneIcon, EnvelopeIcon, GlobeAltIcon, ChatBubbleOvalLeftEllipsisIcon, UserPlusIcon } from '@heroicons/react/24/outline'
+import type { ComponentType, ReactNode, SVGProps } from 'react'
+import { PhoneIcon, EnvelopeIcon, GlobeAltIcon, UserPlusIcon } from '@heroicons/react/24/outline'
+import { WhatsAppIcon } from '@/components/kit/BrandIcons'
+import { SOCIAL_ICONS } from './social-icons'
 import {
-  cardInitials, safeTheme, textOn, websiteHref, websiteLabel, whatsappHref, type CardFields,
+  cardInitials, filledSocials, safeTheme, socialHandle, textOn, websiteHref, websiteLabel, whatsappHref,
+  type CardFields,
 } from './card-model'
 
 // Carte de visite telle que la voient les contacts. Utilisée telle quelle par la
@@ -10,7 +13,7 @@ import {
 // Palette fixe (papier clair) : la carte garde la même allure en thème sombre,
 // seule la couleur du bandeau change.
 
-type Action = { key: string; label: string; href: string; icon: typeof PhoneIcon; color: string; external?: boolean }
+type Action = { key: string; label: string; href: string; icon: ComponentType<SVGProps<SVGSVGElement>>; color: string; external?: boolean }
 
 export function CardView({
   fields,
@@ -31,10 +34,11 @@ export function CardView({
   const email = fields.email.trim()
   const wa = fields.whatsapp.trim() ? whatsappHref(fields.whatsapp) : null
   const site = websiteHref(fields.website)
+  const networks = filledSocials(fields.socials)
 
   const quick: Action[] = [
     phone && { key: 'tel', label: 'Appeler', href: `tel:${phone.replace(/\s+/g, '')}`, icon: PhoneIcon, color: '#0060ff' },
-    wa && { key: 'wa', label: 'WhatsApp', href: wa, icon: ChatBubbleOvalLeftEllipsisIcon, color: '#17804f', external: true },
+    wa && { key: 'wa', label: 'WhatsApp', href: wa, icon: WhatsAppIcon, color: '#25d366', external: true },
     email && { key: 'mail', label: 'Email', href: `mailto:${email}`, icon: EnvelopeIcon, color: '#c8472d' },
   ].filter(Boolean) as Action[]
 
@@ -87,6 +91,24 @@ export function CardView({
           </div>
         )}
 
+        {networks.length > 0 && (
+          <ul className="mt-2.5 flex flex-wrap gap-2" aria-label="Réseaux sociaux">
+            {networks.map(({ net, href }) => {
+              const Icon = SOCIAL_ICONS[net.key]
+              return (
+                <li key={net.key}>
+                  <Tap action={{ key: net.key, label: net.label, href, icon: Icon, color: net.color, external: true }}
+                    interactive={interactive} title={`${net.label} · ${socialHandle(net.key, href)}`}
+                    className="flex h-11 items-center gap-2 rounded-full bg-white pl-3 pr-4 text-[13px] font-semibold">
+                    <Icon className="h-[18px] w-[18px] shrink-0" style={{ color: net.color }} aria-hidden="true" />
+                    {net.label}
+                  </Tap>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+
         {saveButton ?? (
           <span className="mt-3.5 flex h-[54px] w-full items-center justify-center gap-2 rounded-full bg-[#16161d] text-[15px] font-bold text-white">
             <UserPlusIcon className="h-5 w-5" aria-hidden="true" />Enregistrer le contact
@@ -103,12 +125,12 @@ export function CardView({
   )
 }
 
-function Tap({ action, interactive, className, children }: {
-  action: Action; interactive: boolean; className: string; children: ReactNode
+function Tap({ action, interactive, className, title, children }: {
+  action: Action; interactive: boolean; className: string; title?: string; children: ReactNode
 }) {
   if (!interactive) return <span className={className}>{children}</span>
   return (
-    <a href={action.href} className={`${className} transition hover:bg-[#fbf9f5]`}
+    <a href={action.href} title={title} className={`${className} transition hover:bg-[#fbf9f5]`}
       {...(action.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
       {children}
     </a>

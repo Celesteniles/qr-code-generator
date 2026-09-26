@@ -5,6 +5,7 @@ import { createLink, setLinkActive, deleteLink, updateLinkRule, upsertCardProfil
 import { canCreateLink, PLANS, type Rule, type Plan } from '@link/shared'
 import { getDb, getKv } from './data'
 import { getSessionContext } from './session'
+import { SOCIAL_NETWORKS, socialHref } from '@/components/carte/card-model'
 import { DEFAULT_DOMAIN, type CreateState, type UpdateDestinationState, type SlugCheck } from './config'
 
 const HEX_COLOR = /^#[0-9a-f]{6}$/i
@@ -39,6 +40,13 @@ function cardProfileFromForm(formData: FormData): CardProfileInput | { error: st
     const url = whatsappUrl(whatsapp)
     if (!url) return { error: 'Ce numéro WhatsApp ne semble pas valide. Exemple : 06 123 45 67.' }
     socials.push({ label: 'WhatsApp', url })
+  }
+  for (const net of SOCIAL_NETWORKS) {
+    const raw = String(formData.get(`social_${net.key}`) ?? '').trim()
+    if (!raw) continue
+    const url = socialHref(net.key, raw)
+    if (!url) return { error: `Ce profil ${net.label} n'est pas reconnu. Saisissez votre nom (@votrenom) ou collez le lien de votre profil.` }
+    socials.push({ label: net.label, url })
   }
 
   return {

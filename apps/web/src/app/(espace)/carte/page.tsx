@@ -9,7 +9,7 @@ import { getViewer } from '@/server/viewer'
 import { Illustration } from '@/components/kit/Illustration'
 import { CardView } from '@/components/carte/CardView'
 import { CreateCardForm } from '@/components/carte/CreateCardForm'
-import { cardInitials, safeTheme, textOn, DEFAULT_THEME } from '@/components/carte/card-model'
+import { cardInitials, safeTheme, textOn, DEFAULT_THEME, EMPTY_SOCIALS } from '@/components/carte/card-model'
 
 export const metadata: Metadata = { title: 'Carte de visite · link.cg' }
 
@@ -116,6 +116,7 @@ function GuestCarte() {
               <CardView interactive={false} fields={{
                 fullName: 'Votre nom', title: 'Votre fonction', org: 'Votre entreprise',
                 phone: 'Votre numéro', whatsapp: '', email: 'vous@exemple.cg', website: '', theme: DEFAULT_THEME,
+                socials: { ...EMPTY_SOCIALS, facebook: 'votrepage', tiktok: '@votrenom', instagram: '@votrenom' },
               }} />
             </div>
           </div>

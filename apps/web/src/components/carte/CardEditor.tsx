@@ -4,7 +4,8 @@ import { useId, useState, useTransition, type ReactNode } from 'react'
 import { CheckIcon, ExclamationCircleIcon, EyeIcon } from '@heroicons/react/24/outline'
 import { updateCardAction } from '@/server/actions'
 import { CardView } from './CardView'
-import { cardInitials, THEMES, type CardFields } from './card-model'
+import { cardInitials, SOCIAL_NETWORKS, socialHref, THEMES, type CardFields, type SocialKey } from './card-model'
+import { SOCIAL_ICONS } from './social-icons'
 import { Spinner } from '@/components/kit/Spinner'
 
 type Status = { kind: 'idle' } | { kind: 'saved' } | { kind: 'error'; message: string }
@@ -22,12 +23,18 @@ export function CardEditor({ linkId, slug, initial, aside }: {
   const [saved, setSaved] = useState(() => JSON.stringify(initial))
   const [status, setStatus] = useState<Status>({ kind: 'idle' })
   const [pending, startTransition] = useTransition()
+  // Réseaux quittés au moins une fois : l'erreur de saisie ne s'affiche qu'après.
+  const [touched, setTouched] = useState<Set<SocialKey>>(() => new Set())
   const id = useId()
   const dirty = JSON.stringify(fields) !== saved
 
   function set<K extends keyof CardFields>(key: K, value: CardFields[K]) {
     setFields((f) => ({ ...f, [key]: value }))
     if (status.kind !== 'idle') setStatus({ kind: 'idle' })
+  }
+
+  function setSocial(key: SocialKey, value: string) {
+    set('socials', { ...fields.socials, [key]: value })
   }
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -43,6 +50,7 @@ export function CardEditor({ linkId, slug, initial, aside }: {
     data.set('whatsapp', snapshot.whatsapp)
     data.set('cardEmail', snapshot.email)
     data.set('website', snapshot.website)
+    for (const net of SOCIAL_NETWORKS) data.set(`social_${net.key}`, snapshot.socials[net.key])
     // Toujours envoyé : le profil est remplacé en entier à l'enregistrement.
     data.set('theme', snapshot.theme)
     startTransition(async () => {
@@ -129,6 +137,40 @@ export function CardEditor({ linkId, slug, initial, aside }: {
             <label className="label" htmlFor={f('web')}>Site web <span className="opt">· optionnel</span></label>
             <input id={f('web')} className="input" type="text" inputMode="url" autoComplete="url" value={fields.website}
               onChange={(e) => set('website', e.target.value)} placeholder="votresite.cg" />
+          </div>
+        </section>
+
+        <section className="card mt-4 p-[22px] sm:p-[26px]" aria-labelledby={f('reseaux')}>
+          <h2 id={f('reseaux')} className="h3">Vos réseaux <span className="opt text-base font-normal">· optionnel</span></h2>
+          <p className="mt-1 text-sm text-muted">Votre nom (@votrenom) ou le lien de votre profil. Chaque réseau rempli devient un bouton.</p>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {SOCIAL_NETWORKS.map((net) => {
+              const Icon = SOCIAL_ICONS[net.key]
+              const value = fields.socials[net.key]
+              const invalid = touched.has(net.key) && !!value.trim() && !socialHref(net.key, value)
+              const input = f(`s-${net.key}`)
+              return (
+                <div key={net.key}>
+                  <label className="label" htmlFor={input}>{net.label}</label>
+                  <div className={`input-affix ${invalid ? '!shadow-[inset_0_0_0_1.5px_var(--bad)]' : ''}`}>
+                    <span className="pre flex items-center pr-2.5">
+                      {/* Logos noirs (TikTok, X) : couleur du texte, lisibles en thème sombre. */}
+                      <Icon className="h-[18px] w-[18px]" style={{ color: net.color === '#000000' ? 'var(--ink)' : net.color }} aria-hidden="true" />
+                    </span>
+                    <input id={input} type="text" inputMode="url" autoCapitalize="none" autoCorrect="off" spellCheck={false}
+                      value={value} placeholder={net.placeholder}
+                      onChange={(e) => setSocial(net.key, e.target.value)}
+                      onBlur={() => setTouched((t) => (t.has(net.key) ? t : new Set(t).add(net.key)))}
+                      aria-invalid={invalid || undefined} aria-describedby={invalid ? `${input}-err` : undefined} />
+                  </div>
+                  {invalid && (
+                    <p id={`${input}-err`} className="help font-medium text-bad">
+                      Ce n&apos;est pas un profil {net.label}. Saisissez @votrenom ou collez le lien.
+                    </p>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </section>
 
