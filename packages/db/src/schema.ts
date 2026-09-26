@@ -91,5 +91,38 @@ export const linkReviews = sqliteTable('link_reviews', {
   provider: text('provider'),
 })
 
+// Paiements d'abonnement (mobile money). Un paiement = un reçu numéroté
+// LCG-AAAA-NNNNN. Montants en FCFA (XAF), entiers. Voir payments.ts.
+export const payments = sqliteTable(
+  'payments',
+  {
+    id: text('id').primaryKey(),
+    workspaceId: text('workspace_id').notNull().references(() => workspaces.id),
+    receiptNumber: text('receipt_number').notNull().unique(),
+    plan: text('plan', { enum: ['free', 'pro', 'enterprise'] }).notNull(),
+    periodStart: integer('period_start').notNull(),
+    periodEnd: integer('period_end').notNull(),
+    /** Montant en FCFA, entier (le franc CFA n'a pas de subdivision en usage). */
+    amount: integer('amount').notNull(),
+    currency: text('currency', { enum: ['XAF'] }).notNull().default('XAF'),
+    method: text('method', { enum: ['airtel_money', 'mtn_momo', 'manual'] }).notNull(),
+    /** Référence de transaction de l'opérateur (clé d'idempotence avec `method`). */
+    providerReference: text('provider_reference'),
+    /** Numéro du payeur, stocké normalisé ; toujours masqué à l'affichage. */
+    payerPhone: text('payer_phone'),
+    status: text('status', { enum: ['pending', 'paid', 'failed', 'refunded'] }).notNull().default('pending'),
+    paidAt: integer('paid_at'),
+    createdAt: now(),
+    metadata: text('metadata', { mode: 'json' }).$type<Record<string, unknown>>(),
+  },
+  (t) => [
+    index('payments_workspace_created').on(t.workspaceId, t.createdAt),
+    // Une même transaction opérateur ne peut produire qu'un paiement. SQLite
+    // autorise plusieurs NULL : les paiements sans référence ne sont pas contraints.
+    unique('payments_method_reference').on(t.method, t.providerReference),
+  ],
+)
+
 export type LinkRow = typeof links.$inferSelect
+export type PaymentRow = typeof payments.$inferSelect
 export type DomainRow = typeof domains.$inferSelect
