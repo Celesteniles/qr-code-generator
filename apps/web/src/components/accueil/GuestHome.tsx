@@ -59,7 +59,7 @@ export function GuestHome() {
       <div className="stagger mt-4 grid gap-3.5 min-[900px]:grid-cols-3">
         {PRODUCTS.map((p) => (
           <Link key={p.href} href={p.href}
-            className="group flex flex-col gap-3 rounded-[24px] bg-surface p-3.5 shadow-[inset_0_0_0_1.5px_var(--line-strong)] transition hover:-translate-y-0.5 hover:shadow-[inset_0_0_0_1.5px_var(--ink),0_18px_40px_-26px_rgba(22,22,29,.5)]">
+            className="group flex flex-col gap-3 rounded-[24px] bg-surface p-3.5 shadow-[inset_0_0_0_1px_var(--line)] transition hover:-translate-y-0.5 hover:shadow-[inset_0_0_0_1px_var(--line-strong),0_18px_40px_-26px_rgba(22,22,29,.5)]">
             <Illustration name={p.ill} height={140} className={`overflow-hidden rounded-2xl ${p.bg}`} />
             <div className="px-1.5 pb-1.5 pt-1">
               <div className="flex items-center gap-2 font-display text-xl font-bold tracking-[-.02em]">
@@ -85,7 +85,7 @@ export function GuestHome() {
         {INTENTS.map((i) => (
           <li key={i.label}>
             <Link href={i.href}
-              className="group flex h-full flex-col gap-2.5 rounded-[22px] bg-surface p-3 shadow-[inset_0_0_0_1.5px_var(--line-strong)] transition hover:-translate-y-0.5 hover:shadow-[inset_0_0_0_1.5px_var(--ink),0_16px_36px_-24px_rgba(22,22,29,.5)]">
+              className="group flex h-full flex-col gap-2.5 rounded-[22px] bg-surface p-3 shadow-[inset_0_0_0_1px_var(--line)] transition hover:-translate-y-0.5 hover:shadow-[inset_0_0_0_1px_var(--line-strong),0_16px_36px_-24px_rgba(22,22,29,.5)]">
               <Illustration name={i.ill} height={120} className={`overflow-hidden rounded-[14px] ${i.bg}`} />
               <span className="flex items-center gap-2 px-1 pb-1">
                 <strong className="text-[15px]">{i.label}</strong>

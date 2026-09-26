@@ -27,7 +27,7 @@ export function LinkCard({ link }: { link: LinkItem }) {
   )
 
   return (
-    <article className="group relative flex flex-col rounded-3xl bg-surface p-3 shadow-[inset_0_0_0_1.5px_var(--line-strong)] transition hover:-translate-y-0.5 hover:shadow-[inset_0_0_0_1.5px_var(--subtle),0_18px_40px_-26px_rgba(22,22,29,.5)]">
+    <article className="group relative flex flex-col rounded-3xl bg-surface p-3 shadow-[inset_0_0_0_1px_var(--line)] transition hover:-translate-y-0.5 hover:shadow-[inset_0_0_0_1px_var(--line-strong),0_18px_40px_-26px_rgba(22,22,29,.5)]">
       {linkFirst ? (
         <div className="relative grid min-h-[186px] rounded-[18px] bg-sky px-2.5 pb-2 shadow-[inset_0_0_0_1px_var(--line)]">
           {type}{status}

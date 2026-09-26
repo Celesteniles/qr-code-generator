@@ -36,8 +36,8 @@ export function LocalQrCard({ qr }: { qr: LocalQr }) {
   const date = when(qr.createdAt)
 
   return (
-    <article className="flex flex-col rounded-3xl bg-surface p-3 shadow-[inset_0_0_0_1.5px_var(--line-strong)]">
-      <div className="relative grid place-items-center rounded-[18px] px-2.5 pb-[22px] pt-12 shadow-[inset_0_0_0_1.5px_var(--line)]">
+    <article className="flex flex-col rounded-3xl bg-surface p-3 shadow-[inset_0_0_0_1px_var(--line)]">
+      <div className="relative grid place-items-center rounded-[18px] px-2.5 pb-[22px] pt-12 shadow-[inset_0_0_0_1px_var(--line)]">
         <span className="pill pill-soft absolute left-2.5 top-2.5"><LockClosedIcon aria-hidden="true" />QR fixe</span>
         <div className="qr-thumb rounded-2xl p-2.5">
           <QrCanvas data={qr.data} design={design} size={132} />
