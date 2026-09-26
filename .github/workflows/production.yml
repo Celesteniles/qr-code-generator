@@ -20,9 +20,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
-concurrency:
-  group: production-deploy
-  cancel-in-progress: false
+# Pas de file unique pour tout le workflow : un déploiement du routeur en attente
+# d'approbation ne doit pas bloquer l'app. Chaque déploiement a sa propre file
+# (voir les jobs) ; pour l'app, le dernier push l'emporte.
 
 permissions:
   contents: read
@@ -69,6 +69,9 @@ jobs:
 
   migrate:
     name: Migrations D1
+    concurrency:
+      group: production-migrate
+      cancel-in-progress: false
     needs: [checks, changes]
     if: needs.changes.outputs.migrations == 'true'
     runs-on: ubuntu-latest
@@ -88,6 +91,9 @@ jobs:
 
   deploy-web:
     name: App → qrcode.cg
+    concurrency:
+      group: production-web
+      cancel-in-progress: true
     needs: [checks, migrate]
     # Part aussi quand il n'y avait pas de migration (job ignoré), jamais après un échec.
     if: ${{ !failure() && !cancelled() }}
@@ -121,8 +127,13 @@ jobs:
 
   deploy-router:
     name: Routeur → link.cg
+    concurrency:
+      group: production-router
+      cancel-in-progress: false
     needs: [checks, changes]
-    if: needs.changes.outputs.router == 'true'
+    # Lancement manuel (Actions → Run workflow) : déploie le routeur même sans changement
+    # dans ce push, par exemple après l'annulation d'un run précédent.
+    if: needs.changes.outputs.router == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment:
       name: link.cg
