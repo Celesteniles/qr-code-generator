@@ -37,9 +37,9 @@ export default async function LienPage({ params }: { params: Promise<{ id: strin
 
   const [rawDesign, scans, daily, insights] = await Promise.all([
     getQrDesign(db, link.id),
-    getScanCounts(),
-    getDailyVisits([link.slug], 30).catch(() => []),
-    getLinkInsights(link.slug, 30).catch(() => null),
+    getScanCounts([link]),
+    getDailyVisits([link], 30).catch(() => []),
+    getLinkInsights(link, 30).catch(() => null),
   ])
   const url = shortUrl(link.slug)
   const visits = scans[link.slug] ?? 0

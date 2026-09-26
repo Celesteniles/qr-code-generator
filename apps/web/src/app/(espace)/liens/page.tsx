@@ -14,11 +14,13 @@ export const metadata: Metadata = { title: 'Mes liens & QR — link.cg' }
 
 async function loadLinks(workspaceId: string): Promise<LinkItem[]> {
   const db = getDb()
-  const [links, scans] = await Promise.all([getWorkspaceLinks(workspaceId), getScanCounts()])
+  const links = await getWorkspaceLinks(workspaceId)
   if (links.length === 0) return []
 
+  // Visites comptées depuis la création de chaque lien (adresse reprise : pas d'héritage).
   const cards = links.filter((l) => l.kind === 'card')
-  const [designs, cardProfiles] = await Promise.all([
+  const [scans, designs, cardProfiles] = await Promise.all([
+    getScanCounts(links),
     getQrDesigns(db, links.map((l) => l.id)),
     Promise.all(cards.map((l) => getCardBySlug(db, l.slug).catch(() => null))),
   ])

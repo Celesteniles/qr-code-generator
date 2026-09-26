@@ -47,10 +47,10 @@ export async function MemberHome({ ctx, viewer }: { ctx: SessionContext; viewer:
   const links = await getWorkspaceLinks(ctx.workspaceId)
   const slugs = links.map((l) => l.slug)
   const [scans, designs, daily, visitors] = await Promise.all([
-    getScanCounts(),
+    getScanCounts(links),
     getQrDesigns(db, links.map((l) => l.id)),
-    slugs.length ? getDailyVisits(slugs, 30) : Promise.resolve([]),
-    slugs.length ? getWorkspaceInsights(slugs, 30).catch(() => null) : Promise.resolve(null),
+    links.length ? getDailyVisits(links, 30) : Promise.resolve([]),
+    links.length ? getWorkspaceInsights(links, 30).catch(() => null) : Promise.resolve(null),
   ])
 
   // Statistiques indisponibles (pas de jeton, erreur) : objet vide → aucun chiffre.
