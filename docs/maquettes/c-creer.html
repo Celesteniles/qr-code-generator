@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C · Créer un QR — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="c.css">
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  .creator { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
+  .pv { position: sticky; top: 88px; display: flex; flex-direction: column; gap: 12px; padding: 18px; }
+  .panel-pad { padding: 20px; }
+  .types { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .tile .badge { font-size: 10px; font-weight: 700; color: var(--accent); }
+  .tile[aria-disabled="true"] { opacity: .45; }
+  .kinds { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .kind { text-align: left; padding: 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); display: grid; gap: 4px; position: relative; }
+  .kind strong { font-size: 14px; display: flex; align-items: center; gap: 8px; }
+  .kind span { font-size: 13px; color: var(--muted); }
+  .kind .tag { position: absolute; top: 12px; right: 12px; }
+  .kind[aria-pressed="true"] { border-color: var(--brand); box-shadow: inset 0 0 0 1px var(--brand); background: var(--brand-soft); }
+  .kind[aria-pressed="true"] strong { color: var(--accent); }
+  .shapes6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .shapes3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .presets { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .info { display: flex; gap: 10px; padding: 12px; border-radius: 12px; font-size: 13px; background: var(--surface-2); color: var(--muted); }
+  .info .ico { margin-top: 1px; }
+  .info.blue { background: var(--brand-soft); color: var(--fg); }
+  .info.blue .ico { color: var(--accent); }
+  .info a { color: var(--accent); font-weight: 600; }
+
+  body[data-kind="static"] .only-dynamic { display: none !important; }
+  body[data-kind="dynamic"] .only-static { display: none !important; }
+
+  @media (max-width: 1100px) { .creator { grid-template-columns: minmax(0, 1fr); } .pv { position: static; order: -1; } }
+  @media (max-width: 600px) {
+    .types { grid-template-columns: repeat(4, 1fr); } .kinds { grid-template-columns: 1fr; }
+    .shapes6 { grid-template-columns: repeat(3, 1fr); } .presets { grid-template-columns: repeat(3, 1fr); } .grid-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body data-state="guest" data-kind="static">
+
+<div class="state-switch">Aperçu&nbsp;: <button data-state-set="guest">Visiteur</button><button data-state-set="user">Connecté</button></div>
+
+<div class="app">
+  <aside class="side">
+    <a class="logo" href="#"><span class="logo-mark">l.</span><span>link<b>.cg</b></span></a>
+    <a class="btn btn-primary btn-block create" href="c-creer.html"><i data-i="plus"></i>Créer un QR</a>
+    <a class="side-link" aria-current="page" href="c-creer.html"><i data-i="qr"></i>Créer</a>
+    <a class="side-link" href="c-mes-qr.html"><i data-i="link"></i>Mes QR codes<span class="end only-user">5</span><span class="end only-guest">2</span></a>
+    <a class="side-link" href="a-carte.html"><i data-i="user"></i>Cartes de visite<i data-i="lock" class="lock only-guest"></i></a>
+    <a class="side-link" href="#"><i data-i="chart"></i>Statistiques<i data-i="lock" class="lock only-guest"></i></a>
+    <div class="side-sec">Aide</div>
+    <a class="side-link" href="#"><i data-i="card"></i>Offres &amp; tarifs</a>
+    <div class="side-foot">
+      <div class="side-card only-guest">
+        <strong>Compte gratuit</strong>
+        <p>QR modifiables après impression, scans comptés, 25 liens offerts.</p>
+        <a class="btn btn-primary btn-sm btn-block" style="margin-top:12px" href="a-connexion.html">Créer un compte</a>
+        <a class="btn btn-ghost btn-sm btn-block" style="margin-top:4px" href="a-connexion.html">J'ai déjà un compte</a>
+      </div>
+      <div class="side-card only-user">
+        <div class="row"><strong>Offre Gratuit</strong><span class="subtle num" style="margin-left:auto">5 / 25</span></div>
+        <div class="meter"><span style="width:20%"></span></div>
+        <a class="btn btn-secondary btn-sm btn-block" href="#">Passer à Pro</a>
+      </div>
+      <div class="me only-user"><span class="av">CG</span><div class="grow"><div style="font-weight:600">Céleste GAKONO</div><div class="subtle" style="font-size:12px">NS Creative</div></div><button class="icon-btn" aria-label="Se déconnecter"><i data-i="logout" class="sm"></i></button></div>
+      <button class="side-link" data-theme-toggle style="border:0;background:transparent;width:100%"><i data-i="moon"></i>Thème</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="main-head">
+      <a class="logo mob-top" href="#"><span class="logo-mark">l.</span></a>
+      <h1>Créer un QR code</h1>
+      <span class="pill pill-ok only-guest" style="margin-left:6px">Gratuit · sans compte</span>
+      <div class="row" style="margin-left:auto">
+        <a class="btn btn-ghost only-guest" href="a-connexion.html">Connexion</a>
+        <a class="btn btn-secondary only-guest" href="a-connexion.html">Créer un compte</a>
+      </div>
+    </header>
+
+    <div class="main-body">
+      <div class="creator">
+        <section class="card" data-tabs>
+          <div class="tabs" role="tablist">
+            <button role="tab" data-tab="c" aria-selected="true"><span class="step">1</span>Contenu</button>
+            <button role="tab" data-tab="d" aria-selected="false"><span class="step">2</span>Design</button>
+            <button role="tab" data-tab="l" aria-selected="false"><span class="step">3</span>Logo</button>
+          </div>
+
+          <div class="panel-pad" data-panel="c">
+            <div class="section-title">Que doit ouvrir le QR ?</div>
+            <div class="types" data-choice>
+              <button class="tile" aria-pressed="true"><i data-i="link"></i>Lien</button>
+              <button class="tile" aria-pressed="false"><i data-i="sms"></i>WhatsApp</button>
+              <button class="tile" aria-pressed="false"><i data-i="user"></i>Carte de visite</button>
+              <button class="tile" aria-pressed="false"><i data-i="app"></i>App</button>
+              <button class="tile" aria-pressed="false"><i data-i="wifi"></i>Wi‑Fi</button>
+              <button class="tile" aria-pressed="false"><i data-i="phone"></i>Appel</button>
+              <button class="tile" aria-pressed="false"><i data-i="mail"></i>Email</button>
+              <button class="tile" aria-pressed="false"><i data-i="text"></i>Texte</button>
+              <button class="tile" aria-pressed="false"><i data-i="pin"></i>Lieu</button>
+              <button class="tile" aria-pressed="false"><i data-i="globe"></i>Réseaux</button>
+            </div>
+
+            <hr class="divider">
+            <div class="section-title">Après impression, ce QR…</div>
+            <div class="kinds" id="kinds">
+              <button class="kind" data-kind="static" aria-pressed="true">
+                <span class="pill pill-mute tag">Sans compte</span>
+                <strong><i data-i="lock" class="sm"></i>reste fixe</strong>
+                <span>Le contenu est gravé dans le QR. Idéal pour un usage ponctuel.</span>
+              </button>
+              <button class="kind" data-kind="dynamic" aria-pressed="false">
+                <span class="pill pill-brand tag only-guest">Compte gratuit</span>
+                <strong><i data-i="refresh" class="sm"></i>reste modifiable</strong>
+                <span>Il passe par un lien link.cg : destination changeable, scans comptés.</span>
+              </button>
+            </div>
+
+            <hr class="divider">
+            <label class="field"><span class="label">Adresse du site</span><input class="input" value="https://nscreative.cg/promo-rentree"></label>
+            <label class="field only-dynamic"><span class="label">Adresse courte</span>
+              <span class="input-group"><span class="prefix">link.cg/</span><input value="promo-rentree"></span>
+              <span class="hint" style="color:var(--ok);display:flex;gap:4px;align-items:center"><i data-i="check" class="sm"></i>Disponible</span></label>
+          </div>
+
+          <div class="panel-pad" data-panel="d" hidden>
+            <div class="section-title">Styles prêts à l'emploi</div>
+            <div class="presets" data-choice="#cq">
+              <button class="preset" aria-pressed="true" data-set='{"fg":"#14152b","bg":"#ffffff","dot":"rounded","corner":"rounded","fg2":""}'><span class="sw" style="background:#fff;border:1px solid var(--line)"><span data-qr data-size="36" data-fg="#14152b" data-bg="#fff" data-seed="3"></span></span>Encre</button>
+              <button class="preset" aria-pressed="false" data-set='{"fg":"#0060ff","bg":"#f0f6ff","dot":"dots","corner":"dot","fg2":""}'><span class="sw" style="background:#f0f6ff"><span data-qr data-size="36" data-fg="#0060ff" data-bg="#f0f6ff" data-dot="dots" data-seed="3"></span></span>Océan</button>
+              <button class="preset" aria-pressed="false" data-set='{"fg":"#0060ff","fg2":"#7c3aed","bg":"#ffffff","dot":"classy","corner":"rounded"}'><span class="sw" style="background:#fff;border:1px solid var(--line)"><span data-qr data-size="36" data-fg="#0060ff" data-fg2="#7c3aed" data-bg="#fff" data-dot="classy" data-seed="3"></span></span>Aurore</button>
+              <button class="preset" aria-pressed="false" data-set='{"fg":"#1f7a4d","bg":"#f1faf5","dot":"dots","corner":"dot","fg2":""}'><span class="sw" style="background:#f1faf5"><span data-qr data-size="36" data-fg="#1f7a4d" data-bg="#f1faf5" data-dot="dots" data-seed="3"></span></span>Forêt</button>
+              <button class="preset" aria-pressed="false" data-set='{"fg":"#e8ecf3","bg":"#0f1115","dot":"dots","corner":"dot","fg2":""}'><span class="sw" style="background:#0f1115"><span data-qr data-size="36" data-fg="#e8ecf3" data-bg="#0f1115" data-dot="dots" data-seed="3"></span></span>Nuit</button>
+            </div>
+            <hr class="divider">
+            <div class="section-title">Couleurs <div class="seg" data-choice><button aria-pressed="true">Unie</button><button aria-pressed="false">Dégradé</button></div></div>
+            <div class="row" style="flex-wrap:wrap;gap:8px">
+              <div class="color"><span class="chip" style="background:#14152b"></span><span class="meta"><small>Motif</small><span>#14152B</span></span></div>
+              <button class="icon-btn" aria-label="Inverser les couleurs"><i data-i="swap"></i></button>
+              <div class="color"><span class="chip" style="background:#fff"></span><span class="meta"><small>Fond</small><span>#FFFFFF</span></span></div>
+            </div>
+            <hr class="divider">
+            <div class="section-title">Forme des points</div>
+            <div class="shapes6" data-choice="#cq">
+              <button class="shape" aria-pressed="false" data-set='{"dot":"square"}'><span data-glyph="square"></span>Carré</button>
+              <button class="shape" aria-pressed="true" data-set='{"dot":"rounded"}'><span data-glyph="rounded"></span>Arrondi</button>
+              <button class="shape" aria-pressed="false" data-set='{"dot":"dots"}'><span data-glyph="dots"></span>Points</button>
+              <button class="shape" aria-pressed="false" data-set='{"dot":"classy"}'><span data-glyph="classy"></span>Élégant</button>
+              <button class="shape" aria-pressed="false" data-set='{"dot":"classy"}'><span data-glyph="classy-rounded"></span>Élégant +</button>
+              <button class="shape" aria-pressed="false" data-set='{"dot":"rounded"}'><span data-glyph="extra-rounded"></span>Très rond</button>
+            </div>
+            <div class="section-title" style="margin-top:18px">Coins</div>
+            <div class="shapes3" data-choice="#cq" style="max-width:280px">
+              <button class="shape" aria-pressed="false" data-set='{"corner":"square"}'><span data-glyph="c-square"></span>Carré</button>
+              <button class="shape" aria-pressed="true" data-set='{"corner":"rounded"}'><span data-glyph="c-rounded"></span>Arrondi</button>
+              <button class="shape" aria-pressed="false" data-set='{"corner":"dot"}'><span data-glyph="c-dot"></span>Rond</button>
+            </div>
+          </div>
+
+          <div class="panel-pad" data-panel="l" hidden>
+            <button class="btn btn-secondary btn-block" style="height:96px;border-style:dashed;flex-direction:column;gap:6px"><i data-i="photo" class="lg"></i>Ajouter un logo</button>
+          </div>
+        </section>
+
+        <aside class="card pv">
+          <div class="row"><strong style="font-size:14px">Aperçu</strong>
+            <span class="pill pill-mute only-static" style="margin-left:auto"><i data-i="lock" class="sm"></i>QR fixe</span>
+            <span class="pill pill-brand only-dynamic" style="margin-left:auto"><i data-i="refresh" class="sm"></i>link.cg/promo-rentree</span></div>
+          <div class="stage"><div id="cq" data-qr data-size="232" data-fg="#14152b" data-bg="#ffffff" data-dot="rounded" data-corner="rounded" data-seed="11"></div></div>
+
+          <!-- QR fixe : pour tous -->
+          <div class="only-static" style="display:grid;gap:10px">
+            <div class="row"><span class="label" style="margin:0">Format</span><div class="seg" data-choice style="margin-left:auto"><button aria-pressed="true">PNG</button><button aria-pressed="false">SVG</button><button aria-pressed="false">PDF</button></div></div>
+            <button class="btn btn-primary btn-lg btn-block"><i data-i="download"></i>Télécharger</button>
+            <div class="info only-guest"><i data-i="check" class="sm"></i><span>Il sera aussi gardé dans <a href="c-mes-qr.html">Mes QR codes</a> sur cet appareil.</span></div>
+            <div class="info only-user"><i data-i="check" class="sm"></i><span>Enregistré dans <a href="c-mes-qr.html">Mes QR codes</a>.</span></div>
+          </div>
+
+          <!-- QR modifiable -->
+          <div class="only-dynamic" style="display:grid;gap:10px">
+            <div class="only-guest" style="display:grid;gap:10px">
+              <button class="btn btn-primary btn-lg btn-block" data-open="#save"><i data-i="sparkles"></i>Enregistrer mon QR</button>
+              <div class="info blue"><i data-i="lock" class="sm"></i><span>Un compte gratuit suffit (30 secondes). <strong>Votre design est conservé.</strong></span></div>
+            </div>
+            <div class="only-user" style="display:grid;gap:10px">
+              <button class="btn btn-primary btn-lg btn-block"><i data-i="check"></i>Créer le lien et le QR</button>
+              <div class="subtle" style="font-size:12px;text-align:center">5 / 25 liens utilisés · offre Gratuit</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav class="tabbar">
+  <a href="c-creer.html" aria-current="page"><i data-i="plus"></i>Créer</a>
+  <a href="c-mes-qr.html"><i data-i="link"></i>Mes QR</a>
+  <a href="#"><i data-i="chart"></i>Stats</a>
+  <a href="a-connexion.html"><i data-i="user"></i>Compte</a>
+</nav>
+
+<!-- Visiteur qui veut un QR modifiable : inscription sans quitter l'écran -->
+<div class="drawer" id="save" hidden>
+  <div class="scrim" data-close></div>
+  <div class="panel" role="dialog" aria-label="Créer un compte pour enregistrer">
+    <div class="panel-head">
+      <div class="grow" style="font-weight:700">Enregistrer votre QR modifiable</div>
+      <button class="icon-btn" data-close aria-label="Fermer"><i data-i="x"></i></button>
+    </div>
+    <div class="panel-body">
+      <div class="row card" style="padding:12px;box-shadow:none">
+        <div style="line-height:0;border-radius:10px;overflow:hidden" data-qr data-size="64" data-fg="#14152b" data-bg="#fff" data-seed="11"></div>
+        <div class="grow"><div style="font-weight:600">link.cg/promo-rentree</div><div class="muted" style="font-size:13px">→ nscreative.cg/promo-rentree</div></div>
+      </div>
+      <p class="muted" style="margin:18px 0">Créez votre compte gratuit : le QR est enregistré et vous arrivez directement dans votre espace. Rien n'est perdu.</p>
+      <label class="field"><span class="label">Nom ou entreprise</span><input class="input" placeholder="NS Creative"></label>
+      <label class="field"><span class="label">Email</span><input class="input" type="email" placeholder="vous@exemple.cg"></label>
+      <label class="field"><span class="label">Mot de passe</span><input class="input" type="password" placeholder="8 caractères minimum"></label>
+      <p class="muted" style="font-size:13px;margin-top:16px">Déjà un compte ? <a class="accent" href="#">Se connecter</a></p>
+    </div>
+    <div class="panel-foot">
+      <button class="btn btn-primary btn-lg btn-block">Créer mon compte et enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Maquette : bascule QR fixe / modifiable
+  document.querySelectorAll('#kinds .kind').forEach((b) => b.addEventListener('click', () => {
+    document.body.dataset.kind = b.dataset.kind
+    document.querySelectorAll('#kinds .kind').forEach((x) => x.setAttribute('aria-pressed', String(x === b)))
+  }))
+</script>
+
+<div class="note"><b>C · Créer (écran unique).</b> Le générateur n'est plus une page à part : c'est l'écran « Créer » de l'app, pour tout le monde. Le choix « fixe / modifiable » remplace la frontière outil gratuit ↔ dashboard. Le visiteur ne rencontre le compte qu'au moment d'enregistrer un QR modifiable. Basculez <b>Visiteur / Connecté</b> en haut. <a href="index.html">← Sommaire</a></div>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D · Design system — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="d.css">
+<script src="d.js"></script>
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  .doc { max-width: 1120px; margin: 0 auto; padding: 40px 24px 96px; }
+  .top { display: flex; align-items: center; gap: 12px; margin-bottom: 48px; }
+  section { margin-top: 72px; }
+  .sec-no { font-family: var(--f-mono); font-size: 12px; color: var(--subtle); }
+  .principles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+  .principles .card { padding: 0; overflow: hidden; }
+  .principles .ill { background: var(--soft); }
+  .principles .body { padding: 20px 22px 24px; }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-top: 20px; }
+  .sw { border-radius: 18px; overflow: hidden; background: var(--surface); box-shadow: var(--shadow); }
+  .sw i { display: block; height: 72px; }
+  .sw div { padding: 10px 12px; font-size: 13px; }
+  .sw small { display: block; color: var(--subtle); font-family: var(--f-mono); font-size: 11px; }
+  .type-row { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 20px; align-items: baseline; padding: 18px 0; border-bottom: 1px solid var(--line); }
+  .type-row small { font-family: var(--f-mono); font-size: 12px; color: var(--subtle); }
+  .comp { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+  .comp .card { padding: 24px; }
+  .comp h4 { font-size: 12px; font-weight: 600; color: var(--subtle); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 16px; }
+  .ills { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-top: 20px; }
+  .ills figure { margin: 0; background: var(--surface); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); }
+  .ills figure > div { background: var(--soft); padding: 8px; }
+  .ills figcaption { padding: 12px 14px; font-size: 13px; }
+  .ills figcaption span { display: block; color: var(--subtle); font-size: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; color: var(--subtle); font-weight: 600; }
+  td.no { color: var(--bad); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--bad) 40%, transparent); }
+  td.yes { color: var(--ink); font-weight: 500; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 20px; }
+  .flow a { padding: 12px 16px; border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); font-weight: 600; font-size: 14px; display: inline-flex; gap: 8px; align-items: center; }
+  .flow .arrow { color: var(--subtle); }
+  @media (max-width: 860px) { .principles, .comp { grid-template-columns: 1fr; } .type-row { grid-template-columns: 1fr; gap: 4px; } }
+</style>
+</head>
+<body>
+<div class="doc">
+  <div class="top">
+    <a class="logo" href="index.html"><span class="logo-mark"></span><span>link<b>.cg</b></span></a>
+    <span class="pill pill-soft">Design system · v1</span>
+    <button class="icon-btn" data-theme-toggle aria-label="Changer de thème" style="margin-left:auto"><i data-i="moon"></i></button>
+  </div>
+
+  <span class="eyebrow"><i data-i="sparkles" class="sm"></i>Proposition D · synthèse de B et C</span>
+  <h1 class="display mt-12">Simple à lire.<br>Agréable à <span class="hl">utiliser</span>.</h1>
+  <p class="lead mt-16" style="max-width:60ch">Les règles qui font de link.cg un seul produit cohérent, pour le visiteur comme pour le client : les couleurs, la typo, les composants, les illustrations et la manière de parler.</p>
+
+  <section>
+    <div class="sec-no">01</div>
+    <h2 class="h1 mt-8">Trois principes</h2>
+    <div class="principles">
+      <article class="card"><div class="ill" data-ill="hello" data-h="150"></div><div class="body"><h3 class="h3">Parlant</h3><p class="muted mt-8">L'interface pose des questions simples (« Que doit ouvrir votre QR ? ») et explique le pourquoi au bon moment. Jamais de jargon technique.</p></div></article>
+      <article class="card"><div class="ill" data-ill="fixed" data-h="150"></div><div class="body"><h3 class="h3">Épuré</h3><p class="muted mt-8">Une action principale par écran, en encre. Pas de filets inutiles : l'espace et les fonds doux séparent les zones. Les options avancées restent repliées.</p></div></article>
+      <article class="card"><div class="ill" data-ill="welcome" data-h="150"></div><div class="body"><h3 class="h3">Chaleureux</h3><p class="muted mt-8">Papier, encre et bleu NS. Des illustrations rondes pour guider vers l'action, des QR montrés partout : c'est l'objet que l'on fabrique.</p></div></article>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-no">02</div>
+    <h2 class="h1 mt-8">Couleurs</h2>
+    <p class="muted mt-8">L'encre porte l'action, le bleu NS la marque et la sélection. Les teintes douces n'habillent que les illustrations et les catégories. Contraste : textes au moins 4,5:1, bords de champs et de boutons au moins 3:1 (WCAG AA), en clair comme en sombre.</p>
+    <div class="swatches">
+      <div class="sw"><i style="background:var(--bg)"></i><div>Papier<small>--bg</small></div></div>
+      <div class="sw"><i style="background:var(--surface);box-shadow:inset 0 -1px 0 var(--line)"></i><div>Surface<small>--surface</small></div></div>
+      <div class="sw"><i style="background:var(--soft)"></i><div>Doux<small>--soft</small></div></div>
+      <div class="sw"><i style="background:var(--ink)"></i><div>Encre · action<small>--ink / --cta</small></div></div>
+      <div class="sw"><i style="background:var(--brand)"></i><div>Bleu NS<small>--brand</small></div></div>
+      <div class="sw"><i style="background:var(--sky)"></i><div>Ciel<small>--sky</small></div></div>
+      <div class="sw"><i style="background:var(--sun)"></i><div>Soleil<small>--sun</small></div></div>
+      <div class="sw"><i style="background:var(--coral)"></i><div>Corail<small>--coral</small></div></div>
+      <div class="sw"><i style="background:var(--mint)"></i><div>Menthe<small>--mint</small></div></div>
+      <div class="sw"><i style="background:var(--lilac)"></i><div>Lilas<small>--lilac</small></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-no">03</div>
+    <h2 class="h1 mt-8">Typographie</h2>
+    <p class="muted mt-8"><b>Bricolage Grotesque</b> pour les titres : moderne, avec du caractère. <b>Geist</b> pour l'interface : nette et très lisible sur petit écran. Deux polices gratuites (Google Fonts).</p>
+    <div class="mt-24">
+      <div class="type-row"><small>Display · 60</small><span class="display">Imprimez une fois.</span></div>
+      <div class="type-row"><small>Titre 1 · 40</small><span class="h1">Que voulez-vous créer ?</span></div>
+      <div class="type-row"><small>Titre 2 · 24</small><span class="h2">Où mène ce lien ?</span></div>
+      <div class="type-row"><small>Titre 3 · 18</small><span class="h3">Carte de visite</span></div>
+      <div class="type-row"><small>Intro · 17</small><span class="lead">Changez la destination à tout moment, même après impression.</span></div>
+      <div class="type-row"><small>Texte · 15</small><span>Le QR se met à jour pendant que vous tapez.</span></div>
+      <div class="type-row"><small>Mono · 13</small><span class="mono small">link.cg/promo-rentree</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-no">04</div>
+    <h2 class="h1 mt-8">Composants</h2>
+    <div class="comp">
+      <div class="card">
+        <h4>Boutons</h4>
+        <div class="row wrap-flex gap-8">
+          <button class="btn btn-cta">Action principale</button>
+          <button class="btn btn-brand">Compte / marque</button>
+          <button class="btn btn-soft">Secondaire</button>
+          <button class="btn btn-ghost">Discret</button>
+        </div>
+        <p class="help"><i data-i="sparkles"></i>Un seul bouton encre par écran : c'est « la » chose à faire.</p>
+      </div>
+      <div class="card">
+        <h4>Choix</h4>
+        <div class="chips" data-choice>
+          <button class="chip" aria-pressed="true"><i data-i="link"></i>Site web</button>
+          <button class="chip" aria-pressed="false"><i data-i="sms"></i>WhatsApp</button>
+          <button class="chip" aria-pressed="false"><i data-i="wifi"></i>Wi‑Fi</button>
+        </div>
+        <div class="row mt-16 gap-8"><div class="seg" data-choice><button aria-pressed="true">PNG</button><button aria-pressed="false">SVG</button><button aria-pressed="false">PDF</button></div>
+          <button class="switch" role="switch" aria-checked="true" aria-label="Exemple" onclick="this.setAttribute('aria-checked', this.getAttribute('aria-checked')!=='true')"></button></div>
+      </div>
+      <div class="card">
+        <h4>Champs</h4>
+        <label class="field"><span class="label">Adresse du site</span><input class="input" placeholder="https://…" value="https://nscreative.cg"></label>
+        <label class="field"><span class="label">Adresse courte</span><span class="input-affix"><span class="pre">link.cg/</span><input value="promo"></span>
+          <span class="help" style="color:var(--ok)"><i data-i="check" style="color:var(--ok)"></i>Libre, elle est à vous.</span></label>
+      </div>
+      <div class="card">
+        <h4>Messages qui parlent</h4>
+        <div class="tip"><span class="tip-ico"><i data-i="sparkles" class="sm"></i></span><div><strong>Astuce</strong>Ajoutez votre logo : un QR reconnaissable est scanné plus souvent.</div></div>
+        <div class="tip blue mt-8"><span class="tip-ico"><i data-i="refresh" class="sm"></i></span><div><strong>Bon à savoir</strong>Ce QR restera modifiable après impression.</div></div>
+        <details class="why mt-12"><summary><i data-i="eye" class="sm"></i>Pourquoi un compte ?</summary><p>Pour que le QR imprimé puisse changer de destination, il doit passer par une adresse courte qui vous appartient. Le compte la garde pour vous.</p></details>
+      </div>
+      <div class="card" style="grid-column:1/-1">
+        <h4>Carte de choix illustrée</h4>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px" data-choice>
+          <button class="choice" aria-pressed="true"><div class="ill" data-ill="menu" data-h="110" style="background:var(--sun)"></div><strong>Mon menu</strong><span class="d">Un QR sur chaque table</span></button>
+          <button class="choice" aria-pressed="false"><div class="ill" data-ill="card" data-h="110" style="background:var(--coral-tint)"></div><strong>Mes coordonnées</strong><span class="d">Une carte de visite digitale</span></button>
+          <button class="choice" aria-pressed="false"><div class="ill" data-ill="wifi" data-h="110" style="background:var(--mint)"></div><strong>Mon Wi‑Fi</strong><span class="d">Connexion sans taper le mot de passe</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-no">05</div>
+    <h2 class="h1 mt-8">Illustrations</h2>
+    <p class="muted mt-8">Formes rondes, deux ou trois teintes, toujours un QR ou un geste. Elles suivent le thème (clair / sombre) car elles utilisent les mêmes variables que l'interface.</p>
+    <div class="ills">
+      <figure><div data-ill="welcome"></div><figcaption>welcome<span>Bienvenue, héros</span></figcaption></figure>
+      <figure><div data-ill="modifiable"></div><figcaption>modifiable<span>Expliquer le QR modifiable</span></figcaption></figure>
+      <figure><div data-ill="fixed"></div><figcaption>fixed<span>QR fixe</span></figcaption></figure>
+      <figure><div data-ill="shortlink"></div><figcaption>shortlink<span>Raccourcir un lien</span></figcaption></figure>
+      <figure><div data-ill="share"></div><figcaption>share<span>Partager un lien (WhatsApp)</span></figcaption></figure>
+      <figure><div data-ill="link"></div><figcaption>link<span>Site web, page</span></figcaption></figure>
+      <figure><div data-ill="menu"></div><figcaption>menu<span>Restaurant, PDF</span></figcaption></figure>
+      <figure><div data-ill="card"></div><figcaption>card<span>Carte de visite</span></figcaption></figure>
+      <figure><div data-ill="wifi"></div><figcaption>wifi<span>Réseau Wi‑Fi</span></figcaption></figure>
+      <figure><div data-ill="whatsapp"></div><figcaption>whatsapp<span>Discussion WhatsApp</span></figcaption></figure>
+      <figure><div data-ill="app"></div><figcaption>app<span>Lien d'application</span></figcaption></figure>
+      <figure><div data-ill="stats"></div><figcaption>stats<span>Statistiques, CTA compte</span></figcaption></figure>
+      <figure><div data-ill="account"></div><figcaption>account<span>Retrouver ses QR partout</span></figcaption></figure>
+      <figure><div data-ill="empty"></div><figcaption>empty<span>État vide</span></figcaption></figure>
+      <figure><div data-ill="print"></div><figcaption>print<span>Téléchargement, impression</span></figcaption></figure>
+      <figure><div data-ill="lock"></div><figcaption>lock<span>Fonction réservée</span></figcaption></figure>
+      <figure><div data-ill="hello"></div><figcaption>hello<span>Accueil, succès</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-no">06</div>
+    <h2 class="h1 mt-8">Voix &amp; ton</h2>
+    <p class="muted mt-8">On vouvoie, on parle au bénéfice (« vos clients ») plutôt qu'à la technique, et chaque erreur propose une solution.</p>
+    <div class="card mt-24" style="overflow:hidden">
+      <table>
+        <thead><tr><th>Situation</th><th>On dit</th><th>On évite</th></tr></thead>
+        <tbody>
+          <tr><td>Les créations</td><td class="yes">Lien court · QR code · Carte de visite</td><td class="no">Lien dynamique · redirection</td></tr>
+          <tr><td>Type de QR</td><td class="yes">QR modifiable (celui d'un lien court) · QR fixe</td><td class="no">QR dynamique · QR statique</td></tr>
+          <tr><td>Mesure</td><td class="yes">Visites (clics sur le lien + scans du QR)</td><td class="no">Hits · requêtes</td></tr>
+          <tr><td>Selon l'appareil</td><td class="yes">Selon le téléphone : iPhone → App Store, Android → Play Store</td><td class="no">Routage par User-Agent</td></tr>
+          <tr><td>Identifiant du lien</td><td class="yes">Adresse courte : link.cg/promo</td><td class="no">Slug</td></tr>
+          <tr><td>Choisir le type</td><td class="yes">Pourrez-vous avoir besoin de le changer ?</td><td class="no">Activer la redirection dynamique</td></tr>
+          <tr><td>Désactiver</td><td class="yes">Mettre en pause · Réactiver</td><td class="no">Désactiver le lien (inactive)</td></tr>
+          <tr><td>Adresse prise</td><td class="yes">« promo » est déjà prise. Essayez promo-rentree ?</td><td class="no">Erreur 409 : slug déjà utilisé</td></tr>
+          <tr><td>Limite d'offre</td><td class="yes">Vous avez utilisé vos 25 liens. Mettez-en un en pause ou passez à Pro.</td><td class="no">Quota dépassé</td></tr>
+          <tr><td>Succès</td><td class="yes">C'est prêt ! Votre QR mène à nscreative.cg/menu.</td><td class="no">Lien créé avec succès.</td></tr>
+          <tr><td>Paiement</td><td class="yes">Payez par Airtel Money ou MTN MoMo.</td><td class="no">Ajoutez une carte bancaire.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-no">07</div>
+    <h2 class="h1 mt-8">Parcours</h2>
+    <p class="muted mt-8">Une seule application, deux créations principales à égalité : le <b>lien court</b> et le <b>QR code</b>. Un lien court a toujours son QR ; un QR modifiable, c'est un lien court. Le compte n'est demandé qu'au moment où il apporte quelque chose (créer un lien court, voir les visites).</p>
+    <div class="flow">
+      <a href="d-bienvenue.html"><i data-i="sparkles" class="sm"></i>Bienvenue</a><span class="arrow">→</span>
+      <a href="d-accueil.html"><i data-i="home" class="sm"></i>Accueil</a><span class="arrow">→</span>
+      <a href="d-creer.html"><i data-i="plus" class="sm"></i>Créer</a><span class="arrow">→</span>
+      <a href="d-connexion.html?mode=inscription"><i data-i="lock" class="sm"></i>Compte (lien court)</a><span class="arrow">→</span>
+      <a href="d-mes-qr.html"><i data-i="link" class="sm"></i>Mes liens &amp; QR</a><span class="arrow">→</span>
+      <a href="d-qr.html"><i data-i="chart" class="sm"></i>Fiche d'un lien</a>
+    </div>
+    <div class="flow">
+      <a href="d-carte.html"><i data-i="user" class="sm"></i>Carte de visite</a>
+      <a href="d-offres.html"><i data-i="card" class="sm"></i>Offres</a>
+      <a href="d-connexion.html"><i data-i="lock" class="sm"></i>Connexion</a>
+    </div>
+  </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D · Connexion — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="d.css">
+<script src="d.js"></script>
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  .split { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding: 12px; gap: 12px; }
+  .visual { border-radius: 30px; background: var(--sky); padding: 40px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+  .visual .ill { margin: auto 0; }
+  .visual blockquote { margin: 0; font-family: var(--f-display); font-weight: 600; font-size: 22px; letter-spacing: -.02em; line-height: 1.25; color: #16161d; max-width: 26ch; }
+  .visual cite { display: block; font-style: normal; font-size: 13px; color: #4a4a55; margin-top: 10px; font-family: var(--f-ui); font-weight: 500; }
+  .form-side { display: grid; place-items: center; padding: 32px 20px; }
+  .box { width: 100%; max-width: 400px; }
+  .pw { position: relative; display: block; }
+  .pw .icon-btn { position: absolute; right: 7px; top: 7px; }
+  .err { display: flex; gap: 10px; padding: 12px 14px; border-radius: 14px; background: var(--bad-tint); color: var(--bad); font-size: 13px; margin-top: 16px; }
+  .perks { display: grid; gap: 10px; margin-top: 20px; font-size: 14px; }
+  .perks div { display: flex; gap: 10px; align-items: center; }
+  .perks .ico { color: var(--ok); }
+  @media (max-width: 900px) { .split { grid-template-columns: 1fr; } .visual { display: none; } }
+</style>
+</head>
+<body>
+<div class="split">
+  <aside class="visual">
+    <a class="logo" href="d-accueil.html" style="color:#16161d"><span class="logo-mark" style="background:#16161d"></span><span>link<b>.cg</b></span></a>
+    <div class="ill" data-ill="modifiable"></div>
+    <blockquote>« On a changé la carte trois fois ce trimestre. Les QR sur les tables, jamais. »<cite>Restaurant, Brazzaville · exemple d'usage</cite></blockquote>
+  </aside>
+
+  <main class="form-side" data-tabs>
+    <div class="box">
+      <div class="seg" role="tablist">
+        <button role="tab" data-tab="in" aria-selected="true">Se connecter</button>
+        <button role="tab" data-tab="up" aria-selected="false">Créer un compte</button>
+      </div>
+
+      <section data-panel="in" class="mt-32">
+        <h1 class="h1">Bon retour parmi nous</h1>
+        <p class="lead mt-8">Vos liens et QR vous attendent.</p>
+        <div class="mt-24">
+          <label class="field"><span class="label">Email</span><input class="input" type="email" value="celeste@nscreative" autocomplete="email"></label>
+          <label class="field"><span class="label row" style="gap:0">Mot de passe <a class="link small" href="#" style="margin-left:auto">Oublié ?</a></span>
+            <span class="pw"><input class="input" type="password" value="motdepasse"><button class="icon-btn" aria-label="Afficher le mot de passe"><i data-i="eye" class="sm"></i></button></span></label>
+        </div>
+        <div class="err"><i data-i="x" class="sm"></i><span>Cet email et ce mot de passe ne correspondent pas. Vérifiez l'adresse, ou <a class="link" href="#" style="color:inherit;text-decoration:underline">recevez un lien de connexion</a>.</span></div>
+        <button class="btn btn-cta btn-lg btn-block mt-24">Se connecter</button>
+      </section>
+
+      <section data-panel="up" class="mt-32" hidden>
+        <h1 class="h1">Créez votre espace</h1>
+        <p class="lead mt-8">Gratuit, sans carte bancaire.</p>
+        <div class="perks">
+          <div><i data-i="check"></i>25 liens courts, avec leur QR modifiable</div>
+          <div><i data-i="check"></i>Le nombre de visites, chaque jour</div>
+          <div><i data-i="check"></i>Vos créations retrouvées sur tous vos appareils</div>
+        </div>
+        <div class="mt-24">
+          <label class="field"><span class="label">Votre nom ou celui de votre activité</span><input class="input" placeholder="Restaurant Mami Wata"></label>
+          <label class="field"><span class="label">Email</span><input class="input" type="email" placeholder="vous@exemple.cg"></label>
+          <label class="field"><span class="label">Mot de passe</span><span class="pw"><input class="input" type="password" placeholder="8 caractères minimum"><button class="icon-btn" aria-label="Afficher le mot de passe"><i data-i="eye" class="sm"></i></button></span></label>
+        </div>
+        <button class="btn btn-cta btn-lg btn-block mt-24">Créer mon compte</button>
+        <p class="subtle xs center mt-12">En continuant, vous acceptez les conditions d'utilisation.</p>
+      </section>
+
+      <p class="center small mt-32"><a class="link" href="d-accueil.html"><i data-i="back" class="sm"></i>Continuer sans compte</a></p>
+    </div>
+  </main>
+</div>
+<script>
+  // Maquette : ?mode=inscription ouvre directement l'onglet « Créer un compte »
+  document.addEventListener('DOMContentLoaded', () => {
+    if (new URLSearchParams(location.search).get('mode') === 'inscription') document.querySelector('[data-tab="up"]').click()
+  })
+</script>
+<div class="note"><b>D · Connexion.</b> Un seul écran, deux onglets. À gauche, l'illustration et un exemple d'usage rappellent le bénéfice. Les erreurs proposent une issue (lien de connexion par email), et « Continuer sans compte » reste toujours possible. <a href="index.html">← Sommaire</a></div>
+</body>
+</html>

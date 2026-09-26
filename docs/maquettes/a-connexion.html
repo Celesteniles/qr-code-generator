@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A · Connexion — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="a.css">
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  .split { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
+  .brand-side { background: #0a0f1f; color: #e8ecf3; padding: 40px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+  .brand-side::before { content: ""; position: absolute; inset: 0; background: radial-gradient(600px 400px at 90% 110%, rgba(0,96,255,.45), transparent 60%); }
+  .brand-side > * { position: relative; }
+  .brand-side .logo b { color: #6ea2ff; }
+  .brand-side h2 { font-size: 34px; line-height: 1.1; letter-spacing: -.03em; margin-top: auto; max-width: 16ch; }
+  .brand-side p { color: #a0a7b5; margin-top: 12px; max-width: 42ch; }
+  .perks { display: grid; gap: 12px; margin-top: 28px; font-size: 14px; }
+  .perks div { display: flex; gap: 10px; align-items: center; }
+  .perks .ico { color: #6ea2ff; }
+  .float-qr { position: absolute; right: 40px; top: 80px; padding: 14px; background: #fff; border-radius: 22px; transform: rotate(6deg); box-shadow: 0 30px 60px -20px rgba(0,0,0,.6); line-height: 0; }
+  .float-qr .tag { position: absolute; left: -58px; bottom: 20px; transform: rotate(-6deg); background: #13161d; color: #e8ecf3; font-size: 12px; line-height: 1.3; padding: 8px 12px; border-radius: 12px; border: 1px solid #242935; white-space: nowrap; }
+  .form-side { display: grid; place-items: center; padding: 40px 20px; background: var(--surface); }
+  .form-box { width: 100%; max-width: 380px; }
+  .form-box h1 { font-size: 26px; letter-spacing: -.02em; }
+  .pw { position: relative; }
+  .pw .icon-btn { position: absolute; right: 4px; top: 4px; }
+  .error { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; background: var(--bad-soft); color: var(--bad); font-size: 13px; margin-top: 14px; }
+  @media (max-width: 900px) { .split { grid-template-columns: 1fr; } .brand-side { display: none; } }
+</style>
+</head>
+<body>
+<div class="split">
+  <aside class="brand-side">
+    <a class="logo" href="a-generateur.html"><span class="logo-mark">l.</span><span>link<b>.cg</b></span></a>
+    <div class="float-qr"><div data-qr data-size="170" data-fg="#0060ff" data-bg="#fff" data-dot="dots" data-corner="dot" data-seed="5" data-logo="l."></div>
+      <span class="tag"><strong>link.cg/menu</strong><br>842 scans ce mois</span></div>
+    <h2>Vos QR codes, vivants et mesurables.</h2>
+    <p>Créez des liens courts, modifiez-les après impression et suivez leurs scans, depuis un seul endroit.</p>
+    <div class="perks">
+      <div><i data-i="check"></i>25 liens dynamiques offerts</div>
+      <div><i data-i="check"></i>Paiement Airtel Money / MTN MoMo</div>
+      <div><i data-i="check"></i>Hébergé en toute sécurité, sans publicité</div>
+    </div>
+  </aside>
+
+  <main class="form-side" data-tabs>
+    <div class="form-box">
+      <div class="seg" role="tablist" style="margin-bottom:28px">
+        <button role="tab" data-tab="in" aria-selected="true">Connexion</button>
+        <button role="tab" data-tab="up" aria-selected="false">Créer un compte</button>
+      </div>
+
+      <div data-panel="in">
+        <h1>Bon retour</h1>
+        <p class="muted" style="margin-top:4px">Connectez-vous pour gérer vos liens.</p>
+        <div style="margin-top:24px">
+          <label class="field"><span class="label">Email</span><input class="input" type="email" value="celeste@nscreative" autocomplete="email"></label>
+          <label class="field"><span class="label" style="display:flex">Mot de passe <a href="#" class="accent" style="margin-left:auto;font-weight:500">Oublié ?</a></span>
+            <span class="pw"><input class="input" type="password" value="motdepasse"><button class="icon-btn" aria-label="Afficher le mot de passe"><i data-i="eye" class="sm"></i></button></span></label>
+        </div>
+        <div class="error"><i data-i="x" class="sm"></i><span>Email ou mot de passe incorrect. Vérifiez et réessayez.</span></div>
+        <button class="btn btn-primary btn-lg btn-block" style="margin-top:18px">Se connecter</button>
+      </div>
+
+      <div data-panel="up" hidden>
+        <h1>Créez votre espace</h1>
+        <p class="muted" style="margin-top:4px">Gratuit, sans carte bancaire.</p>
+        <div style="margin-top:24px">
+          <label class="field"><span class="label">Nom ou entreprise</span><input class="input" placeholder="NS Creative"></label>
+          <label class="field"><span class="label">Email</span><input class="input" type="email" placeholder="vous@exemple.cg"></label>
+          <label class="field"><span class="label">Mot de passe</span>
+            <span class="pw"><input class="input" type="password" placeholder="8 caractères minimum"><button class="icon-btn" aria-label="Afficher le mot de passe"><i data-i="eye" class="sm"></i></button></span>
+            <span class="hint">8 caractères minimum.</span></label>
+        </div>
+        <button class="btn btn-primary btn-lg btn-block" style="margin-top:18px">Créer mon compte</button>
+        <p class="subtle" style="font-size:12px;margin-top:12px;text-align:center">En continuant, vous acceptez les conditions d'utilisation.</p>
+      </div>
+
+      <p class="muted" style="font-size:13px;margin-top:32px;text-align:center"><a href="a-generateur.html" class="accent">← Retour au générateur gratuit</a></p>
+    </div>
+  </main>
+</div>
+<div class="note"><b>Direction A · Connexion.</b> Écran partagé : argumentaire à gauche (desktop), formulaire à droite. Connexion et inscription dans le même écran via onglets ; afficher le mot de passe ; erreur explicite. <a href="index.html">← Sommaire</a></div>
+</body>
+</html>

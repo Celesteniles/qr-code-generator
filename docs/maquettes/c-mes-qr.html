@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C · Mes QR codes — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="c.css">
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  .stats { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .stat { padding: 16px 18px; }
+  .stat .k { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .stat .v { font-size: 28px; font-weight: 700; letter-spacing: -.03em; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .spark { width: 100%; height: 36px; margin-top: 6px; color: var(--brand); }
+
+  .toolbar { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  .search { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 11px; border-radius: 10px; background: var(--surface-2); color: var(--subtle); flex: 1; min-width: 160px; max-width: 300px; }
+  .search input { border: 0; background: transparent; font: inherit; font-size: 14px; color: var(--fg); flex: 1; min-width: 0; outline: none; }
+
+  .qrow { display: grid; grid-template-columns: 56px minmax(0, 1fr) 110px 110px auto; align-items: center; gap: 14px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  .qrow:last-child { border-bottom: 0; }
+  .qrow:hover { background: color-mix(in srgb, var(--surface-2) 55%, transparent); }
+  .thumb { width: 56px; height: 56px; border-radius: 10px; overflow: hidden; line-height: 0; box-shadow: 0 0 0 1px var(--line); }
+  .ttl { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 6px; }
+  .ttl .h { color: var(--subtle); font-weight: 500; }
+  .sub { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .scans { text-align: right; font-size: 13px; color: var(--muted); }
+  .scans strong { display: block; font-size: 15px; color: var(--fg); font-variant-numeric: tabular-nums; }
+  .acts { display: flex; gap: 2px; justify-content: flex-end; align-items: center; }
+  .qrow.off { opacity: .6; }
+
+  .guest-hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: center; padding: 22px; margin-bottom: 20px; background: var(--brand-soft); border-color: transparent; }
+  .guest-hero h2 { font-size: 20px; letter-spacing: -.02em; }
+  .guest-hero ul { margin: 12px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 14px; }
+  .guest-hero li { display: flex; gap: 6px; align-items: center; }
+  .guest-hero li .ico { color: var(--accent); width: 16px; height: 16px; }
+  .locked { position: relative; overflow: hidden; }
+  .locked .blur { filter: blur(3px); opacity: .55; pointer-events: none; }
+  .locked .over { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; gap: 8px; align-content: center; }
+
+  @media (max-width: 900px) { .stats { grid-template-columns: 1fr 1fr; } .stats .stat:first-child { grid-column: 1 / -1; } .guest-hero { grid-template-columns: 1fr; } }
+  @media (max-width: 720px) {
+    .qrow { grid-template-columns: 48px minmax(0, 1fr) auto; }
+    .thumb { width: 48px; height: 48px; }
+    .qrow .scans, .qrow .st, .qrow .acts .icon-btn { display: none; }
+  }
+</style>
+</head>
+<body data-state="guest">
+
+<div class="state-switch">Aperçu&nbsp;: <button data-state-set="guest">Visiteur</button><button data-state-set="user">Connecté</button></div>
+
+<div class="app">
+  <aside class="side">
+    <a class="logo" href="#"><span class="logo-mark">l.</span><span>link<b>.cg</b></span></a>
+    <a class="btn btn-primary btn-block create" href="c-creer.html"><i data-i="plus"></i>Créer un QR</a>
+    <a class="side-link" href="c-creer.html"><i data-i="qr"></i>Créer</a>
+    <a class="side-link" aria-current="page" href="c-mes-qr.html"><i data-i="link"></i>Mes QR codes<span class="end only-user">7</span><span class="end only-guest">2</span></a>
+    <a class="side-link" href="a-carte.html"><i data-i="user"></i>Cartes de visite<i data-i="lock" class="lock only-guest"></i></a>
+    <a class="side-link" href="#"><i data-i="chart"></i>Statistiques<i data-i="lock" class="lock only-guest"></i></a>
+    <div class="side-sec">Aide</div>
+    <a class="side-link" href="#"><i data-i="card"></i>Offres &amp; tarifs</a>
+    <div class="side-foot">
+      <div class="side-card only-guest">
+        <strong>Compte gratuit</strong>
+        <p>QR modifiables après impression, scans comptés, 25 liens offerts.</p>
+        <a class="btn btn-primary btn-sm btn-block" style="margin-top:12px" href="a-connexion.html">Créer un compte</a>
+        <a class="btn btn-ghost btn-sm btn-block" style="margin-top:4px" href="a-connexion.html">J'ai déjà un compte</a>
+      </div>
+      <div class="side-card only-user">
+        <div class="row"><strong>Offre Gratuit</strong><span class="subtle num" style="margin-left:auto">5 / 25</span></div>
+        <div class="meter"><span style="width:20%"></span></div>
+        <a class="btn btn-secondary btn-sm btn-block" href="#">Passer à Pro</a>
+      </div>
+      <div class="me only-user"><span class="av">CG</span><div class="grow"><div style="font-weight:600">Céleste GAKONO</div><div class="subtle" style="font-size:12px">NS Creative</div></div><button class="icon-btn" aria-label="Se déconnecter"><i data-i="logout" class="sm"></i></button></div>
+      <button class="side-link" data-theme-toggle style="border:0;background:transparent;width:100%"><i data-i="moon"></i>Thème</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="main-head">
+      <a class="logo mob-top" href="#"><span class="logo-mark">l.</span></a>
+      <h1>Mes QR codes</h1>
+      <div class="row" style="margin-left:auto">
+        <a class="btn btn-ghost only-guest" href="a-connexion.html">Connexion</a>
+        <a class="btn btn-primary" href="c-creer.html"><i data-i="plus"></i>Créer un QR</a>
+      </div>
+    </header>
+
+    <div class="main-body">
+
+      <!-- ── Visiteur ─────────────────────────────────────────────────────── -->
+      <section class="card guest-hero only-guest">
+        <div>
+          <h2>Vos QR sont gardés sur cet appareil</h2>
+          <p class="muted" style="margin-top:4px">Sans compte, ils restent fixes et ne sont visibles que dans ce navigateur.</p>
+          <ul>
+            <li><i data-i="refresh"></i>Modifier après impression</li>
+            <li><i data-i="chart"></i>Compter les scans</li>
+            <li><i data-i="globe"></i>Retrouver ses QR partout</li>
+          </ul>
+        </div>
+        <a class="btn btn-primary btn-lg" href="a-connexion.html">Créer un compte gratuit</a>
+      </section>
+
+      <!-- ── Connecté ─────────────────────────────────────────────────────── -->
+      <section class="stats only-user">
+        <div class="card stat">
+          <div class="k"><i data-i="chart" class="sm"></i>Scans · 30 jours</div>
+          <div class="row" style="align-items:baseline;gap:8px"><div class="v">2 533</div><span style="font-size:12px;color:var(--ok);font-weight:600">+18 %</span></div>
+          <svg class="spark" viewBox="0 0 200 36" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 28 L20 27 L40 23 L60 24 L80 19 L100 20 L120 14 L140 15 L160 10 L180 11 L200 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="card stat"><div class="k"><i data-i="refresh" class="sm"></i>QR modifiables</div><div class="v">5</div><div class="subtle" style="font-size:12px">4 actifs · 1 en pause</div></div>
+        <div class="card stat"><div class="k"><i data-i="lock" class="sm"></i>QR fixes</div><div class="v">2</div><div class="subtle" style="font-size:12px">non comptés dans l'offre</div></div>
+      </section>
+
+      <section class="card" style="overflow:hidden">
+        <div class="toolbar">
+          <label class="search"><i data-i="search" class="sm"></i><input placeholder="Rechercher…"></label>
+          <div class="seg only-user" data-choice><button aria-pressed="true">Tous</button><button aria-pressed="false">Modifiables</button><button aria-pressed="false">Fixes</button><button aria-pressed="false">Cartes</button></div>
+        </div>
+
+        <!-- Liens modifiables (connecté) -->
+        <div class="qrow only-user" data-row>
+          <div class="thumb" data-qr data-size="56" data-fg="#0060ff" data-bg="#fff" data-dot="dots" data-corner="dot" data-seed="21"></div>
+          <div style="min-width:0"><div class="ttl"><span><span class="h">link.cg/</span>promo-rentree</span><button class="icon-btn" style="width:26px;height:26px" data-copy="https://link.cg/promo-rentree" aria-label="Copier le lien"><i data-i="copy" class="sm"></i></button></div>
+            <div class="sub">→ nscreative.cg/offres/rentree-2026</div></div>
+          <div class="scans"><strong>1 284</strong>scans</div>
+          <div class="st"><span class="pill pill-ok"><span class="dot"></span>Actif</span></div>
+          <div class="acts"><button class="btn btn-secondary btn-sm"><i data-i="pencil" class="sm"></i>Modifier</button><button class="icon-btn" aria-label="Télécharger"><i data-i="download"></i></button><button class="icon-btn" aria-label="Plus d'actions"><i data-i="more"></i></button></div>
+        </div>
+        <div class="qrow only-user" data-row>
+          <div class="thumb" data-qr data-size="56" data-fg="#7a2e12" data-bg="#fff7ef" data-seed="8"></div>
+          <div style="min-width:0"><div class="ttl"><span><span class="h">link.cg/</span>menu</span><button class="icon-btn" style="width:26px;height:26px" data-copy="https://link.cg/menu" aria-label="Copier le lien"><i data-i="copy" class="sm"></i></button></div>
+            <div class="sub">→ drive.google.com/…/menu-septembre.pdf</div></div>
+          <div class="scans"><strong>842</strong>scans</div>
+          <div class="st"><span class="pill pill-ok"><span class="dot"></span>Actif</span></div>
+          <div class="acts"><button class="btn btn-secondary btn-sm"><i data-i="pencil" class="sm"></i>Modifier</button><button class="icon-btn" aria-label="Télécharger"><i data-i="download"></i></button><button class="icon-btn" aria-label="Plus d'actions"><i data-i="more"></i></button></div>
+        </div>
+        <div class="qrow only-user" data-row>
+          <div class="thumb" data-qr data-size="56" data-fg="#0060ff" data-fg2="#7c3aed" data-bg="#fff" data-dot="dots" data-corner="dot" data-seed="30"></div>
+          <div style="min-width:0"><div class="ttl"><span><span class="h">link.cg/</span>celeste</span><span class="pill pill-mute" style="height:20px;font-size:11px">Carte</span></div>
+            <div class="sub">Céleste GAKONO · NS Creative</div></div>
+          <div class="scans"><strong>96</strong>scans</div>
+          <div class="st"><span class="pill pill-ok"><span class="dot"></span>Actif</span></div>
+          <div class="acts"><a class="btn btn-secondary btn-sm" href="a-carte.html"><i data-i="pencil" class="sm"></i>Modifier</a><button class="icon-btn" aria-label="Télécharger"><i data-i="download"></i></button><button class="icon-btn" aria-label="Plus d'actions"><i data-i="more"></i></button></div>
+        </div>
+
+        <!-- QR fixes : visibles pour tous (appareil pour le visiteur, compte pour l'inscrit) -->
+        <div class="qrow" data-row>
+          <div class="thumb" data-qr data-size="56" data-fg="#14152b" data-bg="#fff" data-seed="11"></div>
+          <div style="min-width:0"><div class="ttl"><span>nscreative.cg/promo</span><span class="pill pill-mute" style="height:20px;font-size:11px"><i data-i="lock" class="sm" style="width:12px;height:12px"></i>Fixe</span></div>
+            <div class="sub">Lien · créé aujourd'hui</div></div>
+          <div class="scans"><span class="subtle">Scans non suivis</span></div>
+          <div class="st"></div>
+          <div class="acts"><button class="btn btn-secondary btn-sm"><i data-i="refresh" class="sm"></i>Rendre modifiable</button><button class="icon-btn" aria-label="Télécharger"><i data-i="download"></i></button><button class="icon-btn danger" data-confirm aria-label="Retirer"><i data-i="trash"></i></button></div>
+        </div>
+        <div class="qrow" data-row>
+          <div class="thumb" data-qr data-size="56" data-fg="#1f7a4d" data-bg="#f1faf5" data-dot="dots" data-corner="dot" data-seed="44"></div>
+          <div style="min-width:0"><div class="ttl"><span>Wi‑Fi « NS-Studio »</span><span class="pill pill-mute" style="height:20px;font-size:11px"><i data-i="lock" class="sm" style="width:12px;height:12px"></i>Fixe</span></div>
+            <div class="sub">Wi‑Fi · créé le 24 sept.</div></div>
+          <div class="scans"><span class="subtle">Scans non suivis</span></div>
+          <div class="st"></div>
+          <div class="acts"><button class="btn btn-secondary btn-sm"><i data-i="pencil" class="sm"></i>Rouvrir</button><button class="icon-btn" aria-label="Télécharger"><i data-i="download"></i></button><button class="icon-btn danger" data-confirm aria-label="Retirer"><i data-i="trash"></i></button></div>
+        </div>
+      </section>
+
+      <!-- Statistiques verrouillées (visiteur) -->
+      <section class="card locked only-guest" style="margin-top:20px">
+        <div class="blur" style="padding:20px">
+          <div class="k muted" style="font-size:13px">Scans · 30 jours</div>
+          <div style="font-size:28px;font-weight:700">1 284</div>
+          <svg viewBox="0 0 200 40" style="width:100%;height:60px;color:var(--brand)" preserveAspectRatio="none"><path d="M0 34 L20 30 L40 31 L60 25 L80 26 L100 20 L120 22 L140 14 L160 16 L180 9 L200 6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        </div>
+        <div class="over">
+          <span style="width:40px;height:40px;border-radius:12px;background:var(--surface);display:grid;place-items:center;box-shadow:var(--shadow);margin:0 auto"><i data-i="chart"></i></span>
+          <strong>Voyez combien de fois vos QR sont scannés</strong>
+          <span class="muted" style="font-size:13px">Disponible avec un compte gratuit, sur les QR modifiables.</span>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<nav class="tabbar">
+  <a href="c-creer.html"><i data-i="plus"></i>Créer</a>
+  <a href="c-mes-qr.html" aria-current="page"><i data-i="link"></i>Mes QR</a>
+  <a href="#"><i data-i="chart"></i>Stats</a>
+  <a href="a-connexion.html"><i data-i="user"></i>Compte</a>
+</nav>
+
+<div class="note"><b>C · Mes QR codes.</b> Une seule liste pour tout : QR fixes (sur l'appareil pour le visiteur, dans le compte une fois inscrit) et QR modifiables. Le visiteur voit ce que le compte débloque, dans l'écran même. Action clé : « Rendre modifiable » sur un QR fixe. <a href="index.html">← Sommaire</a></div>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D · Bienvenue — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="d.css">
+<script src="d.js"></script>
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  body { min-height: 100vh; display: flex; flex-direction: column; }
+  .ob-top { display: flex; align-items: center; gap: 12px; padding: 20px 28px; }
+  .progress { display: flex; gap: 6px; margin: 0 auto; }
+  .progress span { width: 28px; height: 6px; border-radius: 99px; background: var(--line); transition: background .2s, width .2s; }
+  .progress span.on { background: var(--ink); width: 44px; }
+  .stage-ob { flex: 1; display: grid; place-items: center; padding: 12px 24px 40px; }
+  .step { width: 100%; max-width: 1040px; display: none; }
+  .step.on { display: block; animation: rise .35s ease; }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .hero-step { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+  .hero-step .ill { border-radius: 36px; background: var(--surface); box-shadow: var(--shadow); padding: 18px; }
+  .intents { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 32px; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
+  .compare .card { padding: 0; overflow: hidden; }
+  .compare .ill { background: var(--soft); }
+  .compare .body { padding: 22px 24px 26px; }
+  .compare ul { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 8px; font-size: 14px; }
+  .compare li { display: flex; gap: 8px; align-items: flex-start; }
+  .compare li .ico { width: 16px; height: 16px; margin-top: 3px; }
+  .example { margin-top: 16px; padding: 12px 14px; border-radius: 14px; background: var(--soft); font-size: 13px; color: var(--muted); }
+  .example b { color: var(--ink); }
+  .actions { display: flex; align-items: center; gap: 12px; margin-top: 36px; }
+  @media (max-width: 860px) {
+    .hero-step, .compare { grid-template-columns: 1fr; gap: 24px; }
+    .hero-step .ill { order: -1; }
+    .intents { grid-template-columns: 1fr 1fr; }
+    .ob-top { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+<header class="ob-top">
+  <a class="logo" href="d-accueil.html"><span class="logo-mark"></span><span>link<b>.cg</b></span></a>
+  <div class="progress" aria-label="Progression"><span class="on"></span><span></span><span></span><span></span></div>
+  <a class="btn btn-ghost btn-sm" href="d-accueil.html">Passer</a>
+</header>
+
+<main class="stage-ob">
+  <!-- 1 · Bienvenue -->
+  <section class="step on">
+    <div class="hero-step">
+      <div>
+        <span class="pill pill-sun">Bienvenue</span>
+        <h1 class="display mt-16">Un lien ou un QR. <span class="hl">Vos clients arrivent au bon endroit.</span></h1>
+        <p class="lead mt-16">link.cg raccourcit vos liens pour WhatsApp, Facebook et vos SMS, et crée des QR codes à votre image pour vos affiches et vos tables. Les deux restent modifiables, même après impression.</p>
+        <div class="actions">
+          <button class="btn btn-cta btn-lg" data-next>Commencer <i data-i="arrow"></i></button>
+          <span class="muted small">1 minute · sans inscription</span>
+        </div>
+      </div>
+      <div class="ill" data-ill="welcome"></div>
+    </div>
+  </section>
+
+  <!-- 2 · Intention -->
+  <section class="step">
+    <span class="eyebrow">Étape 1 sur 3</span>
+    <h1 class="h1 mt-8">Que voulez-vous partager ?</h1>
+    <p class="lead mt-8">Choisissez l'exemple le plus proche, on prépare le reste pour vous.</p>
+    <div class="intents" data-choice>
+      <button class="choice" aria-pressed="false"><div class="ill" data-ill="shortlink" data-h="120" style="background:var(--sky)"></div><strong>Un lien court à partager</strong><span class="d">Pour vos statuts, groupes et publications</span></button>
+      <button class="choice" aria-pressed="true"><div class="ill" data-ill="menu" data-h="120" style="background:var(--sun)"></div><strong>Mon menu</strong><span class="d">Sur chaque table du restaurant</span></button>
+      <button class="choice" aria-pressed="false"><div class="ill" data-ill="whatsapp" data-h="120" style="background:var(--mint)"></div><strong>Mon WhatsApp</strong><span class="d">Vos clients vous écrivent en un geste</span></button>
+      <button class="choice" aria-pressed="false"><div class="ill" data-ill="card" data-h="120" style="background:var(--coral-tint)"></div><strong>Mes coordonnées</strong><span class="d">Une carte de visite digitale</span></button>
+      <button class="choice" aria-pressed="false"><div class="ill" data-ill="wifi" data-h="120" style="background:var(--mint)"></div><strong>Mon Wi‑Fi</strong><span class="d">Connexion sans taper le mot de passe</span></button>
+      <button class="choice" aria-pressed="false"><div class="ill" data-ill="app" data-h="120" style="background:var(--lilac)"></div><strong>Mon application</strong><span class="d">Le bon store selon le téléphone</span></button>
+    </div>
+    <div class="actions">
+      <button class="btn btn-ghost" data-prev><i data-i="back" class="sm"></i>Retour</button>
+      <button class="btn btn-cta btn-lg" data-next style="margin-left:auto">Continuer <i data-i="arrow"></i></button>
+    </div>
+  </section>
+
+  <!-- 3 · Fixe ou modifiable -->
+  <section class="step">
+    <span class="eyebrow">Étape 2 sur 3</span>
+    <h1 class="h1 mt-8">Votre menu change de temps en temps ?</h1>
+    <p class="lead mt-8">C'est la seule question technique. Voici la différence, simplement.</p>
+    <div class="compare" data-choice>
+      <button class="card choice" aria-pressed="false" style="padding:0;gap:0">
+        <div class="ill" data-ill="fixed" data-h="150"></div>
+        <div class="body">
+          <span class="pill pill-soft">Sans compte</span>
+          <h2 class="h2 mt-12">QR fixe</h2>
+          <p class="muted mt-8">Le contenu est gravé dans le QR, pour toujours.</p>
+          <ul><li><i data-i="check" style="color:var(--ok)"></i>Gratuit, immédiat</li><li><i data-i="x" style="color:var(--subtle)"></i>Pour changer, il faut réimprimer</li><li><i data-i="x" style="color:var(--subtle)"></i>On ne sait pas combien de personnes scannent</li></ul>
+        </div>
+      </button>
+      <button class="card choice" aria-pressed="true" style="padding:0;gap:0">
+        <div class="ill" data-ill="modifiable" data-h="150" style="background:var(--sky)"></div>
+        <div class="body">
+          <span class="pill pill-brand">Recommandé pour un menu · compte gratuit</span>
+          <h2 class="h2 mt-12">QR modifiable</h2>
+          <p class="muted mt-8">Le QR passe par votre adresse courte <span class="mono">link.cg/…</span>. Vous changez la destination quand vous voulez.</p>
+          <ul><li><i data-i="check" style="color:var(--ok)"></i>Nouveau menu ? Même QR, rien à réimprimer</li><li><i data-i="check" style="color:var(--ok)"></i>Un lien court offert avec, à partager sur WhatsApp</li><li><i data-i="check" style="color:var(--ok)"></i>Nombre de visites chaque jour</li><li><i data-i="check" style="color:var(--ok)"></i>25 QR modifiables offerts</li></ul>
+        </div>
+      </button>
+    </div>
+    <div class="example"><b>Exemple :</b> le restaurant Mami Wata imprime son QR sur 40 tables. En octobre, il change de carte : il met à jour le lien en 10 secondes, les tables restent telles quelles.</div>
+    <div class="actions">
+      <button class="btn btn-ghost" data-prev><i data-i="back" class="sm"></i>Retour</button>
+      <button class="btn btn-cta btn-lg" data-next style="margin-left:auto">Continuer <i data-i="arrow"></i></button>
+    </div>
+  </section>
+
+  <!-- 4 · Prêt -->
+  <section class="step">
+    <div class="hero-step">
+      <div>
+        <span class="eyebrow">Étape 3 sur 3</span>
+        <h1 class="h1 mt-8">Parfait, votre QR menu vous attend.</h1>
+        <p class="lead mt-12">On a tout préparé : collez le lien de votre menu, choisissez un style, c'est prêt. Le compte vous sera proposé au moment d'enregistrer, pas avant.</p>
+        <div class="tip mint mt-24"><span class="tip-ico"><i data-i="sparkles" class="sm"></i></span><div><strong>Votre menu est un PDF ?</strong>Déposez-le sur Google Drive ou WhatsApp Business et collez le lien de partage.</div></div>
+        <div class="actions">
+          <a class="btn btn-cta btn-lg" href="d-creer.html?type=menu">Créer mon QR menu <i data-i="arrow"></i></a>
+          <button class="btn btn-ghost" data-prev>Changer mes réponses</button>
+        </div>
+      </div>
+      <div class="ill" data-ill="menu" style="background:var(--sun)"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Maquette : navigation entre les étapes
+  (() => {
+    const steps = [...document.querySelectorAll('.step')]
+    const bars = [...document.querySelectorAll('.progress span')]
+    let i = 0
+    const go = (n) => {
+      i = Math.max(0, Math.min(steps.length - 1, n))
+      steps.forEach((s, k) => s.classList.toggle('on', k === i))
+      bars.forEach((b, k) => b.classList.toggle('on', k <= i))
+      scrollTo({ top: 0, behavior: 'smooth' })
+    }
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('[data-next]')) go(i + 1)
+      if (e.target.closest('[data-prev]')) go(i - 1)
+    })
+  })()
+</script>
+
+<div class="note"><b>D · Visite guidée.</b> Proposée à la première visite (et toujours accessible via « Visite guidée »). 3 questions en langage courant, illustrées, qui mènent à l'écran Créer déjà préparé. Le « fixe / modifiable » y est expliqué par un exemple concret, une seule fois. <a href="index.html">← Sommaire</a></div>
+</body>
+</html>

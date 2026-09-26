@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B · Générateur — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="b.css">
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  .bar { height: 64px; display: flex; align-items: center; gap: 10px; padding: 0 24px; border-bottom: 1px solid var(--line); background: var(--bg); position: sticky; top: 0; z-index: 30; }
+  .bar .logo-mark { background: var(--ink); color: var(--bg); border-radius: 10px; }
+  .bar .logo b { color: var(--brand); }
+  .studio { display: grid; grid-template-columns: minmax(0, 1fr) 420px; min-height: calc(100vh - 64px); }
+  .canvas { position: sticky; top: 64px; height: calc(100vh - 64px); display: flex; flex-direction: column; padding: 36px 40px; gap: 20px; }
+  .canvas h1 { font-size: clamp(34px, 3.6vw, 52px); line-height: 1.02; max-width: 15ch; }
+  .canvas h1 em { color: var(--brand); }
+  .canvas .lead { color: var(--muted); max-width: 46ch; }
+  .board {
+    flex: 1; min-height: 300px; border-radius: 24px; display: grid; place-items: center; position: relative;
+    background: radial-gradient(circle at 1px 1px, var(--line-strong) 1px, transparent 0) 0 0 / 18px 18px, var(--surface-2);
+  }
+  .board > .qrbox { line-height: 0; padding: 18px; background: #fff; border-radius: 28px; box-shadow: 0 30px 60px -30px rgba(26,25,22,.55); }
+  .board .zoom { position: absolute; bottom: 14px; left: 14px; display: flex; gap: 6px; }
+  .board .scan { position: absolute; top: 14px; right: 14px; }
+  .dl { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  .rail { border-left: 1px solid var(--line); background: var(--surface); }
+  details { border-bottom: 1px solid var(--line); }
+  summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 18px 22px; font-weight: 600; }
+  summary::-webkit-details-marker { display: none; }
+  summary .n { width: 26px; height: 26px; border-radius: 8px; background: var(--surface-2); display: grid; place-items: center; font-size: 12px; color: var(--muted); }
+  details[open] summary .n { background: var(--ink); color: var(--bg); }
+  summary .val { margin-left: auto; font-weight: 400; font-size: 13px; color: var(--subtle); max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  summary::after { content: "›"; color: var(--subtle); transform: rotate(90deg); transition: transform .15s; font-size: 18px; }
+  details[open] summary::after { transform: rotate(-90deg); }
+  .dbody { padding: 0 22px 22px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chips button { height: 34px; padding: 0 12px; border-radius: 99px; border: 1px solid var(--line-strong); background: var(--surface); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
+  .chips button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .chips .ico { width: 16px; height: 16px; }
+  .swatches { display: flex; gap: 10px; flex-wrap: wrap; }
+  .swatches button { width: 36px; height: 36px; border-radius: 50%; border: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.1); }
+  .swatches button[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--fg); }
+  .promo { margin: 22px; padding: 18px; border-radius: 16px; background: var(--ink); color: var(--bg); }
+  .promo p { opacity: .75; font-size: 13px; margin-top: 6px; }
+  .promo .btn { margin-top: 14px; background: var(--brand); color: #fff; }
+
+  @media (max-width: 960px) {
+    .studio { grid-template-columns: 1fr; }
+    .canvas { position: static; height: auto; padding: 20px 16px; }
+    .board { min-height: 320px; }
+    .rail { border-left: 0; border-top: 1px solid var(--line); }
+  }
+</style>
+</head>
+<body>
+<header class="bar">
+  <a class="logo" href="#"><span class="logo-mark">l.</span><span>link<b>.cg</b></span></a>
+  <span class="pill pill-mute" style="margin-left:6px">Générateur gratuit</span>
+  <div style="margin-left:auto" class="row">
+    <div class="seg" data-choice><button aria-pressed="true">FR</button><button aria-pressed="false">EN</button></div>
+    <button class="icon-btn" data-theme-toggle aria-label="Changer de thème"><i data-i="moon"></i></button>
+    <a class="btn btn-secondary" href="b-dashboard.html">Mon espace</a>
+  </div>
+</header>
+
+<div class="studio">
+  <section class="canvas">
+    <div>
+      <h1 class="serif">Un QR code qui vous <em>ressemble</em>.</h1>
+      <p class="lead" style="margin-top:10px">Gratuit, sans inscription, rien n'est stocké. Réglez à droite, le résultat s'affiche ici.</p>
+    </div>
+    <div class="board">
+      <span class="pill pill-ok scan"><span class="dot"></span>Se scanne bien</span>
+      <div class="qrbox"><div id="bqr" data-qr data-size="260" data-fg="#14152b" data-bg="#ffffff" data-dot="rounded" data-corner="rounded" data-seed="11"></div></div>
+      <div class="zoom">
+        <span class="pill pill-mute">Aperçu</span>
+        <span class="pill pill-mute mono">1024 × 1024</span>
+      </div>
+    </div>
+    <div class="dl">
+      <button class="btn btn-primary btn-lg"><i data-i="download"></i>Télécharger PNG</button>
+      <button class="btn btn-secondary btn-lg">SVG · pour l'imprimeur</button>
+      <button class="icon-btn" aria-label="Copier l'image" style="margin-left:auto"><i data-i="copy"></i></button>
+      <button class="icon-btn" aria-label="Partager"><i data-i="share"></i></button>
+    </div>
+  </section>
+
+  <aside class="rail">
+    <details open>
+      <summary><span class="n">1</span>Contenu<span class="val">nscreative.cg/promo</span></summary>
+      <div class="dbody">
+        <div class="chips" data-choice>
+          <button aria-pressed="true"><i data-i="link"></i>Lien</button>
+          <button aria-pressed="false"><i data-i="wifi"></i>Wi‑Fi</button>
+          <button aria-pressed="false"><i data-i="user"></i>Contact</button>
+          <button aria-pressed="false"><i data-i="sms"></i>WhatsApp</button>
+          <button aria-pressed="false"><i data-i="phone"></i>Appel</button>
+          <button aria-pressed="false"><i data-i="mail"></i>Email</button>
+          <button aria-pressed="false"><i data-i="text"></i>Texte</button>
+          <button aria-pressed="false"><i data-i="pin"></i>Lieu</button>
+          <button aria-pressed="false"><i data-i="app"></i>App</button>
+          <button aria-pressed="false"><i data-i="globe"></i>Réseaux</button>
+        </div>
+        <label class="field" style="margin-top:16px"><span class="label">Adresse du site</span><input class="input" value="https://nscreative.cg/promo"></label>
+      </div>
+    </details>
+
+    <details open>
+      <summary><span class="n">2</span>Style<span class="val">Arrondi · encre</span></summary>
+      <div class="dbody">
+        <div class="section-title">Couleur</div>
+        <div class="swatches" data-choice="#bqr">
+          <button aria-pressed="true" data-set='{"fg":"#14152b","fg2":""}' style="background:#14152b" aria-label="Encre"></button>
+          <button aria-pressed="false" data-set='{"fg":"#0060ff","fg2":""}' style="background:#0060ff" aria-label="Bleu NS"></button>
+          <button aria-pressed="false" data-set='{"fg":"#0060ff","fg2":"#7c3aed"}' style="background:linear-gradient(135deg,#0060ff,#7c3aed)" aria-label="Dégradé Aurore"></button>
+          <button aria-pressed="false" data-set='{"fg":"#1f7a4d","fg2":""}' style="background:#1f7a4d" aria-label="Forêt"></button>
+          <button aria-pressed="false" data-set='{"fg":"#7a2e12","fg2":""}' style="background:#7a2e12" aria-label="Terre"></button>
+          <button aria-pressed="false" data-set='{"fg":"#c2185b","fg2":""}' style="background:#c2185b" aria-label="Framboise"></button>
+          <button aria-pressed="false" style="background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)" aria-label="Couleur personnalisée"></button>
+        </div>
+        <div class="section-title" style="margin-top:18px">Points</div>
+        <div data-choice="#bqr" style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px">
+          <button class="shape" aria-pressed="false" data-set='{"dot":"square"}'><span data-glyph="square"></span></button>
+          <button class="shape" aria-pressed="true" data-set='{"dot":"rounded"}'><span data-glyph="rounded"></span></button>
+          <button class="shape" aria-pressed="false" data-set='{"dot":"dots"}'><span data-glyph="dots"></span></button>
+          <button class="shape" aria-pressed="false" data-set='{"dot":"classy"}'><span data-glyph="classy"></span></button>
+          <button class="shape" aria-pressed="false" data-set='{"dot":"classy"}'><span data-glyph="classy-rounded"></span></button>
+          <button class="shape" aria-pressed="false" data-set='{"dot":"rounded"}'><span data-glyph="extra-rounded"></span></button>
+        </div>
+        <div class="section-title" style="margin-top:18px">Coins</div>
+        <div data-choice="#bqr" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+          <button class="shape" aria-pressed="false" data-set='{"corner":"square"}'><span data-glyph="c-square"></span></button>
+          <button class="shape" aria-pressed="true" data-set='{"corner":"rounded"}'><span data-glyph="c-rounded"></span></button>
+          <button class="shape" aria-pressed="false" data-set='{"corner":"dot"}'><span data-glyph="c-dot"></span></button>
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="n">3</span>Logo<span class="val">Aucun</span></summary>
+      <div class="dbody"><button class="btn btn-secondary btn-block"><i data-i="photo" class="sm"></i>Ajouter un logo</button></div>
+    </details>
+
+    <details>
+      <summary><span class="n">4</span>Export<span class="val">1024 px</span></summary>
+      <div class="dbody"><div class="seg" data-choice><button aria-pressed="false">512</button><button aria-pressed="true">1024</button><button aria-pressed="false">2048</button></div></div>
+    </details>
+
+    <div class="promo">
+      <strong class="serif" style="font-size:22px;font-weight:400">Déjà imprimé ? Rendez-le modifiable.</strong>
+      <p>Avec un lien link.cg, changez la destination après impression et comptez les scans.</p>
+      <a class="btn" href="b-dashboard.html">Essayer gratuitement <i data-i="arrow" class="sm"></i></a>
+    </div>
+  </aside>
+</div>
+
+<div class="note"><b>Direction B · Générateur.</b> Logique « outil de création » : grande toile d'aperçu à gauche (collante), réglages en accordéon à droite qui résument leur valeur une fois fermés. Couleurs en pastilles, contenus en puces (avec WhatsApp, très utilisé au Congo). <a href="index.html">← Sommaire</a></div>
+</body>
+</html>

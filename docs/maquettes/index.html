@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquettes — refonte link.cg</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="a.css">
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  main { max-width: 1040px; margin: 0 auto; padding: 48px 20px 80px; }
+  h1 { font-size: clamp(30px, 4vw, 42px); letter-spacing: -.03em; line-height: 1.1; }
+  .lead { color: var(--muted); font-size: 17px; margin-top: 12px; max-width: 62ch; }
+  h2 { font-size: 20px; letter-spacing: -.02em; margin: 48px 0 16px; }
+  .audit { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .audit .card { padding: 16px 18px; }
+  .audit strong { display: block; font-size: 14px; }
+  .audit p { font-size: 14px; color: var(--muted); margin-top: 4px; }
+  .dirs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .dir { overflow: hidden; }
+  .dir .thumb { height: 180px; display: grid; place-items: center; position: relative; }
+  .dir .body { padding: 20px; }
+  .dir h3 { font-size: 20px; letter-spacing: -.02em; }
+  .dir p { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .dir ul { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 14px; }
+  .dir li { display: flex; gap: 8px; }
+  .dir li .ico { width: 16px; height: 16px; color: var(--accent); margin-top: 3px; }
+  .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .palette { display: flex; gap: 6px; margin-top: 14px; }
+  .palette span { width: 28px; height: 28px; border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; color: var(--muted); font-weight: 600; }
+  td:first-child { font-weight: 600; width: 24%; }
+  @media (max-width: 760px) { .audit, .dirs, .d-hero { grid-template-columns: 1fr !important; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="row" style="margin-bottom:24px">
+    <a class="logo" href="#"><span class="logo-mark">l.</span><span>link<b>.cg</b></span></a>
+    <button class="icon-btn" data-theme-toggle aria-label="Changer de thème" style="margin-left:auto"><i data-i="moon"></i></button>
+  </div>
+  <span class="pill pill-brand">Propositions · 26 septembre 2026</span>
+  <h1 style="margin-top:14px">Refonte link.cg : propositions</h1>
+  <p class="lead">Maquettes HTML statiques et cliquables (onglets, tiroirs, choix de style, thème sombre). Elles ne touchent pas au code de l'app. Une fois une direction choisie, je l'implémente dans <span class="mono">apps/web</span>.</p>
+
+  <h2>Nouveau · Proposition D, le système complet (B + C)</h2>
+  <article class="card" style="padding:0;overflow:hidden;box-shadow:inset 0 0 0 2px #16161d">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0" class="d-hero">
+      <div style="padding:26px">
+        <span class="pill" style="background:#16161d;color:#fff">Recommandé · à valider</span>
+        <h3 style="font-size:24px;letter-spacing:-.02em;margin-top:12px;font-family:'Bricolage Grotesque',sans-serif">Liens courts et QR à égalité, dans une interface qui parle.</h3>
+        <p class="muted" style="margin-top:8px;font-size:14px">V2 : le lien court devient une création à part entière (raccourcisseur en tête d'accueil, choix Lien court / QR code / Carte dans Créer, aperçu WhatsApp, lien selon le téléphone) avec la règle « un lien court a toujours son QR ». Contraste renforcé et vérifié (textes ≥ 4,5:1, bords ≥ 3:1). Polices Bricolage Grotesque + Geist, illustrations d'action, visite guidée.</p>
+        <div class="links">
+          <a class="btn btn-primary btn-sm" href="d-systeme.html">Design system</a>
+          <a class="btn btn-secondary btn-sm" href="d-bienvenue.html">Visite guidée</a>
+          <a class="btn btn-secondary btn-sm" href="d-accueil.html?etat=guest">Accueil · visiteur</a>
+          <a class="btn btn-secondary btn-sm" href="d-accueil.html?etat=user">Accueil · connecté</a>
+          <a class="btn btn-secondary btn-sm" href="d-creer.html?etat=guest">Créer</a>
+          <a class="btn btn-secondary btn-sm" href="d-mes-qr.html?etat=user">Mes liens &amp; QR</a>
+          <a class="btn btn-secondary btn-sm" href="d-qr.html?etat=user">Fiche d'un lien</a>
+          <a class="btn btn-secondary btn-sm" href="d-carte.html?etat=user">Carte de visite</a>
+          <a class="btn btn-secondary btn-sm" href="d-connexion.html">Connexion</a>
+          <a class="btn btn-secondary btn-sm" href="d-offres.html?etat=guest">Offres</a>
+        </div>
+      </div>
+      <div style="background:#f6f3ee;display:grid;place-items:center;padding:20px">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:34px;line-height:1.05;letter-spacing:-.03em;color:#16161d;max-width:12ch">Partagez tout, en <span style="background:linear-gradient(transparent 62%,#ffe6b3 62%)">un lien</span> ou <span style="background:linear-gradient(transparent 62%,#ffe6b3 62%)">un QR</span>.</div>
+      </div>
+    </div>
+  </article>
+
+  <h2>Structure : un espace unique (C)</h2>
+  <article class="card" style="padding:22px;border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand)">
+    <span class="pill pill-brand">Structure · visiteur + inscrit</span>
+    <h3 style="font-size:20px;letter-spacing:-.02em;margin-top:10px">Une seule app, le compte n'est qu'un palier</h3>
+    <p class="muted" style="margin-top:6px;font-size:14px;max-width:70ch">Aujourd'hui, « Générateur » et « Liens dynamiques » ressemblent à deux produits : mise en page, navigation et vocabulaire différents. C les fusionne : une même barre latérale, un écran <b>Créer</b> pour tous, avec le choix <b>QR fixe</b> (sans compte) ou <b>QR modifiable</b> (compte gratuit), et un seul écran <b>Mes QR codes</b>.</p>
+    <ul style="margin:14px 0 0;padding:0;list-style:none;display:grid;gap:6px;font-size:14px">
+      <li class="row" style="gap:8px"><i data-i="check" class="sm accent"></i>Le visiteur utilise l'app complète ; ses QR fixes sont gardés sur son appareil</li>
+      <li class="row" style="gap:8px"><i data-i="check" class="sm accent"></i>Le compte n'est demandé qu'à l'enregistrement d'un QR modifiable, sans perdre le design</li>
+      <li class="row" style="gap:8px"><i data-i="check" class="sm accent"></i>« Rendre modifiable » transforme un QR fixe en lien link.cg</li>
+      <li class="row" style="gap:8px"><i data-i="check" class="sm accent"></i>Style de A ; l'habillage de B est possible sur la même structure</li>
+    </ul>
+    <div class="links">
+      <a class="btn btn-primary btn-sm" href="c-creer.html?etat=guest">Créer · visiteur</a>
+      <a class="btn btn-secondary btn-sm" href="c-creer.html?etat=user">Créer · connecté</a>
+      <a class="btn btn-secondary btn-sm" href="c-mes-qr.html?etat=guest">Mes QR · visiteur</a>
+      <a class="btn btn-secondary btn-sm" href="c-mes-qr.html?etat=user">Mes QR · connecté</a>
+    </div>
+  </article>
+
+  <h2>Ce que corrige la refonte (diagnostic de l'existant)</h2>
+  <div class="audit">
+    <div class="card"><strong>Deux produits au lieu d'un</strong><p>Le générateur (page marketing) et le dashboard (app) n'ont ni la même navigation ni la même logique. → Proposition C : espace unique, le compte est un palier.</p></div>
+    <div class="card"><strong>Générateur : 7 cartes empilées</strong><p>Tout est au même niveau ; sur mobile il faut longtemps défiler entre le réglage et l'aperçu. → Étapes (A) ou accordéon (B) + barre de téléchargement collante.</p></div>
+    <div class="card"><strong>Formes décrites par des mots</strong><p>« Élégant + », « Très arrondi »… on ne sait pas à quoi ça ressemble. → Pictogrammes de chaque forme, presets avec mini‑QR.</p></div>
+    <div class="card"><strong>Studio QR dans un popover de 288 px</strong><p>Positionné en absolu dans la ligne, tronqué, sans fermeture claire. → Tiroir latéral (bottom sheet sur mobile), Échap pour fermer, état « non enregistré ».</p></div>
+    <div class="card"><strong>Ligne de lien surchargée</strong><p>QR, éditer, actif, × : petits textes serrés, suppression immédiate sans confirmation. → Actions iconographiées, copie en 1 clic, suppression en 2 temps.</p></div>
+    <div class="card"><strong>Emojis comme icônes</strong><p>👤 📱 🔗 ✨ rendent différemment selon les téléphones. → Jeu d'icônes Heroicons, déjà dans les dépendances.</p></div>
+    <div class="card"><strong>Incohérences de style</strong><p>Édition de carte et formulaires en gris « zinc » / bleu Tailwind d'origine, champs de carte sans libellés. → Un seul système de tokens + composants partagés.</p></div>
+    <div class="card"><strong>Chiffres sans contexte</strong><p>« 2 533 scans » seul ne dit pas si ça monte. → Tendance, mini‑courbe par lien, meilleur lien, jauge de l'offre.</p></div>
+    <div class="card"><strong>Carte publique minimale</strong><p>Libellés en capitales, pas d'actions rapides. → Couverture, avatar, Appeler / WhatsApp / Email, gros bouton « Ajouter aux contacts ».</p></div>
+  </div>
+
+  <h2>Deux habillages visuels (A et B)</h2>
+  <div class="dirs">
+    <article class="card dir">
+      <div class="thumb" style="background:#f6f7f9">
+        <div style="display:flex;gap:14px;align-items:center">
+          <div style="background:#fff;padding:12px;border-radius:16px;box-shadow:0 12px 30px -16px rgba(0,0,0,.35);line-height:0" data-qr data-size="110" data-fg="#0060ff" data-bg="#fff" data-dot="dots" data-corner="dot" data-seed="4"></div>
+          <div style="display:grid;gap:8px">
+            <span style="height:10px;width:120px;border-radius:5px;background:#0f1115"></span>
+            <span style="height:8px;width:90px;border-radius:4px;background:#d3d7df"></span>
+            <span style="height:30px;width:120px;border-radius:9px;background:#0060ff"></span>
+          </div>
+        </div>
+      </div>
+      <div class="body">
+        <h3>A · Sobre &amp; précis</h3>
+        <p>La continuité du « design assaini » : même barre du haut, même bleu, mais une vraie hiérarchie et des interactions plus claires. Risque faible, livrable vite.</p>
+        <div class="palette"><span style="background:#f6f7f9"></span><span style="background:#fff"></span><span style="background:#0f1115"></span><span style="background:#0060ff"></span><span style="background:#0e9f5a"></span></div>
+        <ul>
+          <li><i data-i="check"></i>Générateur en 3 étapes, aperçu collant</li>
+          <li><i data-i="check"></i>Dashboard en tableau : dense, lisible à 50+ liens</li>
+          <li><i data-i="check"></i>Tous les écrans maquettés</li>
+        </ul>
+        <div class="links">
+          <a class="btn btn-primary btn-sm" href="a-generateur.html">Générateur</a>
+          <a class="btn btn-secondary btn-sm" href="a-dashboard.html">Tableau de bord</a>
+          <a class="btn btn-secondary btn-sm" href="a-carte.html">Carte de visite</a>
+          <a class="btn btn-secondary btn-sm" href="a-connexion.html">Connexion</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="card dir">
+      <div class="thumb" style="background:#f3f0e9">
+        <div style="display:flex;gap:14px;align-items:center">
+          <div style="display:grid;gap:8px">
+            <span style="font-family:'Instrument Serif',serif;font-size:30px;color:#1a1916;line-height:1">2 533 <em style="color:#0060ff">scans</em></span>
+            <span style="height:30px;width:120px;border-radius:12px;background:#14152b"></span>
+          </div>
+          <div style="background:#fffdf8;padding:12px;border-radius:18px;border:1px solid #e6e0d4;line-height:0" data-qr data-size="100" data-fg="#7a2e12" data-bg="#fff7ef" data-dot="rounded" data-seed="9"></div>
+        </div>
+      </div>
+      <div class="body">
+        <h3>B · Espace de travail</h3>
+        <p>Plus de caractère : papier chaud, titres serif, barre latérale d'app. Le QR devient l'objet central, visible sur chaque lien. Plus distinctif, un peu plus de travail.</p>
+        <div class="palette"><span style="background:#f3f0e9"></span><span style="background:#fffdf8"></span><span style="background:#14152b"></span><span style="background:#0060ff"></span><span style="background:#7a2e12"></span></div>
+        <ul>
+          <li><i data-i="check"></i>Générateur façon outil de création (toile + accordéon)</li>
+          <li><i data-i="check"></i>Liens en cartes avec leur QR, barre d'onglets mobile</li>
+          <li><i data-i="check"></i>Carte et connexion : reprendre celles de A, rhabillées</li>
+        </ul>
+        <div class="links">
+          <a class="btn btn-primary btn-sm" href="b-generateur.html">Générateur</a>
+          <a class="btn btn-secondary btn-sm" href="b-dashboard.html">Espace de travail</a>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <h2>Comparaison rapide</h2>
+  <div class="card" style="overflow:hidden">
+    <table>
+      <thead><tr><th></th><th>A · Sobre &amp; précis</th><th>B · Espace de travail</th></tr></thead>
+      <tbody>
+        <tr><td>Ressenti</td><td>Outil pro, neutre, « Stripe / Linear »</td><td>Studio créatif, chaleureux, signé NS Creative</td></tr>
+        <tr><td>Navigation</td><td>Barre du haut stable (existante)</td><td>Barre latérale + onglets en bas sur mobile</td></tr>
+        <tr><td>Liste des liens</td><td>Tableau dense, tendance par ligne</td><td>Grille de cartes avec QR visible</td></tr>
+        <tr><td>Beaucoup de liens</td><td>Très bien (recherche + filtres)</td><td>Bien, mais plus de défilement</td></tr>
+        <tr><td>Effort d'implémentation</td><td>Moyen (réutilise la structure)</td><td>Plus élevé (coquille d'app, rendu de QR multiples)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="muted" style="font-size:14px;margin-top:16px">Les deux se combinent : par exemple le dashboard de A avec une vignette QR par ligne, ou les couleurs de B sur la structure de A. Quelques ajouts proposés (photo de profil, WhatsApp, couleur de carte, recherche/filtres, tendance de scans) demandent aussi un peu de travail côté données.</p>
+</main>
+</body>
+</html>

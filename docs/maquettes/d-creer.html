@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D · Créer un QR — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="d.css">
+<script src="d.js"></script>
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  .creator { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 40px; align-items: start; }
+  .q { padding: 28px 0; border-bottom: 1px solid var(--line); }
+  .q:first-child { padding-top: 8px; }
+  .q:last-child { border-bottom: 0; }
+  .q-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 18px; }
+  .q-no { width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: var(--bg); display: grid; place-items: center; font-weight: 700; font-size: 13px; flex-shrink: 0; margin-top: 2px; }
+  .q-head p { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .q-body { padding-left: 44px; }
+  .kinds { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .mode { display: flex; align-items: center; gap: 14px; text-align: left; border: 0; padding: 14px 16px; border-radius: 20px; background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--line-strong); transition: box-shadow .15s; }
+  .mode:hover { box-shadow: inset 0 0 0 1.5px var(--ink); }
+  .mode[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--ink); background: var(--soft); }
+  .mode .m-ico { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; flex-shrink: 0; color: #16161d; }
+  .mode strong { display: block; font-family: var(--f-display); font-size: 17px; letter-spacing: -.01em; }
+  .mode .d { display: block; font-size: 13px; color: var(--muted); }
+  @media (max-width: 860px) { .modes { grid-template-columns: 1fr; } }
+  .kinds .choice .ill { background: var(--soft); }
+  .presets { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .preset { border: 0; background: var(--soft); border-radius: 18px; padding: 10px; display: grid; gap: 8px; place-items: center; font-size: 12px; font-weight: 600; color: var(--muted); }
+  .preset > div { line-height: 0; border-radius: 10px; overflow: hidden; }
+  .preset[aria-pressed="true"] { background: var(--surface); box-shadow: inset 0 0 0 2px var(--brand); color: var(--brand); }
+  .more { margin-top: 16px; }
+  .more > summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; padding: 10px 16px; border-radius: 99px; background: var(--soft); }
+  .more > summary::-webkit-details-marker { display: none; }
+  .more[open] > summary { background: var(--ink); color: var(--bg); }
+  .more-body { margin-top: 20px; display: grid; gap: 22px; }
+  .sub-label { font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+  .shapes6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .shapes3 { display: grid; grid-template-columns: repeat(3, 72px); gap: 8px; }
+  .pv { position: sticky; top: 24px; display: grid; gap: 14px; }
+  .pv .name { display: flex; align-items: center; gap: 8px; }
+  .pv .name input { border: 0; background: transparent; font: inherit; font-family: var(--f-display); font-weight: 650; font-size: 20px; color: var(--ink); min-width: 0; flex: 1; padding: 4px 0; outline: none; }
+  .pv .name input:focus { box-shadow: 0 2px 0 var(--brand); }
+  body[data-kind="static"] .only-dynamic { display: none !important; }
+  body[data-kind="dynamic"] .only-static { display: none !important; }
+  @media (max-width: 1180px) { .creator { grid-template-columns: minmax(0, 1fr) 340px; gap: 28px; } }
+  @media (max-width: 960px) {
+    .creator { grid-template-columns: minmax(0, 1fr); }
+    .pv { position: static; order: -1; }
+    .q-body { padding-left: 0; }
+  }
+  @media (max-width: 960px) { body[data-mode="link"] .pv { order: 0; } }
+  @media (max-width: 600px) { .kinds { grid-template-columns: 1fr; } .presets { grid-template-columns: repeat(3, 1fr); } .shapes6 { grid-template-columns: repeat(3, 1fr); } }
+</style>
+</head>
+<body data-page="creer" data-state="guest" data-kind="dynamic" data-mode="link">
+<div class="app">
+  <aside class="side" data-shell></aside>
+  <div class="main"><div class="sheet">
+    <div class="topline">
+      <a class="logo mob-only" href="d-accueil.html"><span class="logo-mark"></span></a>
+      <a class="btn btn-ghost btn-sm" href="d-accueil.html"><i data-i="back" class="sm"></i>Accueil</a>
+      <span class="pill pill-soft only-guest only-qr" style="margin-left:auto">QR fixe : gratuit, sans inscription</span>
+    </div>
+
+    <div class="content">
+      <h1 class="h1">Que voulez-vous créer ?</h1>
+      <p class="lead mt-8">Quelques questions simples. L'aperçu se met à jour pendant que vous répondez.</p>
+      <div class="modes mt-24" id="modes">
+        <button class="mode" data-mode="link" aria-pressed="true"><span class="m-ico" style="background:var(--sky)"><i data-i="link"></i></span><span><strong>Lien court</strong><span class="d">À partager sur WhatsApp, Facebook, SMS · QR inclus</span></span></button>
+        <button class="mode" data-mode="qr" aria-pressed="false"><span class="m-ico" style="background:var(--sun)"><i data-i="qr"></i></span><span><strong>QR code</strong><span class="d">À imprimer : affiche, menu, emballage</span></span></button>
+        <a class="mode" href="d-carte.html"><span class="m-ico" style="background:var(--coral-tint)"><i data-i="user"></i></span><span><strong>Carte de visite</strong><span class="d">Votre profil pro en lien et QR</span></span></a>
+      </div>
+
+      <div class="creator mt-24">
+        <div>
+          <div class="only-link">
+          <section class="q">
+            <div class="q-head"><span class="q-no">1</span><div><h2 class="h2">Quel lien voulez-vous raccourcir ?</h2><p>Une page de votre boutique, un formulaire, une vidéo, un document…</p></div></div>
+            <div class="q-body">
+              <label class="field"><span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden">Lien long</span><input class="input" value="https://boutique-mamiwata.com/produits/pagne-wax-bleu?utm_source=whatsapp&amp;ref=sept"></label>
+              <p class="help"><i data-i="check" style="color:var(--ok)"></i>Page trouvée : « Pagne wax bleu · Boutique Mami Wata ».</p>
+            </div>
+          </section>
+
+          <section class="q">
+            <div class="q-head"><span class="q-no">2</span><div><h2 class="h2">Quelle adresse courte ?</h2><p>C'est ce que les gens verront et taperont. Courte, lisible, à votre image.</p></div></div>
+            <div class="q-body">
+              <span class="input-affix"><span class="pre">link.cg/</span><input value="pagne-wax" aria-label="Adresse courte"></span>
+              <p class="help" style="color:var(--ok)"><i data-i="check" style="color:var(--ok)"></i>Libre, elle est à vous.</p>
+              <div class="row wrap-flex mt-12" style="gap:8px"><span class="small muted">Suggestions :</span>
+                <div class="chips" data-choice><button class="chip" aria-pressed="true">pagne-wax</button><button class="chip" aria-pressed="false">wax-bleu</button><button class="chip" aria-pressed="false">mamiwata-wax</button></div></div>
+            </div>
+          </section>
+
+          <section class="q">
+            <div class="q-head"><span class="q-no">3</span><div><h2 class="h2">Même destination pour tout le monde ?</h2><p>Un lien peut aussi s'adapter au téléphone de la personne.</p></div></div>
+            <div class="q-body">
+              <div class="kinds" id="route">
+                <button class="choice" data-route="same" aria-pressed="true"><strong>Oui, la même page</strong><span class="d">Le cas le plus courant</span></button>
+                <button class="choice" data-route="device" aria-pressed="false"><strong>Selon le téléphone</strong><span class="d">iPhone → App Store, Android → Play Store, sinon votre site</span></button>
+              </div>
+              <div class="route-device mt-16" hidden>
+                <div class="grid-2">
+                  <label class="field"><span class="label">Sur iPhone</span><input class="input" placeholder="https://apps.apple.com/…"></label>
+                  <label class="field"><span class="label">Sur Android</span><input class="input" placeholder="https://play.google.com/…"></label>
+                </div>
+                <p class="help"><i data-i="sparkles"></i>Les autres (ordinateur, tablette…) vont sur le lien de l'étape 1.</p>
+              </div>
+            </div>
+          </section>
+          </div>
+
+          <div class="only-qr">
+          <!-- Q1 -->
+          <section class="q">
+            <div class="q-head"><span class="q-no">1</span><div><h2 class="h2">Que doit ouvrir votre QR ?</h2><p>Ce que la personne verra en scannant.</p></div></div>
+            <div class="q-body">
+              <div class="chips" data-choice>
+                <button class="chip" aria-pressed="false"><i data-i="link"></i>Site web</button>
+                <button class="chip" aria-pressed="true"><i data-i="text"></i>Menu</button>
+                <button class="chip" aria-pressed="false"><i data-i="sms"></i>WhatsApp</button>
+                <button class="chip" aria-pressed="false"><i data-i="wifi"></i>Wi‑Fi</button>
+                <button class="chip" aria-pressed="false"><i data-i="user"></i>Carte de visite</button>
+                <button class="chip" aria-pressed="false"><i data-i="app"></i>Application</button>
+                <button class="chip" aria-pressed="false"><i data-i="more"></i>Autre</button>
+              </div>
+              <a class="link small mt-12" href="d-bienvenue.html" style="display:inline-flex"><i data-i="eye" class="sm"></i>Pas sûr ? Voir des exemples</a>
+            </div>
+          </section>
+
+          <!-- Q2 -->
+          <section class="q">
+            <div class="q-head"><span class="q-no">2</span><div><h2 class="h2">Où se trouve votre menu ?</h2><p>Collez le lien de votre menu en ligne.</p></div></div>
+            <div class="q-body">
+              <label class="field"><span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden">Lien du menu</span><input class="input" value="https://drive.google.com/file/d/1xA…/menu-septembre.pdf"></label>
+              <p class="help"><i data-i="sparkles"></i>Menu en PDF ? Déposez-le sur Google Drive, puis « Partager » → « Copier le lien ».</p>
+            </div>
+          </section>
+
+          <!-- Q3 -->
+          <section class="q">
+            <div class="q-head"><span class="q-no">3</span><div><h2 class="h2">Pourrez-vous avoir besoin de le changer ?</h2><p>Par exemple quand votre menu évolue, sans réimprimer les tables.</p></div></div>
+            <div class="q-body">
+              <div class="kinds" id="kinds">
+                <button class="choice" data-kind="static" aria-pressed="false"><div class="ill" data-ill="fixed" data-h="96"></div><strong>Non, c'est définitif</strong><span class="d">QR fixe · gratuit, sans compte</span></button>
+                <button class="choice" data-kind="dynamic" aria-pressed="true"><div class="ill" data-ill="modifiable" data-h="96" style="background:var(--sky)"></div><strong>Oui, peut-être <span class="pill pill-brand" style="height:22px;margin-left:4px">Conseillé</span></strong><span class="d">QR modifiable · crée aussi un lien court</span></button>
+              </div>
+              <div class="only-dynamic mt-16">
+                <label class="field"><span class="label">Votre adresse courte</span>
+                  <span class="input-affix"><span class="pre">link.cg/</span><input value="menu-mamiwata"></span>
+                  <span class="help" style="color:var(--ok)"><i data-i="check" style="color:var(--ok)"></i>Libre, elle est à vous. C'est l'adresse que contient le QR.</span></label>
+                <details class="why mt-12"><summary><i data-i="eye" class="sm"></i>Comment ça marche ?</summary><p>Le QR imprimé contient toujours <b>link.cg/menu-mamiwata</b>. Quand quelqu'un scanne, on l'envoie vers la destination que vous avez choisie. Changez-la dans votre espace : les QR déjà imprimés suivent.</p></details>
+              </div>
+            </div>
+          </section>
+
+          <!-- Q4 -->
+          <section class="q">
+            <div class="q-head"><span class="q-no">4</span><div><h2 class="h2">À quoi doit-il ressembler ?</h2><p>Choisissez un style, affinez si vous voulez.</p></div></div>
+            <div class="q-body">
+              <div class="presets" data-choice="#pv">
+                <button class="preset" aria-pressed="false" data-set='{"fg":"#16161d","bg":"#ffffff","dot":"square","corner":"square","fg2":"","logo":""}'><div data-qr data-size="64" data-fg="#16161d" data-bg="#fff" data-dot="square" data-corner="square" data-seed="3"></div>Classique</button>
+                <button class="preset" aria-pressed="true" data-set='{"fg":"#7a2e12","bg":"#ffffff","dot":"rounded","corner":"rounded","fg2":"","logo":""}'><div data-qr data-size="64" data-fg="#7a2e12" data-bg="#fff" data-seed="3"></div>Terre</button>
+                <button class="preset" aria-pressed="false" data-set='{"fg":"#0060ff","bg":"#ffffff","dot":"dots","corner":"dot","fg2":"","logo":""}'><div data-qr data-size="64" data-fg="#0060ff" data-bg="#fff" data-dot="dots" data-corner="dot" data-seed="3"></div>Océan</button>
+                <button class="preset" aria-pressed="false" data-set='{"fg":"#0060ff","fg2":"#7c3aed","bg":"#ffffff","dot":"classy","corner":"rounded","logo":""}'><div data-qr data-size="64" data-fg="#0060ff" data-fg2="#7c3aed" data-bg="#fff" data-dot="classy" data-seed="3"></div>Aurore</button>
+                <button class="preset" aria-pressed="false" data-set='{"fg":"#1f9d63","bg":"#ffffff","dot":"dots","corner":"dot","fg2":"","logo":""}'><div data-qr data-size="64" data-fg="#1f9d63" data-bg="#fff" data-dot="dots" data-corner="dot" data-seed="3"></div>Forêt</button>
+              </div>
+              <details class="more">
+                <summary><i data-i="sparkles" class="sm"></i>Plus de réglages · couleurs, formes, logo</summary>
+                <div class="more-body">
+                  <div><div class="sub-label">Couleur</div>
+                    <div class="row wrap-flex" data-choice="#pv" style="gap:10px">
+                      <button class="swatch" style="background:#16161d" aria-pressed="false" data-set='{"fg":"#16161d","fg2":""}' aria-label="Encre"></button>
+                      <button class="swatch" style="background:#7a2e12" aria-pressed="true" data-set='{"fg":"#7a2e12","fg2":""}' aria-label="Terre"></button>
+                      <button class="swatch" style="background:#0060ff" aria-pressed="false" data-set='{"fg":"#0060ff","fg2":""}' aria-label="Bleu NS"></button>
+                      <button class="swatch" style="background:linear-gradient(135deg,#0060ff,#7c3aed)" aria-pressed="false" data-set='{"fg":"#0060ff","fg2":"#7c3aed"}' aria-label="Dégradé"></button>
+                      <button class="swatch" style="background:#1f9d63" aria-pressed="false" data-set='{"fg":"#1f9d63","fg2":""}' aria-label="Forêt"></button>
+                      <button class="swatch" style="background:#d6336c" aria-pressed="false" data-set='{"fg":"#d6336c","fg2":""}' aria-label="Framboise"></button>
+                      <button class="swatch" style="background:conic-gradient(#ff5f5f,#ffd84d,#48d597,#4d8dff,#b36bff,#ff5f5f)" aria-pressed="false" aria-label="Autre couleur"></button>
+                    </div></div>
+                  <div><div class="sub-label">Forme des points</div>
+                    <div class="shapes6" data-choice="#pv">
+                      <button class="shape" aria-pressed="false" data-set='{"dot":"square"}'><span data-glyph="square"></span>Carré</button>
+                      <button class="shape" aria-pressed="true" data-set='{"dot":"rounded"}'><span data-glyph="rounded"></span>Arrondi</button>
+                      <button class="shape" aria-pressed="false" data-set='{"dot":"dots"}'><span data-glyph="dots"></span>Points</button>
+                      <button class="shape" aria-pressed="false" data-set='{"dot":"classy"}'><span data-glyph="classy"></span>Élégant</button>
+                      <button class="shape" aria-pressed="false" data-set='{"dot":"classy"}'><span data-glyph="classy-rounded"></span>Feuille</button>
+                      <button class="shape" aria-pressed="false" data-set='{"dot":"rounded"}'><span data-glyph="extra-rounded"></span>Doux</button>
+                    </div></div>
+                  <div><div class="sub-label">Coins</div>
+                    <div class="shapes3" data-choice="#pv">
+                      <button class="shape" aria-pressed="false" data-set='{"corner":"square"}'><span data-glyph="c-square"></span></button>
+                      <button class="shape" aria-pressed="true" data-set='{"corner":"rounded"}'><span data-glyph="c-rounded"></span></button>
+                      <button class="shape" aria-pressed="false" data-set='{"corner":"dot"}'><span data-glyph="c-dot"></span></button>
+                    </div></div>
+                  <div><div class="sub-label">Logo au centre</div>
+                    <div class="row" data-choice="#pv">
+                      <button class="btn btn-soft" aria-pressed="false" data-set='{"logo":"MW","logoBg":"#7a2e12"}'><i data-i="photo" class="sm"></i>Ajouter mon logo</button>
+                      <span class="muted small">PNG ou JPG · un logo carré rend mieux</span>
+                    </div></div>
+                </div>
+              </details>
+            </div>
+          </section>
+          </div>
+        </div>
+
+        <!-- Aperçu -->
+        <aside class="pv">
+          <div class="only-link" style="display:grid;gap:14px">
+            <div class="name"><input value="Pagne wax bleu" aria-label="Nom du lien (pour vous)"><i data-i="pencil" class="sm subtle"></i></div>
+            <div class="card" style="padding:18px">
+              <div class="xs subtle" style="font-weight:600">Votre lien</div>
+              <div class="row mt-8"><span class="linkchip lg"><span class="host">link.cg/</span>pagne-wax</span><button class="icon-btn" data-copy="https://link.cg/pagne-wax" aria-label="Copier le lien" style="margin-left:auto"><i data-i="copy"></i></button></div>
+              <div class="row mt-12" style="gap:10px;padding-top:12px;border-top:1px solid var(--line)">
+                <div class="qr-thumb" style="padding:4px;border-radius:10px"><div data-qr data-size="48" data-fg="#16161d" data-bg="#fff" data-seed="52"></div></div>
+                <div class="small grow"><b>Son QR est prêt aussi</b><div class="muted xs">Vous le téléchargerez quand vous voudrez l'imprimer.</div></div>
+              </div>
+            </div>
+            <div class="xs subtle" style="font-weight:600;margin-top:4px">Ce que verront vos contacts sur WhatsApp</div>
+            <div class="share-preview">
+              <div class="bubble">
+                <div class="og"><div class="og-img" style="background:#1b3f8f"><div data-ill="share" data-h="100" style="width:150px"></div></div><div class="og-txt"><b>Pagne wax bleu · Boutique Mami Wata</b>boutique-mamiwata.com</div></div>
+                <div class="msg">Nouveau ! Le pagne wax bleu est arrivé : <a>link.cg/pagne-wax</a></div>
+                <div class="time">10:24</div>
+              </div>
+            </div>
+            <button class="btn btn-cta btn-lg btn-block only-guest" data-open="#signup">Créer mon lien <i data-i="arrow"></i></button>
+            <button class="btn btn-cta btn-lg btn-block only-user" data-open="#done-link">Créer mon lien <i data-i="arrow"></i></button>
+            <div class="tip blue only-guest"><span class="tip-ico"><i data-i="lock" class="sm"></i></span><div><strong>Un compte gratuit, et c'est en ligne</strong>Vos liens restent à vous, modifiables à vie, avec leurs visites comptées.</div></div>
+            <p class="subtle xs center only-user">5 / 25 liens utilisés</p>
+          </div>
+
+          <div class="only-qr" style="display:grid;gap:14px">
+          <div class="name"><input value="Menu du restaurant" aria-label="Nom du QR (pour vous)"><i data-i="pencil" class="sm subtle"></i></div>
+          <div class="board"><div class="qrbox"><div id="pv" data-qr data-size="248" data-fg="#7a2e12" data-bg="#ffffff" data-dot="rounded" data-corner="rounded" data-seed="8"></div></div></div>
+          <div class="row small"><span class="pill pill-ok"><span class="dot"></span>Se scanne bien</span>
+            <span class="only-dynamic muted mono xs" style="margin-left:auto">link.cg/menu-mamiwata</span>
+            <span class="only-static muted xs" style="margin-left:auto">QR fixe</span></div>
+
+          <!-- Fixe -->
+          <div class="only-static" style="display:grid;gap:10px">
+            <button class="btn btn-cta btn-lg btn-block"><i data-i="download"></i>Télécharger</button>
+            <div class="row" style="justify-content:center"><div class="seg" data-choice><button aria-pressed="true">PNG</button><button aria-pressed="false">SVG</button><button aria-pressed="false">PDF</button></div></div>
+            <p class="subtle xs center">Gardé aussi dans « Mes QR codes » sur cet appareil.</p>
+          </div>
+
+          <!-- Modifiable -->
+          <div class="only-dynamic" style="display:grid;gap:10px">
+            <button class="btn btn-cta btn-lg btn-block only-guest" data-open="#signup">Enregistrer mon QR <i data-i="arrow"></i></button>
+            <button class="btn btn-cta btn-lg btn-block only-user" data-open="#done">Créer mon QR modifiable <i data-i="arrow"></i></button>
+            <div class="tip blue only-guest"><span class="tip-ico"><i data-i="lock" class="sm"></i></span><div><strong>Dernière étape : un compte gratuit</strong>30 secondes, sans carte bancaire. Votre QR et son style sont gardés.</div></div>
+            <p class="subtle xs center only-user">5 / 25 QR modifiables utilisés</p>
+          </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<!-- Inscription au moment utile -->
+<div class="drawer" id="signup" hidden>
+  <div class="scrim" data-close></div>
+  <div class="panel" role="dialog" aria-label="Créer votre compte">
+    <div class="panel-head"><div class="grow"></div><button class="icon-btn" data-close aria-label="Fermer"><i data-i="x"></i></button></div>
+    <div class="panel-body">
+      <div data-ill="account" data-h="150" style="background:var(--lilac);border-radius:20px"></div>
+      <h2 class="h2 mt-24">Gardons votre QR au chaud</h2>
+      <p class="muted mt-8">Créez votre compte gratuit : <b>link.cg/menu-mamiwata</b> est réservé pour vous et vous arrivez directement sur sa fiche.</p>
+      <div class="mt-24">
+        <label class="field"><span class="label">Votre nom ou celui de votre activité</span><input class="input" placeholder="Restaurant Mami Wata"></label>
+        <label class="field"><span class="label">Email</span><input class="input" type="email" placeholder="vous@exemple.cg"></label>
+        <label class="field"><span class="label">Mot de passe</span><input class="input" type="password" placeholder="8 caractères minimum"></label>
+      </div>
+    </div>
+    <div class="panel-foot" style="flex-direction:column">
+      <button class="btn btn-cta btn-lg btn-block">Créer mon compte et enregistrer</button>
+      <p class="muted small center">Déjà un compte ? <a class="link" href="d-connexion.html">Se connecter</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- Succès : l'interface parle -->
+<div class="drawer" id="done" hidden>
+  <div class="scrim" data-close></div>
+  <div class="panel" role="dialog" aria-label="QR créé">
+    <div class="panel-head"><div class="grow"></div><button class="icon-btn" data-close aria-label="Fermer"><i data-i="x"></i></button></div>
+    <div class="panel-body center">
+      <div class="board" style="padding:28px"><div class="qrbox"><div data-qr data-size="180" data-fg="#7a2e12" data-bg="#fff" data-seed="8"></div></div></div>
+      <h2 class="h1 mt-24">C'est prêt !</h2>
+      <p class="lead mt-8">Votre QR mène au menu. Imprimez-le sur vos tables : s'il change, vous le mettrez à jour ici.</p>
+      <div class="row mt-24" style="justify-content:center;gap:8px"><span class="pill pill-soft mono">link.cg/menu-mamiwata</span><button class="icon-btn" data-copy="https://link.cg/menu-mamiwata" aria-label="Copier le lien"><i data-i="copy" class="sm"></i></button></div>
+    </div>
+    <div class="panel-foot" style="flex-direction:column">
+      <button class="btn btn-cta btn-lg btn-block"><i data-i="download"></i>Télécharger pour l'impression</button>
+      <a class="btn btn-ghost btn-block" href="d-qr.html">Voir la fiche du QR</a>
+    </div>
+  </div>
+</div>
+
+<!-- Succès lien court -->
+<div class="drawer" id="done-link" hidden>
+  <div class="scrim" data-close></div>
+  <div class="panel" role="dialog" aria-label="Lien créé">
+    <div class="panel-head"><div class="grow"></div><button class="icon-btn" data-close aria-label="Fermer"><i data-i="x"></i></button></div>
+    <div class="panel-body center">
+      <div data-ill="shortlink" data-h="160" style="background:var(--sky);border-radius:20px"></div>
+      <h2 class="h1 mt-24">Votre lien est en ligne !</h2>
+      <p class="lead mt-8">Partagez-le dans vos statuts et vos groupes. Vous verrez ici combien de personnes l'ouvrent.</p>
+      <div class="row mt-24" style="justify-content:center;gap:8px"><span class="linkchip lg"><span class="host">link.cg/</span>pagne-wax</span><button class="icon-btn" data-copy="https://link.cg/pagne-wax" aria-label="Copier le lien"><i data-i="copy"></i></button></div>
+    </div>
+    <div class="panel-foot" style="flex-direction:column">
+      <button class="btn btn-lg btn-block" style="background:#1f9d63;color:#fff"><i data-i="share"></i>Partager sur WhatsApp</button>
+      <div class="row" style="gap:8px"><button class="btn btn-soft grow"><i data-i="copy" class="sm"></i>Copier</button><button class="btn btn-soft grow"><i data-i="qr" class="sm"></i>Télécharger le QR</button></div>
+      <a class="btn btn-ghost btn-block" href="d-qr.html">Voir la fiche du lien</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('#kinds .choice').forEach((b) => b.addEventListener('click', () => {
+    document.body.dataset.kind = b.dataset.kind
+    document.querySelectorAll('#kinds .choice').forEach((x) => x.setAttribute('aria-pressed', String(x === b)))
+  }))
+  // Maquette : Lien court / QR code (?mode=lien|qr)
+  const setMode = (m) => {
+    document.body.dataset.mode = m
+    document.querySelectorAll('#modes [data-mode]').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.mode === m)))
+  }
+  document.querySelectorAll('#modes [data-mode]').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)))
+  const qm = new URLSearchParams(location.search).get('mode')
+  if (qm === 'qr') setMode('qr')
+  // Maquette : même destination / selon le téléphone
+  document.querySelectorAll('#route .choice').forEach((b) => b.addEventListener('click', () => {
+    document.querySelectorAll('#route .choice').forEach((x) => x.setAttribute('aria-pressed', String(x === b)))
+    document.querySelector('.route-device').hidden = b.dataset.route !== 'device'
+  }))
+</script>
+<div class="note"><b>D · Créer.</b> On choisit d'abord ce qu'on crée : <b>Lien court</b>, <b>QR code</b> ou <b>Carte</b>. Le lien court montre son adresse, son QR inclus et l'aperçu tel qu'il apparaîtra dans WhatsApp ; il peut aussi s'adapter au téléphone (App Store / Play Store). Onglet QR : les 4 questions d'avant, où « modifiable » crée un lien court. <a href="index.html">← Sommaire</a></div>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D · Offres — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="d.css">
+<script src="d.js"></script>
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; align-items: stretch; }
+  .plan { padding: 28px; display: flex; flex-direction: column; border-radius: 28px; background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--line); }
+  .plan.pop { background: var(--ink); color: var(--bg); box-shadow: var(--shadow-lg); }
+  .plan.pop .muted { color: color-mix(in srgb, var(--bg) 65%, transparent); }
+  .plan .price { font-family: var(--f-display); font-weight: 700; font-size: 34px; letter-spacing: -.03em; margin-top: 18px; }
+  .plan .price small { font-size: 14px; font-weight: 500; font-family: var(--f-ui); letter-spacing: 0; opacity: .7; }
+  .plan ul { list-style: none; padding: 0; margin: 22px 0 26px; display: grid; gap: 10px; font-size: 14px; flex: 1; }
+  .plan li { display: flex; gap: 10px; align-items: flex-start; }
+  .plan li .ico { width: 17px; height: 17px; margin-top: 2px; color: var(--ok); }
+  .plan.pop li .ico { color: #7be0a8; }
+  .plan.pop .btn-cta { background: var(--brand); color: #fff; }
+  .todo-price { display: inline-block; font-size: 11px; font-weight: 600; font-family: var(--f-ui); letter-spacing: 0; padding: 2px 8px; border-radius: 6px; background: var(--sun); color: #7a4b00; vertical-align: middle; margin-left: 6px; }
+  .pay { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 28px; align-items: center; padding: 28px; margin-top: 32px; }
+  .momo { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+  .momo span { height: 40px; padding: 0 16px; border-radius: 12px; display: inline-flex; align-items: center; font-weight: 700; font-size: 14px; }
+  .faq { margin-top: 16px; display: grid; gap: 8px; }
+  .faq details { background: var(--soft); border-radius: 18px; padding: 16px 20px; }
+  .faq summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; align-items: center; gap: 10px; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; margin-left: auto; font-size: 20px; color: var(--subtle); }
+  .faq details[open] summary::after { content: "–"; }
+  .faq p { color: var(--muted); margin-top: 10px; font-size: 14px; }
+  @media (max-width: 960px) { .plans, .pay { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body data-page="offres" data-state="guest">
+<div class="app">
+  <aside class="side" data-shell></aside>
+  <div class="main"><div class="sheet">
+    <div class="topline"><a class="logo mob-only" href="d-accueil.html"><span class="logo-mark"></span></a></div>
+    <div class="content">
+      <div class="center" style="max-width:640px;margin:0 auto">
+        <span class="pill pill-sun">Offres</span>
+        <h1 class="display mt-16">Commencez gratuitement. <span class="hl">Grandissez</span> à votre rythme.</h1>
+        <p class="lead mt-16">Les QR fixes restent gratuits, sans compte, pour toujours. Les offres concernent les liens courts, et les QR modifiables qui vont avec.</p>
+      </div>
+
+      <div class="plans">
+        <article class="plan">
+          <h2 class="h3">Gratuit</h2>
+          <p class="muted small mt-4">Pour démarrer et tester</p>
+          <div class="price">0 FCFA</div>
+          <ul>
+            <li><i data-i="check"></i>25 liens courts, avec leur QR</li>
+            <li><i data-i="check"></i>QR fixes illimités</li>
+            <li><i data-i="check"></i>Visites : clics et scans</li>
+            <li><i data-i="check"></i>Carte de visite digitale</li>
+          </ul>
+          <a class="btn btn-soft btn-block" href="d-connexion.html?mode=inscription">Créer mon compte</a>
+        </article>
+        <article class="plan pop">
+          <div class="row"><h2 class="h3">Pro</h2><span class="pill pill-sun" style="margin-left:auto">Recommandé</span></div>
+          <p class="muted small mt-4">Commerces, restaurants, agences</p>
+          <div class="price">— FCFA <small>/ mois</small><span class="todo-price">prix à fixer</span></div>
+          <ul>
+            <li><i data-i="check"></i>500 liens courts, avec leur QR</li>
+            <li><i data-i="check"></i>Votre propre domaine (ex. go.monresto.cg)</li>
+            <li><i data-i="check"></i>Statistiques détaillées</li>
+            <li><i data-i="check"></i>Support prioritaire sur WhatsApp</li>
+          </ul>
+          <a class="btn btn-cta btn-block" href="#">Passer à Pro</a>
+        </article>
+        <article class="plan">
+          <h2 class="h3">Entreprise</h2>
+          <p class="muted small mt-4">Réseaux, institutions, grandes marques</p>
+          <div class="price">Sur devis</div>
+          <ul>
+            <li><i data-i="check"></i>Liens courts illimités</li>
+            <li><i data-i="check"></i>Plusieurs domaines</li>
+            <li><i data-i="check"></i>Plusieurs utilisateurs</li>
+            <li><i data-i="check"></i>Accompagnement NS Creative (impression incluse possible)</li>
+          </ul>
+          <a class="btn btn-soft btn-block" href="#">Parlons-en</a>
+        </article>
+      </div>
+
+      <section class="card pay">
+        <div data-ill="print" style="background:var(--coral-tint);border-radius:22px"></div>
+        <div>
+          <h2 class="h2">Payez comme vous en avez l'habitude</h2>
+          <p class="muted mt-8">Mobile money, sans carte bancaire. Facture envoyée par email et par WhatsApp.</p>
+          <div class="momo"><span style="background:#e40000;color:#fff">Airtel Money</span><span style="background:#ffcc00;color:#16161d">MTN MoMo</span></div>
+        </div>
+      </section>
+
+      <h2 class="h2 mt-48">Questions fréquentes</h2>
+      <div class="faq">
+        <details open><summary>Que se passe-t-il si j'arrête de payer ?</summary><p>Vos QR modifiables restent en ligne jusqu'à la fin de la période payée, puis vous repassez à l'offre Gratuite. Rien n'est supprimé sans vous prévenir.</p></details>
+        <details><summary>Un QR fixe peut-il devenir modifiable ?</summary><p>Pas le QR déjà imprimé : son contenu est gravé dedans. Mais en un clic, on en fait un lien court avec un QR au même style, à imprimer une dernière fois.</p></details>
+        <details><summary>Mes clients voient-ils de la publicité ?</summary><p>Jamais. En cliquant sur le lien ou en scannant le QR, ils arrivent directement à votre destination.</p></details>
+        <details><summary>Pouvez-vous imprimer mes QR ?</summary><p>Oui, via NS Creative : autocollants de table, flyers, cartes de visite, kakémonos.</p></details>
+      </div>
+    </div>
+  </div></div>
+</div>
+<div class="note"><b>D · Offres.</b> Le bénéfice avant les limites, mobile money mis en avant, et une FAQ qui répond aux vraies inquiétudes (arrêt, publicité, impression). Les prix Pro sont à fixer : ils restent volontairement vides. <a href="index.html">← Sommaire</a></div>
+</body>
+</html>

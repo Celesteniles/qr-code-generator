@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D · Carte de visite — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="d.css">
+<script src="d.js"></script>
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 40px; align-items: start; }
+  .block { padding: 26px; }
+  .block + .block { margin-top: 16px; }
+  .avatar-up { display: flex; align-items: center; gap: 16px; }
+  .avatar-up .av { width: 72px; height: 72px; border-radius: 24px; background: var(--coral); color: #fff; display: grid; place-items: center; font-family: var(--f-display); font-weight: 700; font-size: 26px; }
+  .phone-wrap { position: sticky; top: 24px; }
+  .phone { width: 340px; margin: 0 auto; border-radius: 46px; padding: 12px; background: #16161d; box-shadow: var(--shadow-lg); }
+  .screen { border-radius: 36px; overflow: hidden; background: #f6f3ee; color: #16161d; min-height: 640px; font-family: var(--f-ui); }
+  .vc-top { padding: 28px 22px 22px; background: var(--vc, #0060ff); color: #fff; position: relative; overflow: hidden; }
+  .vc-top::after { content: ""; position: absolute; right: -40px; top: -40px; width: 180px; height: 180px; border-radius: 50%; background: rgba(255,255,255,.14); }
+  .vc-av { width: 76px; height: 76px; border-radius: 24px; background: #fff; color: #16161d; display: grid; place-items: center; font-family: var(--f-display); font-weight: 700; font-size: 26px; }
+  .vc-name { font-family: var(--f-display); font-weight: 700; font-size: 26px; letter-spacing: -.03em; line-height: 1.05; margin-top: 16px; }
+  .vc-role { opacity: .85; font-size: 14px; margin-top: 4px; }
+  .vc-body { padding: 18px; }
+  .vc-quick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .vc-quick a { display: grid; place-items: center; gap: 6px; padding: 14px 4px; border-radius: 18px; background: #fff; font-size: 12px; font-weight: 600; }
+  .vc-quick .ico { width: 22px; height: 22px; }
+  .vc-list { margin-top: 10px; background: #fff; border-radius: 18px; overflow: hidden; }
+  .vc-list a { display: flex; align-items: center; gap: 12px; padding: 14px 16px; font-size: 14px; }
+  .vc-list a + a { border-top: 1px solid #efebe4; }
+  .vc-list small { display: block; color: #9c978b; font-size: 11px; }
+  .vc-list .ico { color: #9c978b; }
+  .vc-save { margin-top: 14px; width: 100%; height: 54px; border-radius: 99px; border: 0; background: #16161d; color: #fff; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .vc-foot { text-align: center; font-size: 11px; color: #9c978b; margin-top: 16px; }
+  @media (max-width: 1100px) { .layout { grid-template-columns: minmax(0, 1fr); } .phone-wrap { position: static; } }
+  @media (max-width: 420px) { .phone { width: 100%; } }
+</style>
+</head>
+<body data-page="carte" data-state="user">
+<div class="app">
+  <aside class="side" data-shell></aside>
+  <div class="main"><div class="sheet">
+    <div class="topline">
+      <a class="logo mob-only" href="d-accueil.html"><span class="logo-mark"></span></a>
+      <span class="pill pill-soft mono only-user">link.cg/celeste</span>
+      <button class="icon-btn only-user" data-copy="https://link.cg/celeste" aria-label="Copier le lien"><i data-i="copy" class="sm"></i></button>
+      <div class="row" style="margin-left:auto">
+        <a class="btn btn-ghost btn-sm only-user" href="#"><i data-i="external" class="sm"></i>Voir en ligne</a>
+      </div>
+    </div>
+    <div class="content">
+      <div class="layout">
+        <div>
+          <h1 class="h1">Votre carte de visite</h1>
+          <p class="lead mt-8">Un lien pour votre bio et votre signature, un QR pour vos flyers et votre badge : on vous appelle, on vous écrit, on vous enregistre. Modifiable à tout moment, sans réimprimer.</p>
+
+          <section class="card block mt-24">
+            <h2 class="h3">Qui êtes-vous ?</h2>
+            <div class="avatar-up mt-16">
+              <span class="av">CG</span>
+              <div><button class="btn btn-soft btn-sm"><i data-i="photo" class="sm"></i>Ajouter une photo</button><p class="help">Sans photo, vos initiales s'affichent.</p></div>
+            </div>
+            <div class="mt-24">
+              <label class="field"><span class="label">Nom complet</span><input class="input" value="Céleste GAKONO"></label>
+              <div class="grid-2 mt-16">
+                <label class="field"><span class="label">Fonction</span><input class="input" value="Direction artistique"></label>
+                <label class="field"><span class="label">Entreprise</span><input class="input" value="NS Creative"></label>
+              </div>
+            </div>
+          </section>
+
+          <section class="card block">
+            <h2 class="h3">Comment vous joindre ?</h2>
+            <p class="muted small mt-4">Chaque info devient un bouton sur la carte.</p>
+            <div class="grid-2 mt-16">
+              <label class="field"><span class="label">Téléphone</span><input class="input" value="+242 06 555 12 34"></label>
+              <label class="field"><span class="label">WhatsApp <span class="opt">· si différent</span></span><input class="input" placeholder="Même numéro"></label>
+            </div>
+            <label class="field mt-16"><span class="label">Email</span><input class="input" value="contact@nscreative.cg"></label>
+            <label class="field"><span class="label">Site web <span class="opt">· optionnel</span></span><input class="input" value="https://nscreative.cg"></label>
+            <button class="btn btn-ghost btn-sm mt-12"><i data-i="plus" class="sm"></i>Ajouter un réseau social</button>
+          </section>
+
+          <section class="card block">
+            <h2 class="h3">Votre couleur</h2>
+            <div class="row wrap-flex mt-16" style="gap:12px" data-choice>
+              <button class="swatch" style="background:#0060ff" aria-pressed="true" aria-label="Bleu NS" onclick="document.querySelector('.vc-top').style.setProperty('--vc','#0060ff')"></button>
+              <button class="swatch" style="background:#16161d" aria-pressed="false" aria-label="Encre" onclick="document.querySelector('.vc-top').style.setProperty('--vc','#16161d')"></button>
+              <button class="swatch" style="background:#ff7a59" aria-pressed="false" aria-label="Corail" onclick="document.querySelector('.vc-top').style.setProperty('--vc','#e2583e')"></button>
+              <button class="swatch" style="background:#1f9d63" aria-pressed="false" aria-label="Forêt" onclick="document.querySelector('.vc-top').style.setProperty('--vc','#1f9d63')"></button>
+              <button class="swatch" style="background:#7c3aed" aria-pressed="false" aria-label="Violet" onclick="document.querySelector('.vc-top').style.setProperty('--vc','#7c3aed')"></button>
+            </div>
+          </section>
+
+          <div class="row mt-24 wrap-flex">
+            <button class="btn btn-cta btn-lg only-user">Enregistrer les changements</button>
+            <a class="btn btn-cta btn-lg only-guest" href="d-connexion.html?mode=inscription">Publier ma carte <i data-i="arrow"></i></a>
+            <span class="muted small only-guest">Compte gratuit requis pour la mettre en ligne.</span>
+            <span class="muted small only-user">Vos contacts verront la nouvelle version immédiatement.</span>
+          </div>
+        </div>
+
+        <aside class="phone-wrap">
+          <p class="eyebrow center" style="display:flex;justify-content:center"><i data-i="eye" class="sm"></i>Ce que voient vos contacts</p>
+          <div class="phone mt-12"><div class="screen">
+            <div class="vc-top">
+              <div class="vc-av">CG</div>
+              <div class="vc-name">Céleste<br>GAKONO</div>
+              <div class="vc-role">Direction artistique · NS Creative</div>
+            </div>
+            <div class="vc-body">
+              <div class="vc-quick">
+                <a href="#"><i data-i="phone" style="color:#0060ff"></i>Appeler</a>
+                <a href="#"><i data-i="sms" style="color:#1f9d63"></i>WhatsApp</a>
+                <a href="#"><i data-i="mail" style="color:#e2583e"></i>Email</a>
+              </div>
+              <div class="vc-list">
+                <a href="#"><i data-i="phone"></i><span><small>Téléphone</small>+242 06 555 12 34</span></a>
+                <a href="#"><i data-i="mail"></i><span><small>Email</small>contact@nscreative.cg</span></a>
+                <a href="#"><i data-i="globe"></i><span><small>Site web</small>nscreative.cg</span></a>
+              </div>
+              <button class="vc-save"><i data-i="contact"></i>Enregistrer le contact</button>
+              <div class="vc-foot">Créez votre carte gratuite sur link.cg</div>
+            </div>
+          </div></div>
+        </aside>
+      </div>
+    </div>
+  </div></div>
+</div>
+<div class="note"><b>D · Carte de visite.</b> Les sections sont des questions (« Qui êtes-vous ? », « Comment vous joindre ? »). Aperçu téléphone en direct. La page publique pousse une seule action : « Enregistrer le contact », et fait connaître link.cg en bas. <a href="index.html">← Sommaire</a></div>
+</body>
+</html>

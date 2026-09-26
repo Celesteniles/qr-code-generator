@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A · Générateur — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="a.css">
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  .hero { padding: 48px 0 28px; }
+  .hero h1 { font-size: clamp(30px, 4.4vw, 46px); line-height: 1.08; letter-spacing: -.035em; font-weight: 700; max-width: 16ch; }
+  .hero p { margin-top: 14px; font-size: 17px; color: var(--muted); max-width: 52ch; }
+  .trust { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 18px; font-size: 13px; color: var(--muted); }
+  .trust span { display: inline-flex; align-items: center; gap: 6px; }
+  .trust .ico { color: var(--ok); width: 16px; height: 16px; }
+
+  .tool { display: grid; grid-template-columns: 1fr 380px; overflow: hidden; }
+  .tool .controls { min-width: 0; }
+  .tool .preview { border-left: 1px solid var(--line); background: var(--surface); padding: 20px; display: flex; flex-direction: column; gap: 14px; position: sticky; top: 64px; align-self: start; }
+  .panel-pad { padding: 20px; }
+  .types { grid-template-columns: repeat(5, 1fr); }
+  .shapes6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .shapes3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .presets { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .colors { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .drop { display: grid; place-items: center; gap: 6px; padding: 28px; border: 1.5px dashed var(--line-strong); border-radius: 14px; color: var(--muted); font-size: 13px; text-align: center; background: var(--surface-2); }
+  .drop strong { color: var(--fg); }
+  .upsell { display: flex; gap: 12px; padding: 14px; border-radius: 12px; background: var(--brand-soft); font-size: 13px; }
+  .upsell .ico { color: var(--accent); margin-top: 1px; }
+  .upsell a { color: var(--accent); font-weight: 600; display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; }
+
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .feature .fi { width: 40px; height: 40px; border-radius: 11px; background: var(--brand-soft); color: var(--accent); display: grid; place-items: center; margin-bottom: 14px; }
+  .feature h3 { font-size: 16px; letter-spacing: -.01em; }
+  .feature p { font-size: 14px; color: var(--muted); margin-top: 6px; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 0; overflow: hidden; }
+  .compare > div { padding: 22px; }
+  .compare > div + div { border-left: 1px solid var(--line); background: var(--brand-soft); }
+  .compare ul { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 8px; font-size: 14px; }
+  .compare li { display: flex; gap: 8px; }
+  .compare li .ico { width: 16px; height: 16px; margin-top: 3px; }
+  footer { padding: 40px 0 56px; color: var(--subtle); font-size: 13px; }
+
+  @media (max-width: 960px) {
+    .tool { grid-template-columns: 1fr; }
+    .tool .preview { position: static; border-left: 0; border-bottom: 1px solid var(--line); order: -1; }
+    .features, .compare { grid-template-columns: 1fr; }
+    .compare > div + div { border-left: 0; border-top: 1px solid var(--line); }
+  }
+  @media (max-width: 560px) {
+    .types { grid-template-columns: repeat(4, 1fr); }
+    .shapes6 { grid-template-columns: repeat(3, 1fr); }
+    .presets { grid-template-columns: repeat(3, 1fr); }
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="logo" href="#"><span class="logo-mark">l.</span><span>link<b>.cg</b></span></a>
+    <nav class="nav-links">
+      <a class="nav-link" aria-current="page" href="#">Générateur QR</a>
+      <a class="nav-link" href="a-dashboard.html">Liens dynamiques</a>
+      <a class="nav-link" href="#">Tarifs</a>
+    </nav>
+    <div class="right">
+      <div class="seg" data-choice><button aria-pressed="true">FR</button><button aria-pressed="false">EN</button></div>
+      <button class="icon-btn" data-theme-toggle aria-label="Changer de thème"><i data-i="moon"></i></button>
+      <a class="btn btn-ghost" href="a-connexion.html">Connexion</a>
+      <a class="btn btn-primary" href="a-connexion.html">Créer un compte</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <span class="pill pill-brand"><i data-i="sparkles" class="sm"></i> Gratuit · sans inscription</span>
+    <h1 style="margin-top:14px">Un QR code à votre image, en 30&nbsp;secondes.</h1>
+    <p>Saisissez votre contenu, choisissez un style, téléchargez. En PNG pour l'écran, en SVG pour l'imprimeur.</p>
+    <div class="trust">
+      <span><i data-i="check"></i> Aucune donnée stockée</span>
+      <span><i data-i="check"></i> Haute définition jusqu'à 1024 px</span>
+      <span><i data-i="check"></i> Logo au centre</span>
+    </div>
+  </section>
+
+  <section class="card tool">
+    <div class="controls" data-tabs>
+      <div class="tabs" role="tablist">
+        <button role="tab" data-tab="c" aria-selected="true"><span class="step">1</span>Contenu</button>
+        <button role="tab" data-tab="d" aria-selected="false"><span class="step">2</span>Design</button>
+        <button role="tab" data-tab="l" aria-selected="false"><span class="step">3</span>Logo</button>
+      </div>
+
+      <!-- 1 · Contenu -->
+      <div class="panel-pad" data-panel="c">
+        <div class="section-title">Que doit ouvrir le QR ?</div>
+        <div class="tiles types" data-choice>
+          <button class="tile" aria-pressed="true"><i data-i="link"></i>Lien</button>
+          <button class="tile" aria-pressed="false"><i data-i="text"></i>Texte</button>
+          <button class="tile" aria-pressed="false"><i data-i="wifi"></i>Wi‑Fi</button>
+          <button class="tile" aria-pressed="false"><i data-i="user"></i>Contact</button>
+          <button class="tile" aria-pressed="false"><i data-i="mail"></i>Email</button>
+          <button class="tile" aria-pressed="false"><i data-i="sms"></i>SMS</button>
+          <button class="tile" aria-pressed="false"><i data-i="phone"></i>Appel</button>
+          <button class="tile" aria-pressed="false"><i data-i="pin"></i>Lieu</button>
+          <button class="tile" aria-pressed="false"><i data-i="app"></i>App</button>
+          <button class="tile" aria-pressed="false"><i data-i="globe"></i>Réseaux</button>
+        </div>
+        <hr class="divider">
+        <label class="field">
+          <span class="label">Adresse du site</span>
+          <input class="input" value="https://nscreative.cg/promo-rentree">
+          <span class="hint">Le QR se met à jour pendant que vous tapez.</span>
+        </label>
+      </div>
+
+      <!-- 2 · Design -->
+      <div class="panel-pad" data-panel="d" hidden>
+        <div class="section-title">Styles prêts à l'emploi</div>
+        <div class="presets" data-choice="#preview">
+          <button class="preset" aria-pressed="true" data-set='{"fg":"#14152b","bg":"#ffffff","dot":"rounded","corner":"rounded","fg2":""}'>
+            <span class="sw" style="background:#fff;border:1px solid var(--line)"><span data-qr data-size="36" data-fg="#14152b" data-bg="#fff" data-seed="3"></span></span>Encre</button>
+          <button class="preset" aria-pressed="false" data-set='{"fg":"#0060ff","bg":"#f0f6ff","dot":"extra-rounded","corner":"dot","fg2":""}'>
+            <span class="sw" style="background:#f0f6ff"><span data-qr data-size="36" data-fg="#0060ff" data-bg="#f0f6ff" data-dot="dots" data-seed="3"></span></span>Océan</button>
+          <button class="preset" aria-pressed="false" data-set='{"fg":"#0060ff","fg2":"#7c3aed","bg":"#ffffff","dot":"classy","corner":"rounded"}'>
+            <span class="sw" style="background:#fff;border:1px solid var(--line)"><span data-qr data-size="36" data-fg="#0060ff" data-fg2="#7c3aed" data-bg="#fff" data-dot="classy" data-seed="3"></span></span>Aurore</button>
+          <button class="preset" aria-pressed="false" data-set='{"fg":"#1f7a4d","bg":"#f1faf5","dot":"dots","corner":"dot","fg2":""}'>
+            <span class="sw" style="background:#f1faf5"><span data-qr data-size="36" data-fg="#1f7a4d" data-bg="#f1faf5" data-dot="dots" data-seed="3"></span></span>Forêt</button>
+          <button class="preset" aria-pressed="false" data-set='{"fg":"#e8ecf3","bg":"#0f1115","dot":"dots","corner":"dot","fg2":""}'>
+            <span class="sw" style="background:#0f1115"><span data-qr data-size="36" data-fg="#e8ecf3" data-bg="#0f1115" data-dot="dots" data-seed="3"></span></span>Nuit</button>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">Couleurs
+          <div class="seg" data-choice><button aria-pressed="true">Unie</button><button aria-pressed="false">Dégradé</button></div>
+        </div>
+        <div class="colors">
+          <div class="color"><span class="chip" style="background:#14152b"></span><span class="meta"><small>Motif</small><span>#14152B</span></span></div>
+          <button class="icon-btn" aria-label="Inverser les couleurs"><i data-i="swap"></i></button>
+          <div class="color"><span class="chip" style="background:#ffffff"></span><span class="meta"><small>Fond</small><span>#FFFFFF</span></span></div>
+          <span class="pill pill-ok" style="margin-left:auto"><i data-i="check" class="sm"></i> Contraste lisible</span>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">Forme des points</div>
+        <div class="shapes6" data-choice="#preview">
+          <button class="shape" aria-pressed="false" data-set='{"dot":"square"}'><span data-glyph="square"></span>Carré</button>
+          <button class="shape" aria-pressed="true" data-set='{"dot":"rounded"}'><span data-glyph="rounded"></span>Arrondi</button>
+          <button class="shape" aria-pressed="false" data-set='{"dot":"dots"}'><span data-glyph="dots"></span>Points</button>
+          <button class="shape" aria-pressed="false" data-set='{"dot":"classy"}'><span data-glyph="classy"></span>Élégant</button>
+          <button class="shape" aria-pressed="false" data-set='{"dot":"classy"}'><span data-glyph="classy-rounded"></span>Élégant +</button>
+          <button class="shape" aria-pressed="false" data-set='{"dot":"rounded"}'><span data-glyph="extra-rounded"></span>Très rond</button>
+        </div>
+
+        <div class="grid-2" style="margin-top:18px">
+          <div>
+            <div class="section-title">Cadre des coins</div>
+            <div class="shapes3" data-choice="#preview">
+              <button class="shape" aria-pressed="false" data-set='{"corner":"square"}'><span data-glyph="c-square"></span>Carré</button>
+              <button class="shape" aria-pressed="true" data-set='{"corner":"rounded"}'><span data-glyph="c-rounded"></span>Arrondi</button>
+              <button class="shape" aria-pressed="false" data-set='{"corner":"dot"}'><span data-glyph="c-dot"></span>Rond</button>
+            </div>
+          </div>
+          <div>
+            <div class="section-title">Centre des coins</div>
+            <div class="shapes3" data-choice>
+              <button class="shape" aria-pressed="false"><span data-glyph="square"></span>Carré</button>
+              <button class="shape" aria-pressed="true"><span data-glyph="dots"></span>Point</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 · Logo -->
+      <div class="panel-pad" data-panel="l" hidden>
+        <div class="section-title">Logo au centre <small>PNG, JPG ou SVG</small></div>
+        <button class="drop" style="width:100%" data-choice="#preview">
+          <i data-i="photo" class="lg"></i>
+          <span><strong>Glissez votre logo ici</strong><br>ou cliquez pour parcourir</span>
+        </button>
+        <hr class="divider">
+        <label class="field">
+          <span class="label" style="display:flex;justify-content:space-between">Taille du logo <span class="mono muted">30 %</span></span>
+          <input type="range" min="10" max="50" value="30">
+        </label>
+        <div class="row" style="margin-top:14px">
+          <div class="grow"><div class="label" style="margin:0">Dégager les points sous le logo</div><div class="hint" style="margin:0">Recommandé : meilleure lecture.</div></div>
+          <button class="switch" role="switch" aria-checked="true" onclick="this.setAttribute('aria-checked', this.getAttribute('aria-checked')!=='true')"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aperçu -->
+    <aside class="preview">
+      <div class="row"><strong style="font-size:14px">Aperçu</strong><span class="pill pill-ok" style="margin-left:auto"><span class="dot"></span>Lisible</span></div>
+      <div class="stage"><div id="preview" data-qr data-size="248" data-fg="#14152b" data-bg="#ffffff" data-dot="rounded" data-corner="rounded" data-seed="11"></div></div>
+      <div class="row">
+        <span class="label" style="margin:0">Format</span>
+        <div class="seg" data-choice style="margin-left:auto"><button aria-pressed="true">PNG</button><button aria-pressed="false">SVG</button></div>
+      </div>
+      <div class="row">
+        <span class="label" style="margin:0">Taille</span>
+        <div class="seg" data-choice style="margin-left:auto"><button aria-pressed="false">512</button><button aria-pressed="true">1024</button><button aria-pressed="false">2048</button></div>
+      </div>
+      <button class="btn btn-primary btn-lg btn-block"><i data-i="download"></i>Télécharger le QR</button>
+      <div class="upsell">
+        <i data-i="refresh"></i>
+        <div><strong>Imprimé, mais l'adresse change ?</strong><br><span class="muted">Un QR dynamique se redirige sans réimpression, et compte ses scans.</span><br>
+          <a href="a-dashboard.html">Le rendre dynamique <i data-i="arrow" class="sm"></i></a></div>
+      </div>
+    </aside>
+  </section>
+
+  <section style="padding:72px 0 8px">
+    <span class="pill pill-brand">Liens dynamiques</span>
+    <h2 style="font-size:30px;letter-spacing:-.03em;margin-top:12px;max-width:22ch">Imprimez une fois. Modifiez quand vous voulez.</h2>
+    <p class="muted" style="margin-top:8px;max-width:56ch">Chaque QR pointe vers un lien court <span class="mono">link.cg/…</span> que vous gardez sous la main.</p>
+    <div class="features" style="margin-top:28px">
+      <div class="card card-pad feature"><div class="fi"><i data-i="refresh"></i></div><h3>Destination modifiable</h3><p>Changez l'URL derrière un QR déjà imprimé sur vos affiches, menus ou emballages.</p></div>
+      <div class="card card-pad feature"><div class="fi"><i data-i="chart"></i></div><h3>Scans comptés</h3><p>Sachez quelles affiches fonctionnent, jour par jour, sans outil externe.</p></div>
+      <div class="card card-pad feature"><div class="fi"><i data-i="user"></i></div><h3>Carte de visite digitale</h3><p>Un profil pro partageable, avec « Ajouter aux contacts » en un geste.</p></div>
+    </div>
+  </section>
+
+  <section class="card compare" style="margin-top:24px">
+    <div>
+      <strong>QR statique · gratuit</strong>
+      <ul class="muted">
+        <li><i data-i="check"></i> Téléchargement immédiat</li>
+        <li><i data-i="x"></i> Contenu figé une fois imprimé</li>
+        <li><i data-i="x"></i> Aucune statistique</li>
+      </ul>
+    </div>
+    <div>
+      <strong>QR dynamique · link.cg</strong>
+      <ul>
+        <li><i data-i="check" class="accent"></i> Destination modifiable à vie</li>
+        <li><i data-i="check" class="accent"></i> Scans par jour</li>
+        <li><i data-i="check" class="accent"></i> Paiement Airtel Money / MTN MoMo</li>
+      </ul>
+      <a class="btn btn-primary" style="margin-top:16px" href="a-connexion.html">Commencer gratuitement <i data-i="arrow" class="sm"></i></a>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap row">
+  <span>Un outil <strong style="color:var(--fg)">NS Creative</strong> · Brazzaville</span>
+  <span style="margin-left:auto">Aucune donnée stockée · 100 % gratuit</span>
+</footer>
+
+<div class="mobile-bar">
+  <button class="btn btn-primary"><i data-i="download"></i>PNG</button>
+  <button class="btn btn-secondary"><i data-i="download"></i>SVG</button>
+</div>
+
+<div class="note"><b>Direction A · Générateur.</b> Réglages en 3 étapes (onglets) au lieu de 7 cartes empilées ; formes montrées en image ; aperçu collant avec un seul gros bouton de téléchargement ; passerelle vers le dynamique argumentée plus bas. <a href="index.html">← Sommaire</a></div>
+</body>
+</html>

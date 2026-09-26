@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B · Espace de travail — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="b.css">
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  .hello { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+  .hello .eyebrow { font-size: 13px; color: var(--muted); }
+  .hello h1 { font-size: clamp(34px, 4vw, 48px); line-height: 1.05; margin-top: 4px; }
+  .hello h1 em { font-style: italic; color: var(--brand); }
+  .kpis { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 14px; margin-top: 28px; }
+  .kpi { padding: 18px 20px; }
+  .kpi .k { font-size: 13px; color: var(--muted); }
+  .kpi .v { font-size: 40px; line-height: 1; margin-top: 10px; }
+  .bars { display: flex; align-items: flex-end; gap: 4px; height: 56px; margin-top: 14px; }
+  .bars span { flex: 1; background: var(--surface-2); border-radius: 4px 4px 2px 2px; }
+  .bars span.hi { background: var(--brand); }
+  .bars-x { display: flex; justify-content: space-between; font-size: 11px; color: var(--subtle); margin-top: 6px; }
+
+  .sec-head { display: flex; align-items: center; gap: 12px; margin: 36px 0 14px; flex-wrap: wrap; }
+  .sec-head h2 { font-size: 26px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .lcard { padding: 14px; display: flex; flex-direction: column; gap: 12px; transition: box-shadow .15s, transform .15s; }
+  .lcard:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -24px rgba(26,25,22,.45); }
+  .lcard .qr { border-radius: 12px; background: var(--surface-2); display: grid; place-items: center; padding: 18px; position: relative; }
+  .lcard .qr > div { line-height: 0; border-radius: 10px; overflow: hidden; box-shadow: 0 8px 20px -12px rgba(0,0,0,.35); }
+  .lcard .qr .kind { position: absolute; top: 10px; left: 10px; }
+  .lcard .qr .state { position: absolute; top: 10px; right: 10px; }
+  .lcard .slug { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 2px; }
+  .lcard .slug .h { color: var(--subtle); font-weight: 500; }
+  .lcard .dest { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lcard .foot { display: flex; align-items: center; gap: 4px; border-top: 1px solid var(--line); padding-top: 10px; }
+  .lcard .foot .n { font-size: 13px; color: var(--muted); margin-right: auto; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .lcard .foot .n strong { color: var(--fg); font-variant-numeric: tabular-nums; }
+  .lcard.off .qr > div { filter: grayscale(1); opacity: .45; }
+  .new-card { border: 1.5px dashed var(--line-strong); border-radius: var(--radius); display: grid; place-items: center; gap: 10px; text-align: center; color: var(--muted); min-height: 300px; background: transparent; }
+  .new-card .plus { width: 48px; height: 48px; border-radius: 14px; background: var(--ink); color: var(--bg); display: grid; place-items: center; }
+  .new-card:hover { border-color: var(--fg); color: var(--fg); }
+  @media (max-width: 900px) { .kpis { grid-template-columns: 1fr 1fr; } .kpis .kpi:first-child { grid-column: 1 / -1; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <a class="logo" href="b-generateur.html"><span class="logo-mark">l.</span><span>link<b>.cg</b></span></a>
+    <a class="side-link" href="#"><i data-i="home"></i>Accueil</a>
+    <a class="side-link" aria-current="page" href="#"><i data-i="link"></i>Mes liens <span class="count">5</span></a>
+    <a class="side-link" href="#"><i data-i="user"></i>Cartes de visite <span class="count">1</span></a>
+    <a class="side-link" href="#"><i data-i="chart"></i>Statistiques</a>
+    <div class="side-sec">Outils</div>
+    <a class="side-link" href="b-generateur.html"><i data-i="qr"></i>Générateur QR</a>
+    <div class="plan-card">
+      <div class="row"><strong>Offre Gratuit</strong><span class="subtle num" style="margin-left:auto">5 / 25</span></div>
+      <div class="meter"><span style="width:20%"></span></div>
+      <a class="btn btn-secondary btn-sm btn-block" href="#">Passer à Pro</a>
+    </div>
+    <div class="me"><span class="av">CG</span><div class="grow"><div style="font-weight:600">Céleste GAKONO</div><div class="subtle" style="font-size:12px">NS Creative</div></div>
+      <button class="icon-btn" data-theme-toggle aria-label="Changer de thème"><i data-i="moon" class="sm"></i></button></div>
+  </aside>
+
+  <main class="main">
+    <div class="hello">
+      <div>
+        <div class="eyebrow">Samedi 26 septembre</div>
+        <h1 class="serif">2 533 scans ce mois-ci,<br><em>+18 %</em> sur août.</h1>
+      </div>
+      <button class="btn btn-primary btn-lg" style="margin-left:auto" data-open="#studio"><i data-i="plus"></i>Nouveau lien</button>
+    </div>
+
+    <section class="kpis">
+      <div class="card kpi">
+        <div class="k">Scans par jour · 30 jours</div>
+        <div class="bars" aria-hidden="true">
+          <span style="height:30%"></span><span style="height:42%"></span><span style="height:38%"></span><span style="height:50%"></span><span style="height:46%"></span><span style="height:60%"></span><span style="height:35%"></span>
+          <span style="height:40%"></span><span style="height:55%"></span><span style="height:48%"></span><span style="height:62%"></span><span style="height:58%"></span><span style="height:70%"></span><span style="height:44%"></span>
+          <span style="height:50%"></span><span style="height:66%"></span><span style="height:60%"></span><span style="height:72%"></span><span style="height:68%"></span><span style="height:80%"></span><span style="height:52%"></span>
+          <span style="height:58%"></span><span style="height:74%"></span><span style="height:70%"></span><span style="height:84%"></span><span style="height:78%"></span><span style="height:92%"></span><span style="height:64%"></span>
+          <span style="height:88%" class="hi"></span><span style="height:100%" class="hi"></span>
+        </div>
+        <div class="bars-x"><span>28 août</span><span>Aujourd'hui</span></div>
+      </div>
+      <div class="card kpi"><div class="k">Liens actifs</div><div class="v serif">4<span class="subtle" style="font-size:22px"> / 5</span></div><div class="subtle" style="font-size:13px;margin-top:8px">1 en pause</div></div>
+      <div class="card kpi"><div class="k">Meilleur QR</div><div class="v serif" style="font-size:28px">promo-rentree</div><div class="subtle" style="font-size:13px;margin-top:8px">1 284 scans · 51 %</div></div>
+    </section>
+
+    <div class="sec-head">
+      <h2 class="serif">Vos liens</h2>
+      <div class="seg" data-choice style="margin-left:auto"><button aria-pressed="true">Tous</button><button aria-pressed="false">Liens</button><button aria-pressed="false">Apps</button><button aria-pressed="false">Cartes</button></div>
+      <label class="search" style="display:flex;align-items:center;gap:8px;height:36px;padding:0 11px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--subtle)"><i data-i="search" class="sm"></i><input placeholder="Rechercher" style="border:0;background:transparent;font:inherit;font-size:14px;color:var(--fg);width:140px;outline:none"></label>
+    </div>
+
+    <div class="grid">
+      <article class="card lcard" data-row>
+        <div class="qr"><span class="pill pill-mute kind"><i data-i="link" class="sm"></i>Lien</span><span class="pill pill-ok state"><span class="dot"></span>Actif</span>
+          <div data-qr data-size="132" data-fg="#0060ff" data-bg="#ffffff" data-dot="dots" data-corner="dot" data-seed="21" data-logo="NS"></div></div>
+        <div><div class="slug"><span class="h">link.cg/</span>promo-rentree</div><div class="dest">nscreative.cg/offres/rentree-2026</div></div>
+        <div class="foot"><span class="n"><i data-i="chart" class="sm"></i><strong>1 284</strong> scans</span>
+          <button class="icon-btn" data-copy="https://link.cg/promo-rentree" aria-label="Copier le lien"><i data-i="copy"></i></button>
+          <button class="icon-btn" data-open="#studio" aria-label="Personnaliser le QR"><i data-i="sparkles"></i></button>
+          <button class="icon-btn" aria-label="Télécharger le QR"><i data-i="download"></i></button>
+          <button class="icon-btn" aria-label="Plus d'actions"><i data-i="more"></i></button></div>
+      </article>
+
+      <article class="card lcard" data-row>
+        <div class="qr"><span class="pill pill-mute kind"><i data-i="link" class="sm"></i>Lien</span><span class="pill pill-ok state"><span class="dot"></span>Actif</span>
+          <div data-qr data-size="132" data-fg="#7a2e12" data-bg="#fff7ef" data-dot="rounded" data-corner="rounded" data-seed="8"></div></div>
+        <div><div class="slug"><span class="h">link.cg/</span>menu</div><div class="dest">drive.google.com/file/d/1xA…/menu-septembre.pdf</div></div>
+        <div class="foot"><span class="n"><i data-i="chart" class="sm"></i><strong>842</strong> scans</span>
+          <button class="icon-btn" data-copy="https://link.cg/menu" aria-label="Copier le lien"><i data-i="copy"></i></button>
+          <button class="icon-btn" data-open="#studio" aria-label="Personnaliser le QR"><i data-i="sparkles"></i></button>
+          <button class="icon-btn" aria-label="Télécharger le QR"><i data-i="download"></i></button>
+          <button class="icon-btn" aria-label="Plus d'actions"><i data-i="more"></i></button></div>
+      </article>
+
+      <article class="card lcard" data-row>
+        <div class="qr"><span class="pill pill-mute kind"><i data-i="app" class="sm"></i>App</span><span class="pill pill-ok state"><span class="dot"></span>Actif</span>
+          <div data-qr data-size="132" data-fg="#14152b" data-bg="#ffffff" data-dot="classy" data-corner="rounded" data-seed="14"></div></div>
+        <div><div class="slug"><span class="h">link.cg/</span>app</div><div class="dest">iOS · Android · sinon paywithnex.com</div></div>
+        <div class="foot"><span class="n"><i data-i="chart" class="sm"></i><strong>311</strong> scans</span>
+          <button class="icon-btn" data-copy="https://link.cg/app" aria-label="Copier le lien"><i data-i="copy"></i></button>
+          <button class="icon-btn" data-open="#studio" aria-label="Personnaliser le QR"><i data-i="sparkles"></i></button>
+          <button class="icon-btn" aria-label="Télécharger le QR"><i data-i="download"></i></button>
+          <button class="icon-btn" aria-label="Plus d'actions"><i data-i="more"></i></button></div>
+      </article>
+
+      <article class="card lcard" data-row>
+        <div class="qr"><span class="pill pill-mute kind"><i data-i="user" class="sm"></i>Carte</span><span class="pill pill-ok state"><span class="dot"></span>Actif</span>
+          <div data-qr data-size="132" data-fg="#0060ff" data-fg2="#7c3aed" data-bg="#ffffff" data-dot="dots" data-corner="dot" data-seed="30"></div></div>
+        <div><div class="slug"><span class="h">link.cg/</span>celeste</div><div class="dest">Céleste GAKONO · NS Creative</div></div>
+        <div class="foot"><span class="n"><i data-i="chart" class="sm"></i><strong>96</strong> scans</span>
+          <button class="icon-btn" data-copy="https://link.cg/celeste" aria-label="Copier le lien"><i data-i="copy"></i></button>
+          <a class="icon-btn" href="a-carte.html" aria-label="Modifier la carte"><i data-i="pencil"></i></a>
+          <button class="icon-btn" aria-label="Télécharger le QR"><i data-i="download"></i></button>
+          <button class="icon-btn" aria-label="Plus d'actions"><i data-i="more"></i></button></div>
+      </article>
+
+      <article class="card lcard off" data-row>
+        <div class="qr"><span class="pill pill-mute kind"><i data-i="link" class="sm"></i>Lien</span><span class="pill pill-mute state"><span class="dot"></span>En pause</span>
+          <div data-qr data-size="132" data-fg="#14152b" data-bg="#ffffff" data-seed="40"></div></div>
+        <div><div class="slug"><span class="h">link.cg/</span>salon-2025</div><div class="dest">nscreative.cg/salon</div></div>
+        <div class="foot"><span class="n"><i data-i="chart" class="sm"></i><strong>0</strong> scan</span>
+          <button class="btn btn-secondary btn-sm">Réactiver</button>
+          <button class="icon-btn danger" data-confirm aria-label="Supprimer"><i data-i="trash"></i></button></div>
+      </article>
+
+      <button class="new-card" data-open="#studio">
+        <span class="plus"><i data-i="plus"></i></span>
+        <span><strong style="color:var(--fg)">Nouveau lien</strong><br><span style="font-size:13px">Lien, application ou carte de visite</span></span>
+      </button>
+    </div>
+  </main>
+</div>
+
+<nav class="tabbar">
+  <a href="#"><i data-i="home"></i>Accueil</a>
+  <a href="#" aria-current="page"><i data-i="link"></i>Liens</a>
+  <a href="#" data-open="#studio"><span class="fab"><i data-i="plus"></i></span></a>
+  <a href="#"><i data-i="chart"></i>Stats</a>
+</nav>
+
+<!-- Studio (même principe que A, habillage B) -->
+<div class="drawer" id="studio" hidden>
+  <div class="scrim" data-close></div>
+  <div class="panel" role="dialog" aria-label="Studio QR">
+    <div class="panel-head">
+      <div class="grow"><div class="serif" style="font-size:24px;line-height:1">Studio</div><div class="muted mono" style="font-size:13px">link.cg/promo-rentree</div></div>
+      <button class="icon-btn" data-close aria-label="Fermer"><i data-i="x"></i></button>
+    </div>
+    <div class="panel-body">
+      <div class="stage"><div id="bq" data-qr data-size="208" data-fg="#0060ff" data-bg="#ffffff" data-dot="dots" data-corner="dot" data-seed="21" data-logo="NS"></div></div>
+      <div class="section-title" style="margin-top:20px">Destination</div>
+      <span class="input-group"><span class="prefix"><i data-i="link" class="sm"></i></span><input value="https://nscreative.cg/offres/rentree-2026" style="padding-left:8px"></span>
+      <div class="hint">Changez-la à tout moment : le QR imprimé suivra.</div>
+      <div class="section-title" style="margin-top:20px">Points</div>
+      <div data-choice="#bq" style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px">
+        <button class="shape" aria-pressed="false" data-set='{"dot":"square"}'><span data-glyph="square"></span></button>
+        <button class="shape" aria-pressed="false" data-set='{"dot":"rounded"}'><span data-glyph="rounded"></span></button>
+        <button class="shape" aria-pressed="true" data-set='{"dot":"dots"}'><span data-glyph="dots"></span></button>
+        <button class="shape" aria-pressed="false" data-set='{"dot":"classy"}'><span data-glyph="classy"></span></button>
+        <button class="shape" aria-pressed="false" data-set='{"dot":"classy"}'><span data-glyph="classy-rounded"></span></button>
+        <button class="shape" aria-pressed="false" data-set='{"dot":"rounded"}'><span data-glyph="extra-rounded"></span></button>
+      </div>
+      <div class="section-title" style="margin-top:20px">Couleur</div>
+      <div data-choice="#bq" style="display:flex;gap:10px">
+        <button aria-pressed="false" data-set='{"fg":"#14152b","fg2":""}' style="width:34px;height:34px;border-radius:50%;border:0;background:#14152b"></button>
+        <button aria-pressed="true" data-set='{"fg":"#0060ff","fg2":""}' style="width:34px;height:34px;border-radius:50%;border:0;background:#0060ff;box-shadow:0 0 0 3px var(--surface),0 0 0 5px #0060ff"></button>
+        <button aria-pressed="false" data-set='{"fg":"#0060ff","fg2":"#7c3aed"}' style="width:34px;height:34px;border-radius:50%;border:0;background:linear-gradient(135deg,#0060ff,#7c3aed)"></button>
+        <button aria-pressed="false" data-set='{"fg":"#1f7a4d","fg2":""}' style="width:34px;height:34px;border-radius:50%;border:0;background:#1f7a4d"></button>
+        <button aria-pressed="false" data-set='{"fg":"#7a2e12","fg2":""}' style="width:34px;height:34px;border-radius:50%;border:0;background:#7a2e12"></button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <button class="btn btn-secondary"><i data-i="download" class="sm"></i>Télécharger</button>
+      <button class="btn btn-primary" style="margin-left:auto">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="note"><b>Direction B · Espace de travail.</b> Navigation latérale (barre d'onglets en bas sur mobile), titre éditorial qui raconte la tendance, et surtout <b>chaque lien montre son QR</b> : on reconnaît ses supports imprimés d'un coup d'œil. Le studio y ajoute la destination. <a href="index.html">← Sommaire</a></div>
+</body>
+</html>

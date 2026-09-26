@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D · Mes liens &amp; QR — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="d.css">
+<script src="d.js"></script>
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  .bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+  .search { display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px; border-radius: 99px; background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--line-strong); color: var(--muted); min-width: 220px; flex: 1; max-width: 340px; }
+  .search input { border: 0; background: transparent; font: inherit; font-size: 14px; color: var(--ink); flex: 1; min-width: 0; outline: none; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; margin-top: 20px; }
+  .qc { border-radius: 24px; background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--line-strong); padding: 12px; display: flex; flex-direction: column; transition: box-shadow .15s, transform .15s; }
+  .qc:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--subtle), 0 18px 40px -26px rgba(22,22,29,.5); }
+  .qc .top { position: relative; border-radius: 18px; background: var(--soft); box-shadow: inset 0 0 0 1px var(--line); display: grid; place-items: center; padding: 26px 10px; }
+  .qc .top .qr-thumb { padding: 10px; border-radius: 16px; }
+  .qc .top .l { position: absolute; top: 10px; left: 10px; }
+  .qc .top .r { position: absolute; top: 10px; right: 10px; }
+  .qc .body { padding: 14px 6px 6px; }
+  .qc .t { font-family: var(--f-display); font-weight: 650; font-size: 17px; letter-spacing: -.01em; }
+  .qc .s { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+  .qc .foot { display: flex; align-items: center; gap: 2px; padding: 10px 2px 0; margin-top: 10px; border-top: 1px solid var(--line); }
+  .qc .foot .n { font-size: 13px; color: var(--muted); margin-right: auto; display: flex; gap: 6px; align-items: center; white-space: nowrap; }
+  .qc .foot .n b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .qc.paused .qr-thumb { filter: grayscale(1); opacity: .5; }
+  .qc .top.linkmode { background: var(--sky); place-items: stretch; min-height: 186px; }
+  .qc .top.linkmode .lk { align-self: end; display: grid; gap: 6px; padding: 38px 6px 0; }
+  .qc.fixed .top { background: transparent; box-shadow: inset 0 0 0 1.5px var(--line); }
+  .empty { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 36px; align-items: center; padding: 32px; }
+  .guest-band { display: grid; grid-template-columns: 180px minmax(0, 1fr) auto; gap: 24px; align-items: center; padding: 20px 24px; border-radius: 24px; background: var(--brand-tint); margin-top: 24px; }
+  .guest-band .ill { border-radius: 16px; overflow: hidden; background: var(--surface); }
+  @media (max-width: 860px) { .empty, .guest-band { grid-template-columns: 1fr; } .guest-band .ill { max-width: 200px; } }
+</style>
+</head>
+<body data-page="mes-qr" data-state="user">
+<div class="app">
+  <aside class="side" data-shell></aside>
+  <div class="main"><div class="sheet">
+    <div class="topline">
+      <a class="logo mob-only" href="d-accueil.html"><span class="logo-mark"></span></a>
+      <a class="btn btn-cta btn-sm" href="d-creer.html" style="margin-left:auto"><i data-i="plus" class="sm"></i>Créer</a>
+    </div>
+    <div class="content">
+      <h1 class="h1">Mes liens &amp; QR</h1>
+      <p class="lead mt-8 only-user">6 liens courts et 2 QR fixes. Chaque lien court a son QR : partagez l'un, imprimez l'autre. Cliquez pour changer la destination ou voir les visites.</p>
+      <p class="lead mt-8 only-guest">Les QR créés sur cet appareil. Ils sont fixes et ne sont visibles que dans ce navigateur. Les liens courts demandent un compte gratuit.</p>
+
+      <div class="guest-band only-guest">
+        <div class="ill" data-ill="account" data-h="110"></div>
+        <div><h2 class="h3">Passez aux liens courts</h2><p class="muted small mt-4">Avec un compte gratuit : des liens link.cg à partager, des QR modifiables après impression, et vos créations retrouvées sur tous vos appareils.</p></div>
+        <a class="btn btn-brand" href="d-connexion.html?mode=inscription">Créer mon compte</a>
+      </div>
+
+      <div class="bar">
+        <label class="search"><i data-i="search" class="sm"></i><input placeholder="Rechercher un QR, une adresse…"></label>
+        <div class="chips only-user" data-choice>
+          <button class="chip" aria-pressed="true">Tous · 8</button>
+          <button class="chip" aria-pressed="false"><i data-i="link"></i>Liens courts</button>
+          <button class="chip" aria-pressed="false"><i data-i="lock"></i>QR fixes</button>
+          <button class="chip" aria-pressed="false"><i data-i="user"></i>Cartes</button>
+        </div>
+        <div class="seg only-user" data-choice style="margin-left:auto"><button aria-pressed="true">Plus visités</button><button aria-pressed="false">Récents</button></div>
+      </div>
+
+      <div class="grid">
+        <a class="qc only-user" href="d-qr.html">
+          <div class="top linkmode"><span class="pill pill-soft l"><i data-i="link"></i>Lien court</span><span class="pill pill-ok r"><span class="dot"></span>En ligne</span>
+            <div class="lk"><span class="linkchip" style="font-size:18px"><span class="host">link.cg/</span>pagne-wax</span><span class="small muted">Partagé sur WhatsApp · QR disponible</span></div></div>
+          <div class="body"><div class="t">Pagne wax bleu</div><div class="s">→ boutique-mamiwata.com/produits/pagne-wax-bleu</div></div>
+          <div class="foot"><span class="n"><i data-i="chart" class="sm"></i><b>1 902</b> visites</span>
+            <button class="icon-btn" data-copy="https://link.cg/pagne-wax" aria-label="Copier le lien" onclick="event.preventDefault()"><i data-i="copy"></i></button>
+            <button class="icon-btn" aria-label="Télécharger le QR" onclick="event.preventDefault()"><i data-i="qr"></i></button></div>
+        </a>
+
+        <a class="qc only-user" href="d-qr.html">
+          <div class="top"><span class="pill pill-soft l"><i data-i="link"></i>Lien court · QR</span><span class="pill pill-ok r"><span class="dot"></span>En ligne</span>
+            <div class="qr-thumb"><div data-qr data-size="132" data-fg="#0060ff" data-bg="#fff" data-dot="dots" data-corner="dot" data-seed="21" data-logo="NS"></div></div></div>
+          <div class="body"><div class="t">Promo de rentrée</div><div class="s"><span class="mono" style="color:var(--ink);font-weight:600">link.cg/promo-rentree</span> → nscreative.cg/offres</div></div>
+          <div class="foot"><span class="n"><i data-i="chart" class="sm"></i><b>1 284</b> visites</span>
+            <button class="icon-btn" data-copy="https://link.cg/promo-rentree" aria-label="Copier le lien" onclick="event.preventDefault()"><i data-i="copy"></i></button>
+            <button class="icon-btn" aria-label="Télécharger" onclick="event.preventDefault()"><i data-i="download"></i></button></div>
+        </a>
+
+        <a class="qc only-user" href="d-qr.html">
+          <div class="top"><span class="pill pill-soft l"><i data-i="link"></i>Lien court · QR</span><span class="pill pill-ok r"><span class="dot"></span>En ligne</span>
+            <div class="qr-thumb"><div data-qr data-size="132" data-fg="#7a2e12" data-bg="#fff" data-seed="8"></div></div></div>
+          <div class="body"><div class="t">Menu du restaurant</div><div class="s"><span class="mono" style="color:var(--ink);font-weight:600">link.cg/menu-mamiwata</span> → drive.google.com/…</div></div>
+          <div class="foot"><span class="n"><i data-i="chart" class="sm"></i><b>842</b> visites</span>
+            <button class="icon-btn" aria-label="Copier le lien" onclick="event.preventDefault()"><i data-i="copy"></i></button>
+            <button class="icon-btn" aria-label="Télécharger" onclick="event.preventDefault()"><i data-i="download"></i></button></div>
+        </a>
+
+        <a class="qc only-user" href="d-qr.html">
+          <div class="top"><span class="pill pill-soft l"><i data-i="app"></i>Lien · App</span><span class="pill pill-ok r"><span class="dot"></span>En ligne</span>
+            <div class="qr-thumb"><div data-qr data-size="132" data-fg="#16161d" data-bg="#fff" data-dot="classy" data-seed="14"></div></div></div>
+          <div class="body"><div class="t">Application NEX</div><div class="s"><span class="mono" style="color:var(--ink);font-weight:600">link.cg/nex</span> · iPhone → App Store · Android → Play</div></div>
+          <div class="foot"><span class="n"><i data-i="chart" class="sm"></i><b>311</b> visites</span>
+            <button class="icon-btn" aria-label="Copier le lien" onclick="event.preventDefault()"><i data-i="copy"></i></button>
+            <button class="icon-btn" aria-label="Télécharger" onclick="event.preventDefault()"><i data-i="download"></i></button></div>
+        </a>
+
+        <a class="qc only-user" href="d-carte.html">
+          <div class="top"><span class="pill pill-soft l"><i data-i="user"></i>Carte de visite</span><span class="pill pill-ok r"><span class="dot"></span>En ligne</span>
+            <div class="qr-thumb"><div data-qr data-size="132" data-fg="#0060ff" data-fg2="#7c3aed" data-bg="#fff" data-dot="dots" data-corner="dot" data-seed="30"></div></div></div>
+          <div class="body"><div class="t">Ma carte de visite</div><div class="s"><span class="mono" style="color:var(--ink);font-weight:600">link.cg/celeste</span> · Céleste GAKONO</div></div>
+          <div class="foot"><span class="n"><i data-i="chart" class="sm"></i><b>96</b> visites</span>
+            <button class="icon-btn" aria-label="Copier le lien" onclick="event.preventDefault()"><i data-i="copy"></i></button>
+            <button class="icon-btn" aria-label="Télécharger" onclick="event.preventDefault()"><i data-i="download"></i></button></div>
+        </a>
+
+        <a class="qc paused only-user" href="d-qr.html">
+          <div class="top"><span class="pill pill-soft l"><i data-i="link"></i>Lien court · QR</span><span class="pill pill-sun r">En pause</span>
+            <div class="qr-thumb"><div data-qr data-size="132" data-fg="#16161d" data-bg="#fff" data-seed="40"></div></div></div>
+          <div class="body"><div class="t">Salon 2025</div><div class="s">En pause depuis le 2 juin · réutilisable</div></div>
+          <div class="foot"><span class="n">Pas de scan ce mois</span><span class="link small" style="padding-right:8px">Réutiliser</span></div>
+        </a>
+
+        <a class="qc fixed" href="d-creer.html">
+          <div class="top"><span class="pill pill-soft l"><i data-i="lock"></i>QR fixe</span>
+            <div class="qr-thumb"><div data-qr data-size="132" data-fg="#16161d" data-bg="#fff" data-seed="11"></div></div></div>
+          <div class="body"><div class="t">nscreative.cg/promo</div><div class="s">Lien · créé aujourd'hui</div></div>
+          <div class="foot"><span class="n subtle">Non suivi</span><span class="link small" style="padding-right:8px"><i data-i="link" class="sm"></i>En faire un lien court</span></div>
+        </a>
+
+        <a class="qc fixed" href="d-creer.html">
+          <div class="top"><span class="pill pill-soft l"><i data-i="lock"></i>QR fixe</span>
+            <div class="qr-thumb"><div data-qr data-size="132" data-fg="#1f9d63" data-bg="#fff" data-dot="dots" data-corner="dot" data-seed="44"></div></div></div>
+          <div class="body"><div class="t">Wi‑Fi « NS-Studio »</div><div class="s">Wi‑Fi · 24 sept.</div></div>
+          <div class="foot"><span class="n subtle">Non suivi</span>
+            <button class="icon-btn" aria-label="Télécharger" onclick="event.preventDefault()"><i data-i="download"></i></button>
+            <button class="icon-btn danger" data-confirm aria-label="Retirer" onclick="event.preventDefault()"><i data-i="trash"></i></button></div>
+        </a>
+      </div>
+
+      <h2 class="h3 mt-48 subtle">État vide (tout premier passage)</h2>
+      <div class="card empty mt-16">
+        <div data-ill="empty" style="background:var(--sky);border-radius:24px"></div>
+        <div>
+          <h2 class="h1" style="font-size:32px">Votre premier lien vous attend</h2>
+          <p class="lead mt-8">Collez un long lien pour le raccourcir, ou créez le QR de votre menu, de votre WhatsApp ou de votre Wi‑Fi. On s'occupe du reste.</p>
+          <div class="row mt-24 wrap-flex"><a class="btn btn-cta btn-lg" href="d-creer.html"><i data-i="plus"></i>Créer mon premier lien</a><a class="btn btn-ghost" href="d-bienvenue.html">Voir des exemples</a></div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+</div>
+<div class="note"><b>D · Mes liens &amp; QR.</b> Liens courts et QR dans une seule liste : un lien partagé sur WhatsApp est montré par son adresse, un lien imprimé par son QR. Nom lisible, adresse courte bien visible, visites (clics + scans). Les QR fixes proposent de devenir un lien court. <a href="index.html">← Sommaire</a></div>
+</body>
+</html>

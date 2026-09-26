@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A · Carte de visite — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="a.css">
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 32px; padding: 28px 0 64px; align-items: start; }
+  .crumb { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 14px; padding-top: 24px; }
+  .editor h1 { font-size: 24px; letter-spacing: -.02em; margin: 6px 0 4px; }
+  .editor .sub { color: var(--muted); }
+  .form-sec { margin-top: 20px; }
+  .form-sec h2 { font-size: 13px; font-weight: 600; margin-bottom: 14px; color: var(--muted); text-transform: none; }
+  .avatar-up { display: flex; align-items: center; gap: 14px; }
+  .avatar-up .av { width: 64px; height: 64px; border-radius: 18px; background: var(--brand); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 22px; }
+  .save-bar { position: sticky; bottom: 16px; margin-top: 20px; display: flex; align-items: center; gap: 10px; padding: 12px 14px; }
+
+  /* Téléphone de prévisualisation */
+  .phone-wrap { position: sticky; top: 88px; }
+  .phone-label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-bottom: 12px; justify-content: center; }
+  .phone { width: 340px; margin: 0 auto; border-radius: 44px; padding: 12px; background: #0b0d12; box-shadow: var(--shadow-lg); }
+  .screen { border-radius: 34px; overflow: hidden; background: #f6f7f9; min-height: 640px; color: #0f1115; }
+
+  /* La carte publique elle-même (identique sur la vraie page /c/slug) */
+  .vc-cover { height: 110px; background: #0060ff; position: relative; }
+  .vc-cover::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 80% 0%, rgba(255,255,255,.25), transparent 55%); }
+  .vc-body { padding: 0 20px 24px; margin-top: -40px; position: relative; }
+  .vc-av { width: 84px; height: 84px; border-radius: 24px; background: #fff; padding: 4px; box-shadow: 0 8px 24px -10px rgba(0,0,0,.3); }
+  .vc-av span { width: 100%; height: 100%; border-radius: 20px; background: #14152b; color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 26px; }
+  .vc-name { font-size: 22px; font-weight: 700; letter-spacing: -.02em; margin-top: 12px; }
+  .vc-role { color: #5d6474; font-size: 14px; margin-top: 2px; }
+  .vc-quick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 18px; }
+  .vc-quick a { display: grid; place-items: center; gap: 4px; padding: 12px 4px; border-radius: 14px; background: #fff; border: 1px solid #e5e7ec; font-size: 12px; font-weight: 600; color: #0f1115; }
+  .vc-quick .ico { color: #0057e6; width: 20px; height: 20px; }
+  .vc-list { margin-top: 12px; background: #fff; border: 1px solid #e5e7ec; border-radius: 16px; overflow: hidden; }
+  .vc-list a { display: flex; align-items: center; gap: 12px; padding: 13px 14px; font-size: 14px; }
+  .vc-list a + a { border-top: 1px solid #eef0f3; }
+  .vc-list .ico { color: #8c93a3; }
+  .vc-list small { display: block; color: #8c93a3; font-size: 11px; }
+  .vc-save { margin-top: 16px; width: 100%; height: 50px; border-radius: 14px; border: 0; background: #0060ff; color: #fff; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .vc-foot { text-align: center; font-size: 11px; color: #8c93a3; margin-top: 18px; }
+
+  @media (max-width: 960px) { .layout { grid-template-columns: 1fr; } .phone-wrap { position: static; } }
+  @media (max-width: 420px) { .phone { width: 100%; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="logo" href="a-generateur.html"><span class="logo-mark">l.</span><span>link<b>.cg</b></span></a>
+    <nav class="nav-links">
+      <a class="nav-link" href="a-generateur.html">Générateur QR</a>
+      <a class="nav-link" aria-current="page" href="a-dashboard.html">Mes liens</a>
+      <a class="nav-link" href="#">Tarifs</a>
+    </nav>
+    <div class="right">
+      <button class="icon-btn" data-theme-toggle aria-label="Changer de thème"><i data-i="moon"></i></button>
+      <span style="width:32px;height:32px;border-radius:50%;background:var(--fg);color:var(--bg);display:grid;place-items:center;font-weight:700;font-size:13px">CG</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <a class="crumb" href="a-dashboard.html"><i data-i="back" class="sm"></i>Mes liens</a>
+  <div class="layout">
+    <section class="editor">
+      <div class="row"><h1 class="grow">Carte de visite</h1><a class="btn btn-secondary btn-sm" href="#"><i data-i="external" class="sm"></i>Ouvrir</a><button class="btn btn-secondary btn-sm" data-copy="https://link.cg/celeste"><i data-i="copy" class="sm"></i>Copier</button></div>
+      <p class="sub"><span class="mono">link.cg/celeste</span> · les modifications sont visibles immédiatement, sans réimprimer.</p>
+
+      <div class="card card-pad form-sec">
+        <h2>Identité</h2>
+        <div class="avatar-up">
+          <span class="av">CG</span>
+          <div class="grow"><button class="btn btn-secondary btn-sm"><i data-i="photo" class="sm"></i>Ajouter une photo</button><div class="hint">Sinon, vos initiales sont affichées.</div></div>
+        </div>
+        <hr class="divider">
+        <label class="field"><span class="label">Nom complet</span><input class="input" value="Céleste GAKONO"></label>
+        <div class="grid-2" style="margin-top:14px">
+          <label class="field"><span class="label">Poste</span><input class="input" value="Direction artistique"></label>
+          <label class="field"><span class="label">Organisation</span><input class="input" value="NS Creative"></label>
+        </div>
+      </div>
+
+      <div class="card card-pad form-sec">
+        <h2>Coordonnées</h2>
+        <div class="grid-2">
+          <label class="field"><span class="label">Téléphone</span><input class="input" value="+242 06 555 12 34"></label>
+          <label class="field"><span class="label">WhatsApp <span class="opt">(optionnel)</span></span><input class="input" value="+242 06 555 12 34"></label>
+        </div>
+        <label class="field" style="margin-top:14px"><span class="label">Email</span><input class="input" value="contact@nscreative.cg"></label>
+        <label class="field"><span class="label">Site web <span class="opt">(optionnel)</span></span><input class="input" value="https://nscreative.cg"></label>
+      </div>
+
+      <div class="card card-pad form-sec">
+        <h2>Apparence</h2>
+        <div class="row" style="gap:10px" data-choice>
+          <button aria-pressed="true" style="width:36px;height:36px;border-radius:50%;border:3px solid var(--surface);background:#0060ff;box-shadow:0 0 0 2px #0060ff" aria-label="Bleu"></button>
+          <button aria-pressed="false" style="width:36px;height:36px;border-radius:50%;border:3px solid var(--surface);background:#14152b;box-shadow:0 0 0 1px var(--line)" aria-label="Encre"></button>
+          <button aria-pressed="false" style="width:36px;height:36px;border-radius:50%;border:3px solid var(--surface);background:#1f7a4d;box-shadow:0 0 0 1px var(--line)" aria-label="Forêt"></button>
+          <button aria-pressed="false" style="width:36px;height:36px;border-radius:50%;border:3px solid var(--surface);background:#c2410c;box-shadow:0 0 0 1px var(--line)" aria-label="Terre"></button>
+        </div>
+      </div>
+
+      <div class="card save-bar">
+        <span class="unsaved" style="font-size:13px;color:var(--warn);display:flex;align-items:center;gap:6px"><span class="dot"></span>2 modifications non enregistrées</span>
+        <button class="btn btn-ghost" style="margin-left:auto">Annuler</button>
+        <button class="btn btn-primary">Enregistrer</button>
+      </div>
+    </section>
+
+    <aside class="phone-wrap">
+      <div class="phone-label"><i data-i="eye" class="sm"></i>Ce que voient vos contacts</div>
+      <div class="phone"><div class="screen">
+        <div class="vc-cover"></div>
+        <div class="vc-body">
+          <div class="vc-av"><span>CG</span></div>
+          <div class="vc-name">Céleste GAKONO</div>
+          <div class="vc-role">Direction artistique · NS Creative</div>
+          <div class="vc-quick">
+            <a href="#"><i data-i="phone"></i>Appeler</a>
+            <a href="#"><i data-i="sms"></i>WhatsApp</a>
+            <a href="#"><i data-i="mail"></i>Email</a>
+          </div>
+          <div class="vc-list">
+            <a href="#"><i data-i="phone"></i><span><small>Téléphone</small>+242 06 555 12 34</span></a>
+            <a href="#"><i data-i="mail"></i><span><small>Email</small>contact@nscreative.cg</span></a>
+            <a href="#"><i data-i="globe"></i><span><small>Site web</small>nscreative.cg</span></a>
+          </div>
+          <button class="vc-save"><i data-i="contact"></i>Ajouter aux contacts</button>
+          <div class="vc-foot">Carte créée avec link.cg</div>
+        </div>
+      </div></div>
+    </aside>
+  </div>
+</main>
+
+<div class="note"><b>Direction A · Carte.</b> Éditeur avec libellés (plus de champs sans titre) et aperçu téléphone en direct. La page publique gagne des actions rapides (appel, WhatsApp, email), des icônes et un gros bouton « Ajouter aux contacts ». <a href="index.html">← Sommaire</a></div>
+</body>
+</html>

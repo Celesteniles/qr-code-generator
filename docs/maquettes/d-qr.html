@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D · Fiche d'un lien — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="d.css">
+<script src="d.js"></script>
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  .fiche { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 32px; align-items: start; margin-top: 8px; }
+  .left { position: sticky; top: 24px; display: grid; gap: 14px; }
+  .addr { display: flex; align-items: center; gap: 6px; padding: 6px 6px 6px 16px; border-radius: 99px; background: var(--soft); font-family: var(--f-mono); font-size: 13px; }
+  .addr span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sec { padding: 26px; }
+  .sec + .sec { margin-top: 16px; }
+  .sec-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 18px; }
+  .sec-head .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0; }
+  .sec-head p { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .history { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 2px; }
+  .history li { display: flex; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 12px; font-size: 13px; }
+  .history li:hover { background: var(--soft); }
+  .history .when { color: var(--subtle); width: 92px; flex-shrink: 0; }
+  .history .what { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .kpi { padding: 14px 16px; border-radius: 16px; background: var(--soft); }
+  .kpi .v { font-family: var(--f-display); font-weight: 700; font-size: 28px; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .kpi .k { font-size: 12px; color: var(--muted); }
+  .bars { display: flex; align-items: flex-end; gap: 5px; height: 120px; margin-top: 18px; }
+  .bars span { flex: 1; border-radius: 6px 6px 3px 3px; background: var(--sky); position: relative; }
+  .bars span.fri { background: var(--brand); }
+  .split { display: flex; height: 12px; border-radius: 99px; overflow: hidden; margin-top: 10px; }
+  .legend { display: flex; gap: 16px; font-size: 13px; margin-top: 10px; color: var(--muted); }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .danger { box-shadow: inset 0 0 0 1.5px var(--bad-tint); background: transparent; }
+  @media (max-width: 1100px) { .fiche { grid-template-columns: 300px minmax(0, 1fr); } }
+  @media (max-width: 900px) { .fiche { grid-template-columns: minmax(0, 1fr); } .left { position: static; } .kpis { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body data-page="stats" data-state="user">
+<div class="app">
+  <aside class="side" data-shell></aside>
+  <div class="main"><div class="sheet">
+    <div class="topline">
+      <a class="logo mob-only" href="d-accueil.html"><span class="logo-mark"></span></a>
+      <a class="btn btn-ghost btn-sm" href="d-mes-qr.html"><i data-i="back" class="sm"></i>Mes liens &amp; QR</a>
+    </div>
+    <div class="content">
+      <div class="row wrap-flex">
+        <h1 class="h1">Menu du restaurant</h1>
+        <span class="pill pill-ok"><span class="dot"></span>En ligne</span>
+        <span class="pill pill-soft"><i data-i="link"></i>Lien court + QR</span>
+      </div>
+
+      <div class="fiche mt-24">
+        <!-- Colonne QR -->
+        <aside class="left">
+          <div class="board"><div class="qrbox"><div data-qr data-size="240" data-fg="#7a2e12" data-bg="#fff" data-seed="8" data-logo="MW" data-logo-bg="#7a2e12"></div></div></div>
+          <div class="addr"><span>link.cg/menu-mamiwata</span><button class="icon-btn" data-copy="https://link.cg/menu-mamiwata" aria-label="Copier le lien"><i data-i="copy" class="sm"></i></button><button class="icon-btn" aria-label="Partager"><i data-i="share" class="sm"></i></button></div>
+          <button class="btn btn-lg btn-block" style="background:#1f9d63;color:#fff"><i data-i="share"></i>Partager le lien sur WhatsApp</button>
+          <button class="btn btn-cta btn-lg btn-block"><i data-i="download"></i>Télécharger le QR</button>
+          <button class="btn btn-soft btn-block" data-open="#style"><i data-i="sparkles" class="sm"></i>Changer le style</button>
+          <p class="subtle xs center">Changer le style du QR crée un nouveau visuel : réimprimez seulement si vous le souhaitez. Le lien, lui, ne change jamais.</p>
+        </aside>
+
+        <!-- Colonne réglages -->
+        <div>
+          <section class="card sec">
+            <div class="sec-head"><span class="ic" style="background:var(--brand-tint);color:var(--brand)"><i data-i="link"></i></span>
+              <div><h2 class="h2">Où mène ce lien ?</h2><p>Changez la destination quand vous voulez : le lien partagé et le QR imprimé suivent immédiatement.</p></div></div>
+            <div class="row" style="align-items:stretch;gap:10px">
+              <input class="input grow" value="https://drive.google.com/file/d/1xA…/menu-septembre.pdf" aria-label="Destination">
+              <button class="btn btn-cta" style="height:52px">Mettre à jour</button>
+            </div>
+            <div class="tip mint mt-16"><span class="tip-ico"><i data-i="check" class="sm"></i></span><div><strong>Testé à l'instant</strong>La page s'ouvre correctement sur téléphone.</div></div>
+            <ul class="history">
+              <li><span class="when">1er sept.</span><span class="what">menu-septembre.pdf</span><span class="pill pill-ok">Actuelle</span></li>
+              <li><span class="when">3 août</span><span class="what subtle">menu-aout.pdf</span><button class="btn btn-ghost btn-sm">Revenir</button></li>
+              <li><span class="when">12 juil.</span><span class="what subtle">menu-juillet.pdf</span><button class="btn btn-ghost btn-sm">Revenir</button></li>
+            </ul>
+          </section>
+
+          <section class="card sec">
+            <div class="sec-head"><span class="ic" style="background:var(--sun);color:#7a4b00"><i data-i="chart"></i></span>
+              <div class="grow"><h2 class="h2">Qui l'ouvre ?</h2><p>Clics sur le lien et scans du QR, comptés sans collecter de données personnelles.</p></div>
+              <div class="seg" data-choice><button aria-pressed="false">7 j</button><button aria-pressed="true">30 j</button><button aria-pressed="false">Tout</button></div></div>
+            <div class="kpis">
+              <div class="kpi"><div class="v">842</div><div class="k">visites ce mois</div></div>
+              <div class="kpi"><div class="v" style="color:var(--ok)">+24 %</div><div class="k">vs mois dernier</div></div>
+              <div class="kpi"><div class="v">5 120</div><div class="k">depuis l'impression</div></div>
+            </div>
+            <div class="bars" aria-hidden="true">
+              <span style="height:30%"></span><span style="height:28%"></span><span style="height:34%"></span><span style="height:40%"></span><span class="fri" style="height:88%"></span><span style="height:70%"></span><span style="height:22%"></span>
+              <span style="height:32%"></span><span style="height:30%"></span><span style="height:36%"></span><span style="height:44%"></span><span class="fri" style="height:92%"></span><span style="height:74%"></span><span style="height:26%"></span>
+              <span style="height:34%"></span><span style="height:33%"></span><span style="height:38%"></span><span style="height:46%"></span><span class="fri" style="height:96%"></span><span style="height:78%"></span><span style="height:24%"></span>
+              <span style="height:36%"></span><span style="height:35%"></span><span style="height:42%"></span><span style="height:50%"></span><span class="fri" style="height:100%"></span><span style="height:80%"></span><span style="height:28%"></span>
+            </div>
+            <div class="tip mt-16"><span class="tip-ico"><i data-i="sparkles" class="sm"></i></span><div><strong>Le vendredi soir, c'est votre moment</strong>Vos clients ouvrent le menu 2,5 fois plus le vendredi entre 19 h et 22 h. Pensez à y mettre en avant vos plats du jour.</div></div>
+            <div class="mt-24"><div class="small" style="font-weight:600">Par où arrivent-ils ?</div>
+              <div class="split"><span style="width:64%;background:var(--brand)"></span><span style="width:36%;background:var(--coral)"></span></div>
+              <div class="legend"><span><i style="background:var(--brand)"></i>Scans du QR 64 %</span><span><i style="background:var(--coral)"></i>Clics sur le lien 36 %</span></div></div>
+            <div class="mt-24"><div class="small" style="font-weight:600">Téléphones</div>
+              <div class="split"><span style="width:78%;background:var(--leaf)"></span><span style="width:22%;background:var(--ink)"></span></div>
+              <div class="legend"><span><i style="background:var(--leaf)"></i>Android 78 %</span><span><i style="background:var(--ink)"></i>iPhone 22 %</span></div></div>
+          </section>
+
+          <section class="card sec">
+            <div class="row">
+              <div class="grow"><h2 class="h3">Lien en ligne</h2><p class="muted small mt-4">En pause, le lien et son QR affichent une page neutre « Ce lien n'est plus actif » au lieu d'une erreur. Vous pouvez le réactiver quand vous voulez.</p></div>
+              <button class="switch" role="switch" aria-checked="true" aria-label="Lien en ligne" onclick="this.setAttribute('aria-checked', this.getAttribute('aria-checked')!=='true')"></button>
+            </div>
+          </section>
+
+          <section class="card sec danger">
+            <div class="row wrap-flex">
+              <div class="grow"><h2 class="h3">Supprimer ce lien</h2><p class="muted small mt-4">Le lien partagé et les QR imprimés ne mèneront plus nulle part, et l'adresse sera libérée. Préférez la pause si vous hésitez.</p></div>
+              <button class="btn btn-soft" data-confirm style="color:var(--bad)"><i data-i="trash" class="sm"></i>Supprimer</button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="drawer" id="style" hidden>
+  <div class="scrim" data-close></div>
+  <div class="panel" role="dialog" aria-label="Changer le style">
+    <div class="panel-head"><h2 class="h2 grow">Style du QR</h2><button class="icon-btn" data-close aria-label="Fermer"><i data-i="x"></i></button></div>
+    <div class="panel-body">
+      <div class="board" style="padding:24px"><div class="qrbox"><div id="sq" data-qr data-size="190" data-fg="#7a2e12" data-bg="#fff" data-seed="8" data-logo="MW" data-logo-bg="#7a2e12"></div></div></div>
+      <div class="small mt-24" style="font-weight:600">Couleur</div>
+      <div class="row wrap-flex mt-8" data-choice="#sq" style="gap:10px">
+        <button class="swatch" style="background:#16161d" aria-pressed="false" data-set='{"fg":"#16161d","fg2":""}' aria-label="Encre"></button>
+        <button class="swatch" style="background:#7a2e12" aria-pressed="true" data-set='{"fg":"#7a2e12","fg2":""}' aria-label="Terre"></button>
+        <button class="swatch" style="background:#0060ff" aria-pressed="false" data-set='{"fg":"#0060ff","fg2":""}' aria-label="Bleu"></button>
+        <button class="swatch" style="background:linear-gradient(135deg,#0060ff,#7c3aed)" aria-pressed="false" data-set='{"fg":"#0060ff","fg2":"#7c3aed"}' aria-label="Dégradé"></button>
+        <button class="swatch" style="background:#1f9d63" aria-pressed="false" data-set='{"fg":"#1f9d63","fg2":""}' aria-label="Forêt"></button>
+      </div>
+      <div class="small mt-24" style="font-weight:600">Points</div>
+      <div class="mt-8" data-choice="#sq" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+        <button class="shape" aria-pressed="false" data-set='{"dot":"square"}'><span data-glyph="square"></span></button>
+        <button class="shape" aria-pressed="true" data-set='{"dot":"rounded"}'><span data-glyph="rounded"></span></button>
+        <button class="shape" aria-pressed="false" data-set='{"dot":"dots"}'><span data-glyph="dots"></span></button>
+        <button class="shape" aria-pressed="false" data-set='{"dot":"classy"}'><span data-glyph="classy"></span></button>
+      </div>
+      <div class="small mt-24" style="font-weight:600">Coins</div>
+      <div class="mt-8" data-choice="#sq" style="display:grid;grid-template-columns:repeat(3,72px);gap:8px">
+        <button class="shape" aria-pressed="false" data-set='{"corner":"square"}'><span data-glyph="c-square"></span></button>
+        <button class="shape" aria-pressed="true" data-set='{"corner":"rounded"}'><span data-glyph="c-rounded"></span></button>
+        <button class="shape" aria-pressed="false" data-set='{"corner":"dot"}'><span data-glyph="c-dot"></span></button>
+      </div>
+      <div class="tip blue mt-24"><span class="tip-ico"><i data-i="refresh" class="sm"></i></span><div><strong>Rien ne casse</strong>Les QR déjà imprimés continuent de fonctionner, quel que soit le style.</div></div>
+    </div>
+    <div class="panel-foot"><button class="btn btn-ghost" data-close>Annuler</button><button class="btn btn-cta" style="margin-left:auto">Enregistrer le style</button></div>
+  </div>
+</div>
+<div class="note"><b>D · Fiche d'un lien.</b> Un lien court et son QR sur une page : partager le lien, télécharger le QR, où il mène (historique, retour arrière), qui l'ouvre (visites, QR vs lien, interprétation en clair), pause et suppression expliquées. <a href="index.html">← Sommaire</a></div>
+</body>
+</html>

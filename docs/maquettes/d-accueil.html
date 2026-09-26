@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D · Accueil — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="d.css">
+<script src="d.js"></script>
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  .intents { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 20px; }
+  .intent { text-align: left; border: 0; border-radius: 22px; padding: 12px; display: flex; flex-direction: column; gap: 10px; background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--line-strong); transition: transform .15s, box-shadow .15s; }
+  .intent:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--ink), 0 16px 36px -24px rgba(22,22,29,.5); }
+  .intent .ill { border-radius: 14px; overflow: hidden; }
+  .intent .row strong { font-size: 15px; }
+  .intent .row .ico { margin-left: auto; color: var(--subtle); }
+  .how { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 20px; }
+  .how .zone { padding: 20px; }
+  .how .n { width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: var(--bg); display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+  .recent { display: flex; gap: 12px; overflow-x: auto; padding: 4px 2px 12px; margin-top: 16px; }
+  .rq { flex: 0 0 188px; padding: 12px; border-radius: 20px; background: var(--soft); box-shadow: inset 0 0 0 1px var(--line); }
+  .rq .linktop { height: 164px; border-radius: 14px; background: var(--surface); display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 10px; padding: 14px; box-shadow: 0 10px 24px -16px rgba(22,22,29,.5); }
+  .rq .linktop .linkchip { font-size: 15px; }
+  .rq .qr-thumb { display: grid; place-items: center; }
+  .rq strong { display: block; font-size: 14px; margin-top: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rq span { font-size: 12px; color: var(--muted); }
+
+  .insight { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; margin-top: 24px; align-items: start; }
+  .bars { display: flex; align-items: flex-end; gap: 5px; height: 110px; margin-top: 18px; }
+  .bars span { flex: 1; border-radius: 6px 6px 3px 3px; background: var(--soft); }
+  .bars span.hi { background: var(--brand); }
+  .todo { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 4px; }
+  .todo li { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; font-size: 14px; }
+  .todo li:hover { background: var(--soft); }
+  .todo .ck { width: 24px; height: 24px; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--line); display: grid; place-items: center; flex-shrink: 0; }
+  .todo li.done { color: var(--subtle); text-decoration: line-through; }
+  .todo li.done .ck { background: var(--ok); box-shadow: none; color: #fff; }
+  .todo li .link { margin-left: auto; font-size: 13px; }
+  @media (max-width: 1100px) { .intents { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 860px) { .how, .insight { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .intents { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body data-page="accueil" data-state="guest">
+<div class="app">
+  <aside class="side" data-shell></aside>
+  <div class="main"><div class="sheet">
+    <div class="topline">
+      <a class="logo mob-only" href="d-accueil.html"><span class="logo-mark"></span></a>
+      <span class="eyebrow only-guest"><i data-i="sparkles" class="sm"></i>Gratuit · sans inscription</span>
+      <span class="eyebrow only-user">Samedi 26 septembre</span>
+      <div class="row" style="margin-left:auto">
+        <a class="btn btn-ghost btn-sm only-guest" href="d-bienvenue.html">Visite guidée</a>
+        <a class="btn btn-soft btn-sm only-guest" href="d-connexion.html">Se connecter</a>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- ───────── Visiteur ───────── -->
+      <div class="only-guest">
+        <h1 class="display" style="max-width:17ch">Partagez tout, en <span class="hl">un lien</span> ou <span class="hl">un QR</span>.</h1>
+        <p class="lead mt-16" style="max-width:60ch">Raccourcissez vos liens pour WhatsApp, Facebook ou vos SMS. Créez des QR codes pour vos affiches et vos tables. Les deux restent modifiables et vous disent combien de personnes les ouvrent.</p>
+
+        <form class="shortener mt-32" onsubmit="event.preventDefault();document.getElementById('sr').hidden=false">
+          <i data-i="link"></i>
+          <input value="https://boutique-mamiwata.com/produits/pagne-wax-bleu?utm_source=whatsapp&amp;ref=sept" aria-label="Lien à raccourcir">
+          <button class="btn btn-cta" type="submit">Raccourcir</button>
+        </form>
+        <div class="short-result" id="sr" hidden>
+          <span class="linkchip lg"><span class="host">link.cg/</span>pagne-wax</span>
+          <span class="from">boutique-mamiwata.com/produits/pagne-wax-bleu?utm_source=…</span>
+          <div class="row" style="margin-left:auto;gap:10px">
+            <div class="qr-thumb" style="padding:4px;border-radius:10px"><div data-qr data-size="44" data-fg="#16161d" data-bg="#fff" data-seed="52"></div></div>
+            <a class="btn btn-brand btn-sm" href="d-connexion.html?mode=inscription">L'activer · compte gratuit</a>
+          </div>
+        </div>
+        <p class="help"><i data-i="sparkles"></i>Essayez : appuyez sur « Raccourcir ». Le QR du lien est inclus, prêt à imprimer.</p>
+
+        <h2 class="h2 mt-48">Ou choisissez ce que vous créez</h2>
+        <div class="products mt-16">
+          <a class="product" href="d-creer.html?mode=lien">
+            <div class="ill" data-ill="shortlink" data-h="140" style="background:var(--sky)"></div>
+            <div class="p-body">
+              <div class="p-title">Lien court <i data-i="arrow" class="sm"></i></div>
+              <p>Une adresse <span class="mono">link.cg/…</span> facile à partager et à retenir. Destination modifiable, visites comptées.</p>
+              <div class="tags"><span class="pill pill-brand"><i data-i="qr"></i>QR inclus</span><span class="pill pill-soft">Selon le téléphone</span></div>
+            </div>
+          </a>
+          <a class="product" href="d-creer.html?mode=qr">
+            <div class="ill" data-ill="welcome" data-h="140" style="background:var(--sun)"></div>
+            <div class="p-body">
+              <div class="p-title">QR code <i data-i="arrow" class="sm"></i></div>
+              <p>Pour vos affiches, menus et emballages. Fixe et gratuit sans compte, ou modifiable grâce à un lien court.</p>
+              <div class="tags"><span class="pill pill-ok">Sans compte</span><span class="pill pill-soft">PNG · SVG · PDF</span></div>
+            </div>
+          </a>
+          <a class="product" href="d-carte.html">
+            <div class="ill" data-ill="card" data-h="140" style="background:var(--coral-tint)"></div>
+            <div class="p-body">
+              <div class="p-title">Carte de visite <i data-i="arrow" class="sm"></i></div>
+              <p>Votre profil pro en un lien et un QR : on vous appelle, on vous écrit sur WhatsApp, on enregistre votre contact.</p>
+              <div class="tags"><span class="pill pill-brand"><i data-i="link"></i>Lien + QR</span></div>
+            </div>
+          </a>
+        </div>
+        <div class="tip blue mt-16"><span class="tip-ico"><i data-i="refresh" class="sm"></i></span><div><strong>Lien ou QR ? Pas besoin de choisir.</strong>Chaque lien court a son QR, et un QR modifiable, c'est un lien court. Partagez l'un sur WhatsApp, imprimez l'autre : c'est la même destination, les mêmes statistiques.</div></div>
+
+        <h2 class="h2 mt-48">Idées pour commencer</h2>
+        <div class="intents">
+          <a class="intent" href="d-creer.html?mode=lien&amp;type=whatsapp"><div class="ill" data-ill="share" data-h="120" style="background:var(--mint)"></div><div class="row"><strong>Un lien pour mes statuts WhatsApp</strong><i data-i="arrow" class="sm"></i></div></a>
+          <a class="intent" href="d-creer.html?mode=qr&amp;type=menu"><div class="ill" data-ill="menu" data-h="120" style="background:var(--sun)"></div><div class="row"><strong>Le QR de mon menu</strong><i data-i="arrow" class="sm"></i></div></a>
+          <a class="intent" href="d-creer.html?mode=lien&amp;type=app"><div class="ill" data-ill="app" data-h="120" style="background:var(--lilac)"></div><div class="row"><strong>Un lien vers mon application</strong><i data-i="arrow" class="sm"></i></div></a>
+          <a class="intent" href="d-creer.html?mode=qr&amp;type=whatsapp"><div class="ill" data-ill="whatsapp" data-h="120" style="background:var(--mint)"></div><div class="row"><strong>Un QR « Écrivez-nous »</strong><i data-i="arrow" class="sm"></i></div></a>
+          <a class="intent" href="d-creer.html?mode=qr&amp;type=wifi"><div class="ill" data-ill="wifi" data-h="120" style="background:var(--mint)"></div><div class="row"><strong>Le QR de mon Wi‑Fi</strong><i data-i="arrow" class="sm"></i></div></a>
+          <a class="intent" href="d-creer.html?mode=lien"><div class="ill" data-ill="link" data-h="120" style="background:var(--sky)"></div><div class="row"><strong>Un lien propre pour ma bio</strong><i data-i="arrow" class="sm"></i></div></a>
+        </div>
+
+        <h2 class="h2 mt-48">Comment ça marche</h2>
+        <div class="how">
+          <div class="zone"><span class="n">1</span><h3 class="h3 mt-12">Collez un lien ou dites ce que le QR ouvre</h3><p class="muted small mt-4">Un site, votre WhatsApp, votre Wi‑Fi… on s'adapte.</p></div>
+          <div class="zone"><span class="n">2</span><h3 class="h3 mt-12">Choisissez l'adresse et le style</h3><p class="muted small mt-4">link.cg/votre-nom, couleurs, logo au centre. Aperçu en direct.</p></div>
+          <div class="zone"><span class="n">3</span><h3 class="h3 mt-12">Partagez ou imprimez</h3><p class="muted small mt-4">Le lien sur WhatsApp, le QR sur vos supports. Changez la destination quand vous voulez.</p></div>
+        </div>
+
+        <div class="row mt-48"><h2 class="h2">Sur cet appareil</h2><a class="link small" style="margin-left:auto" href="d-mes-qr.html">Tout voir <i data-i="arrow" class="sm"></i></a></div>
+        <div class="recent">
+          <a class="rq" href="d-creer.html"><div class="qr-thumb"><div data-qr data-size="148" data-fg="#16161d" data-bg="#fff" data-seed="11"></div></div><strong>nscreative.cg/promo</strong><span>QR fixe · aujourd'hui</span></a>
+          <a class="rq" href="d-creer.html"><div class="qr-thumb"><div data-qr data-size="148" data-fg="#1f9d63" data-bg="#fff" data-dot="dots" data-corner="dot" data-seed="44"></div></div><strong>Wi‑Fi « NS-Studio »</strong><span>QR fixe · 24 sept.</span></a>
+        </div>
+
+        <div class="cta-banner mt-32">
+          <div>
+            <span class="pill pill-sun">Compte gratuit</span>
+            <h2 class="h1 mt-12" style="font-size:32px">Des liens qui travaillent pour vous.</h2>
+            <p>Avec un compte : 25 liens courts modifiables à vie, leur QR, et le nombre de visites chaque jour. Paiement mobile money pour l'offre Pro.</p>
+            <a class="btn btn-brand btn-lg" href="d-connexion.html?mode=inscription">Créer mon compte gratuit <i data-i="arrow"></i></a>
+          </div>
+          <div class="ill" data-ill="stats"></div>
+        </div>
+      </div>
+
+      <!-- ───────── Connecté ───────── -->
+      <div class="only-user">
+        <h1 class="display" style="max-width:19ch">Bonjour Céleste. Vos liens et QR ont été ouverts <span class="hl">2 533 fois</span> ce mois-ci.</h1>
+        <p class="lead mt-16">C'est 18 % de plus qu'en août. Votre lien <b>pagne-wax</b>, partagé sur WhatsApp, fait le plus de visites.</p>
+
+        <form class="shortener mt-24" onsubmit="event.preventDefault()">
+          <i data-i="link"></i>
+          <input placeholder="Collez un long lien pour le raccourcir…" aria-label="Lien à raccourcir">
+          <button class="btn btn-cta" type="submit">Raccourcir</button>
+        </form>
+
+        <div class="insight">
+          <div class="card pad">
+            <div class="row"><h3 class="h3">Visites par jour</h3><div class="seg" data-choice style="margin-left:auto"><button aria-pressed="false">7 j</button><button aria-pressed="true">30 j</button></div></div>
+            <p class="subtle xs mt-4">Clics sur vos liens + scans de vos QR</p>
+            <div class="bars" aria-hidden="true">
+              <span style="height:30%"></span><span style="height:42%"></span><span style="height:38%"></span><span style="height:50%"></span><span style="height:46%"></span><span style="height:60%"></span><span style="height:35%"></span><span style="height:40%"></span><span style="height:55%"></span><span style="height:48%"></span><span style="height:62%"></span><span style="height:58%"></span><span style="height:70%"></span><span style="height:44%"></span><span style="height:50%"></span><span style="height:66%"></span><span style="height:60%"></span><span style="height:72%"></span><span style="height:68%"></span><span style="height:80%"></span><span style="height:52%"></span><span style="height:58%"></span><span style="height:74%"></span><span style="height:70%"></span><span style="height:84%"></span><span style="height:78%"></span><span style="height:92%"></span><span style="height:64%"></span><span class="hi" style="height:88%"></span><span class="hi" style="height:100%"></span>
+            </div>
+            <div class="row mt-8 xs subtle"><span>28 août</span><span style="margin-left:auto">Aujourd'hui</span></div>
+          </div>
+          <div class="card pad">
+            <h3 class="h3">Bien démarrer</h3>
+            <p class="muted small mt-4">3 sur 5 · encore deux étapes pour tirer le meilleur de link.cg</p>
+            <div class="meter mt-12"><span style="width:60%;background:var(--ok)"></span></div>
+            <ul class="todo">
+              <li class="done"><span class="ck"><i data-i="check" class="sm"></i></span>Créer votre premier lien court</li>
+              <li class="done"><span class="ck"><i data-i="check" class="sm"></i></span>Imprimer un QR modifiable</li>
+              <li class="done"><span class="ck"><i data-i="check" class="sm"></i></span>Changer une destination</li>
+              <li><span class="ck"></span>Compléter votre carte de visite<a class="link" href="d-carte.html">Faire</a></li>
+              <li><span class="ck"></span>Essayer un lien selon le téléphone<a class="link" href="d-creer.html?mode=lien&amp;type=app">Faire</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="row mt-48"><h2 class="h2">Vos liens et QR récents</h2><a class="link small" style="margin-left:auto" href="d-mes-qr.html">Tout voir <i data-i="arrow" class="sm"></i></a></div>
+        <div class="recent">
+          <a class="rq" href="d-qr.html"><div class="linktop"><span class="linkchip"><span class="host">link.cg/</span>pagne-wax</span><span class="pill pill-ok">Partagé sur WhatsApp</span></div><strong>Pagne wax bleu</strong><span>1 902 visites · lien court</span></a>
+          <a class="rq" href="d-qr.html"><div class="qr-thumb"><div data-qr data-size="148" data-fg="#7a2e12" data-bg="#fff" data-seed="8"></div></div><strong>Menu du restaurant</strong><span>842 visites · QR modifiable</span></a>
+          <a class="rq" href="d-qr.html"><div class="qr-thumb"><div data-qr data-size="148" data-fg="#0060ff" data-bg="#fff" data-dot="dots" data-corner="dot" data-seed="21" data-logo="NS"></div></div><strong>Promo de rentrée</strong><span>1 284 visites · QR modifiable</span></a>
+          <a class="rq" href="d-creer.html" style="display:grid;place-items:center;text-align:center;background:transparent;box-shadow:inset 0 0 0 1.5px var(--line-strong)"><div><span style="width:48px;height:48px;border-radius:16px;background:var(--ink);color:var(--bg);display:grid;place-items:center;margin:0 auto"><i data-i="plus"></i></span><strong>Créer</strong><span>Lien court, QR, carte</span></div></a>
+        </div>
+
+        <div class="tip mt-24"><span class="tip-ico"><i data-i="sparkles" class="sm"></i></span><div><strong>Idée</strong>Votre lien « salon-2025 » est en pause depuis 3 mois. Réutilisez-le pour le salon 2026 : même lien, même QR imprimé, nouvelle destination. <a class="link" href="d-qr.html">Le mettre à jour</a></div></div>
+      </div>
+    </div>
+  </div></div>
+</div>
+<div class="note"><b>D · Accueil.</b> Le raccourcisseur en tête dit tout de suite « on fait aussi des liens ». Puis trois créations à égalité (Lien court, QR code, Carte) et la règle « un lien court a toujours son QR ». Connecté : visites (clics + scans), raccourcisseur rapide, liens récents. Basculez l'aperçu en haut. <a href="index.html">← Sommaire</a></div>
+</body>
+</html>
