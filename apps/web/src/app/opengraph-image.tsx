@@ -1,115 +1,75 @@
 import { ImageResponse } from 'next/og'
+import { LOGO_BLUE, LOGO_DISC, LOGO_STROKE } from '@/components/kit/logo-mark'
+
+// Aperçu de partage (WhatsApp, Facebook…) : symbole link.cg, message de l'accueil.
 
 export const runtime = 'edge'
-export const alt = 'Générateur de QR Code gratuit — qr.nscreative.cg'
+export const alt = 'link.cg — Liens courts et QR codes, à votre image'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
-export default function Image() {
+const INK = '#16161d'
+const PAPER = '#efe9df'
+
+function Mark({ px, width }: { px: number; width: number }) {
+  return (
+    <svg width={px} height={px} viewBox="0 0 64 64">
+      <circle cx={LOGO_DISC.cx} cy={LOGO_DISC.cy} r={LOGO_DISC.r} fill={LOGO_BLUE} />
+      <path d={LOGO_STROKE} fill="none" stroke={LOGO_BLUE} strokeWidth={width + 3} strokeLinecap="round" strokeLinejoin="round" />
+      <path d={LOGO_STROKE} fill="none" stroke="#fff" strokeWidth={width} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+/**
+ * Bricolage Grotesque (titres de l'app) depuis Google Fonts, en TTF (le moteur de
+ * rendu ne lit pas le woff2). En cas d'échec, police par défaut : l'image reste valide.
+ */
+async function bricolage(weight: number): Promise<ArrayBuffer | null> {
+  try {
+    const css = await (await fetch(`https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@${weight}`)).text()
+    const url = /src: url\(([^)]+)\) format\('(?:truetype|opentype)'\)/.exec(css)?.[1]
+    return url ? await (await fetch(url)).arrayBuffer() : null
+  } catch {
+    return null
+  }
+}
+
+export default async function Image() {
+  const [bold, medium] = await Promise.all([bricolage(800), bricolage(500)])
+  const fonts = [
+    ...(bold ? [{ name: 'Bricolage', data: bold, weight: 800 as const, style: 'normal' as const }] : []),
+    ...(medium ? [{ name: 'Bricolage', data: medium, weight: 500 as const, style: 'normal' as const }] : []),
+  ]
   return new ImageResponse(
     (
-      <div style={{ display: 'flex', width: '100%', height: '100%', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-
-        {/* ── Colonne gauche : contenu ── */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          padding: '64px 72px',
-          flex: 1,
-          background: '#fafafa',
-        }}>
-          {/* Badge URL */}
-          <div style={{ display: 'flex' }}>
-            <div style={{
-              background: '#eff6ff',
-              border: '1.5px solid #bfdbfe',
-              color: '#1d4ed8',
-              fontSize: 20,
-              fontWeight: 700,
-              padding: '6px 20px',
-              borderRadius: 100,
-              letterSpacing: '0.2px',
-            }}>
-              qr.nscreative.cg
+      <div style={{ display: 'flex', width: '100%', height: '100%', background: PAPER, color: INK, fontFamily: fonts.length ? 'Bricolage' : 'sans-serif' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '64px 0 64px 76px', flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+            <Mark px={64} width={6.5} />
+            <div style={{ display: 'flex', fontSize: 40, fontWeight: 800, letterSpacing: '-1.5px' }}>
+              link<span style={{ color: LOGO_BLUE }}>.cg</span>
             </div>
           </div>
 
-          {/* Titre + sous-titre */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <div style={{
-              fontSize: 76,
-              fontWeight: 800,
-              color: '#18181b',
-              letterSpacing: '-3px',
-              lineHeight: 1.0,
-            }}>
-              Générateur de QR Code
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', fontSize: 74, fontWeight: 800, letterSpacing: '-3px', lineHeight: 1.02 }}>
+              <span>Partagez tout,</span>
+              <span>en un lien ou un QR.</span>
             </div>
-            <div style={{
-              fontSize: 30,
-              color: '#71717a',
-              letterSpacing: '0.2px',
-            }}>
-              Gratuit · Instantané · Sans inscription
+            <div style={{ fontSize: 30, fontWeight: 500, color: '#4f4c44', lineHeight: 1.35, maxWidth: 640 }}>
+              Liens courts et QR codes à votre image. Gratuit, sans inscription.
             </div>
           </div>
 
-          {/* Pills fonctionnalités + branding */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <div style={{ display: 'flex', gap: 12 }}>
-              {['Couleurs & Dégradés', 'Logo intégré', 'Wi-Fi · vCard · Email', 'PNG / SVG'].map((label) => (
-                <div key={label} style={{
-                  padding: '7px 18px',
-                  background: 'white',
-                  border: '1.5px solid #e4e4e7',
-                  borderRadius: 100,
-                  fontSize: 17,
-                  color: '#52525b',
-                  fontWeight: 600,
-                }}>
-                  {label}
-                </div>
-              ))}
-            </div>
-            <div style={{ fontSize: 17, color: '#a1a1aa' }}>
-              Un outil par nscreative.cg
-            </div>
-          </div>
+          <div style={{ display: 'flex', fontSize: 22, fontWeight: 500, color: '#6b665b' }}>Par NS Creative · Brazzaville</div>
         </div>
 
-        {/* ── Colonne droite : icône ── */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: 340,
-          background: '#3b82f6',
-          gap: 20,
-        }}>
-          {/* Icône QR code */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 160,
-            height: 160,
-            background: 'rgba(255,255,255,0.15)',
-            borderRadius: 36,
-          }}>
-            <svg width="96" height="96" viewBox="0 0 20 20" fill="white">
-              <path fillRule="evenodd" d="M3 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 2V5h1v1H5zM3 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zm2 2v-1h1v1H5zM13 3a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1V4a1 1 0 00-1-1h-3zm1 2v1h1V5h-1z" clipRule="evenodd" />
-              <path d="M11 4a1 1 0 10-2 0v1a1 1 0 002 0V4zM10 7a1 1 0 011 1v1h2a1 1 0 110 2h-3a1 1 0 01-1-1V8a1 1 0 011-1zM16 9a1 1 0 100 2 1 1 0 000-2zM9 13a1 1 0 011-1h1a1 1 0 110 2v2a1 1 0 11-2 0v-3zM7 11a1 1 0 100-2H4a1 1 0 100 2h3zM17 13a1 1 0 01-1 1h-2a1 1 0 110-2h2a1 1 0 011 1zM16 17a1 1 0 100-2h-3a1 1 0 100 2h3z" />
-            </svg>
-          </div>
-          <div style={{ fontSize: 17, color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>
-            Free QR Generator
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 400 }}>
+          <Mark px={330} width={6.5} />
         </div>
-
       </div>
     ),
-    { ...size }
+    { ...size, fonts },
   )
 }

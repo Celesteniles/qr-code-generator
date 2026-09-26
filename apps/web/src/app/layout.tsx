@@ -25,16 +25,14 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://qr.nscreative.cg"),
   title: "link.cg — Liens courts et générateur de QR code gratuit",
   description: "Raccourcissez vos liens et créez des QR codes à votre image, gratuitement et sans inscription. Liens et QR modifiables après impression, avec leurs statistiques.",
+  // Symbole link.cg (piste A) ; fichiers générés par scripts/icons.mjs.
   icons: {
     icon: [
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icon.svg", type: "image/svg+xml" },
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
     ],
-    apple: [{ url: "/apple-touch-icon.png" }],
-    other: [
-      { rel: "android-chrome", url: "/android-chrome-192x192.png", sizes: "192x192" },
-      { rel: "android-chrome", url: "/android-chrome-512x512.png", sizes: "512x512" },
-    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
   },
   openGraph: {
     title: "link.cg — Liens courts et QR codes",
