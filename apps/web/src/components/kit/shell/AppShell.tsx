@@ -4,7 +4,7 @@ import Link, { useLinkStatus } from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
 import {
-  HomeIcon, LinkIcon, UserIcon, SparklesIcon, CreditCardIcon, PlusIcon, LockClosedIcon, ArrowRightIcon,
+  HomeIcon, LinkIcon, UserIcon, CreditCardIcon, PlusIcon, LockClosedIcon, ArrowRightIcon, QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline'
 import { Logo } from '../Logo'
 import { Illustration } from '../Illustration'
@@ -22,8 +22,9 @@ const NAV: NavItem[] = [
   { href: '/liens', label: 'Mes liens & QR', icon: LinkIcon },
   { href: '/carte', label: 'Carte de visite', icon: UserIcon, needsAccount: true },
 ]
+// La visite guidée n'est pas une rubrique : elle reste accessible par la pop-up
+// d'accueil, l'accueil visiteur, le menu mobile et le bouton d'aide en bas.
 const NAV_SECONDARY: NavItem[] = [
-  { href: '/bienvenue', label: 'Visite guidée', icon: SparklesIcon },
   { href: '/offres', label: 'Offres', icon: CreditCardIcon },
 ]
 
@@ -121,6 +122,9 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
             ) : (
               <span className="grow text-xs text-subtle">Mode visiteur</span>
             )}
+            <Link href="/bienvenue" className="icon-btn" aria-label="Aide : visite guidée" title="Visite guidée">
+              <QuestionMarkCircleIcon />
+            </Link>
             <ThemeToggle />
           </div>
         </div>
