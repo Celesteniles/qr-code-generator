@@ -49,7 +49,7 @@ export default {
     )
 
     // L'enregistrement du scan part APRÈS la réponse, sans jamais la retarder.
-    ctx.waitUntil(logScan(env, request, slug, resolution))
+    ctx.waitUntil(logScan(env, request, url, slug, resolution))
 
     return toResponse(resolution)
   },
@@ -82,7 +82,14 @@ function notFound(): Response {
   })
 }
 
-async function logScan(env: Env, request: Request, slug: string, r: Resolution): Promise<void> {
+// Colonnes de link_scans (l'ordre ne doit jamais changer : les requêtes du
+// dashboard lisent blobN par position) :
+//   blob1 slug · blob2 résultat · blob3 pays · blob4 user-agent · blob5 referer
+//   blob6 ville · blob7 canal ('qr' = scan d'un QR, adresse suivie de « ?q » ;
+//   'link' = clic). Les lignes antérieures ont blob6/blob7 vides.
+// Les robots (aperçus de lien…) sont enregistrés tels quels et écartés à la
+// lecture (humanVisitSql de @link/shared) : la donnée brute reste complète.
+async function logScan(env: Env, request: Request, url: URL, slug: string, r: Resolution): Promise<void> {
   if (!env.SCANS) return
   const cf = (request as unknown as { cf?: IncomingRequestCfProperties }).cf
   env.SCANS.writeDataPoint({
@@ -92,6 +99,8 @@ async function logScan(env: Env, request: Request, slug: string, r: Resolution):
       cf?.country ?? 'XX',
       request.headers.get('user-agent') ?? '',
       request.headers.get('referer') ?? '',
+      cf?.city ?? '',
+      url.searchParams.has('q') ? 'qr' : 'link',
     ],
     doubles: [1],
     indexes: [slug],
