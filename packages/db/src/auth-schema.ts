@@ -53,5 +53,18 @@ export const verification = sqliteTable('verification', {
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
 })
 
+/**
+ * Compteurs de limitation de débit de Better Auth (rateLimit.storage = 'database').
+ * En base plutôt qu'en mémoire : sur Workers, chaque isolat a sa propre mémoire,
+ * un compteur en mémoire ne limiterait presque rien. `id` est requis par
+ * l'adaptateur Drizzle (mises à jour atomiques par id) ; `lastRequest` en ms.
+ */
+export const rateLimit = sqliteTable('rate_limit', {
+  id: text('id').primaryKey(),
+  key: text('key').notNull().unique(),
+  count: integer('count').notNull(),
+  lastRequest: integer('last_request').notNull(),
+})
+
 /** Regroupé pour l'adaptateur Drizzle de Better Auth : drizzleAdapter(db, { schema: authSchema }). */
-export const authSchema = { user, session, account, verification }
+export const authSchema = { user, session, account, verification, rateLimit }
