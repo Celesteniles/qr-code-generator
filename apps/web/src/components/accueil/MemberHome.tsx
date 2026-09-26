@@ -7,10 +7,11 @@ import { QrCanvas } from '@/components/kit/QrCanvas'
 import type { Viewer } from '@/components/kit/shell/types'
 import { toDesign } from '@/lib/qr-design'
 import { getDb } from '@/server/data'
-import { getDailyVisits, getScanCounts } from '@/server/scans'
+import { getDailyVisits, getScanCounts, getWorkspaceInsights } from '@/server/scans'
 import type { SessionContext } from '@/server/session'
 import { Shortener } from './Shortener'
 import { VisitsChart } from './VisitsChart'
+import { VisitorsCard } from './VisitorsCard'
 import { qrLinkUrl } from '@/lib/short-link'
 
 // Accueil de l'inscrit. Tout ce qui est affiché se déduit de ses données réelles :
@@ -45,10 +46,11 @@ export async function MemberHome({ ctx, viewer }: { ctx: SessionContext; viewer:
   const db = getDb()
   const links = await getWorkspaceLinks(ctx.workspaceId)
   const slugs = links.map((l) => l.slug)
-  const [scans, designs, daily] = await Promise.all([
+  const [scans, designs, daily, visitors] = await Promise.all([
     getScanCounts(),
     getQrDesigns(db, links.map((l) => l.id)),
     slugs.length ? getDailyVisits(slugs, 30) : Promise.resolve([]),
+    slugs.length ? getWorkspaceInsights(slugs, 30).catch(() => null) : Promise.resolve(null),
   ])
 
   // Statistiques indisponibles (pas de jeton, erreur) : objet vide → aucun chiffre.
@@ -94,7 +96,7 @@ export async function MemberHome({ ctx, viewer }: { ctx: SessionContext; viewer:
             {hello} Vos liens et QR ont été ouverts <span className="hl">{times(total)}</span>{' ces 30 derniers jours.'}
           </h1>
           <p className="lead mt-4 max-w-[60ch]">
-            Visites = clics sur vos liens + scans de vos QR.
+            Visites = clics sur vos liens + scans de vos QR, hors robots et aperçus de lien.
             {top && visitsOf(top.slug) > 0 && (
               <> Votre adresse <b className="font-mono text-ink">{SHORT_HOST}/{top.slug}</b> en fait le plus ({nf.format(visitsOf(top.slug))}).</>
             )}
@@ -135,6 +137,8 @@ export async function MemberHome({ ctx, viewer }: { ctx: SessionContext; viewer:
           )}
         </div>
       )}
+
+      {statsOk && visitors && visitors.total > 0 && <VisitorsCard data={visitors} />}
 
       <div className="mt-12 flex items-center gap-3">
         <h2 className="h2">Vos liens et QR récents</h2>

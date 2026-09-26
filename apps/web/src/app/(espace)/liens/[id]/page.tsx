@@ -5,7 +5,7 @@ import { ArrowLeftIcon, ChartBarIcon, DevicePhoneMobileIcon, LinkIcon } from '@h
 import { getLink, getQrDesign } from '@link/db'
 import { getDb } from '@/server/data'
 import { getViewer } from '@/server/viewer'
-import { getScanCounts, getDailyVisits } from '@/server/scans'
+import { getScanCounts, getDailyVisits, getLinkInsights } from '@/server/scans'
 import { deleteLinkAction } from '@/server/actions'
 import { toDesign } from '@/lib/qr-design'
 import { QrPanel } from '@/components/liens/QrPanel'
@@ -13,6 +13,7 @@ import { DestinationForm, type DestinationValues } from '@/components/liens/Dest
 import { ActiveSwitch } from '@/components/liens/ActiveSwitch'
 import { DeleteZone } from '@/components/liens/DeleteZone'
 import { VisitsChart } from '@/components/liens/VisitsChart'
+import { LinkInsightsView } from '@/components/stats/LinkInsightsView'
 import { SHORT_HOST, nf, shortUrl } from '@/components/liens/model'
 
 export const metadata: Metadata = { title: 'Fiche du lien — link.cg' }
@@ -34,10 +35,11 @@ export default async function LienPage({ params }: { params: Promise<{ id: strin
   if (!link || link.workspaceId !== ctx.workspaceId) notFound()
   if (link.kind === 'card' || link.rule.type === 'card') redirect(`/carte/${link.slug}`)
 
-  const [rawDesign, scans, daily] = await Promise.all([
+  const [rawDesign, scans, daily, insights] = await Promise.all([
     getQrDesign(db, link.id),
     getScanCounts(),
     getDailyVisits([link.slug], 30).catch(() => []),
+    getLinkInsights(link.slug, 30).catch(() => null),
   ])
   const url = shortUrl(link.slug)
   const visits = scans[link.slug] ?? 0
@@ -79,7 +81,7 @@ export default async function LienPage({ params }: { params: Promise<{ id: strin
 
             <section className="card p-[26px]" aria-labelledby="qui-ouvre">
               <SectionHead icon={<ChartBarIcon />} tone="bg-sun text-[#7a4b00]" id="qui-ouvre" title="Qui l'ouvre ?">
-                Clics sur le lien et scans du QR, comptés sans collecter de données personnelles.
+                Clics sur le lien et scans du QR, hors robots et aperçus de lien, comptés sans collecter de données personnelles.
               </SectionHead>
               <div className="inline-block rounded-2xl bg-soft px-4 py-3.5">
                 <div className="font-display text-[28px] font-bold tabular-nums tracking-[-.03em]">{nf.format(visits)}</div>
@@ -88,6 +90,7 @@ export default async function LienPage({ params }: { params: Promise<{ id: strin
               {daily.length > 0
                 ? <VisitsChart points={daily} />
                 : <p className="mt-4 text-sm text-muted">Les statistiques détaillées, jour par jour, arrivent bientôt.</p>}
+              {insights && <LinkInsightsView data={insights} />}
             </section>
 
             <section className="card p-[26px]">

@@ -32,7 +32,7 @@ export function VisitsChart({ points }: { points: VisitPoint[] }) {
           ))}
         </div>
       </div>
-      <p className="mt-1 text-xs text-subtle">Clics sur vos liens + scans de vos QR · {fmtNum.format(total)} sur la période</p>
+      <p className="mt-1 text-xs text-subtle">Clics sur vos liens + scans de vos QR, hors robots · {fmtNum.format(total)} sur la période</p>
       <div className="mt-[18px] flex h-[110px] items-end gap-[5px]" aria-hidden="true">
         {shown.map((p, i) => (
           <span
