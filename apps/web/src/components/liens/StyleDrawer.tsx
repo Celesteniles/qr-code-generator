@@ -243,7 +243,7 @@ function Heading({ children }: { children: React.ReactNode }) {
 
 function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
-    <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-surface py-1 pl-1 pr-3 text-[13px] font-medium text-muted shadow-[inset_0_0_0_1.5px_var(--line-strong)] focus-within:shadow-[inset_0_0_0_1.5px_var(--brand),var(--ring)]">
+    <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-surface py-1 pl-1 pr-3 text-[13px] font-medium text-muted shadow-[inset_0_0_0_1px_var(--line-strong)] focus-within:shadow-[inset_0_0_0_1.5px_var(--brand),var(--ring)]">
       <input
         type="color"
         value={value}

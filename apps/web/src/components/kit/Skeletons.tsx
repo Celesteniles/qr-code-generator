@@ -39,7 +39,7 @@ export function SkeletonHead({ lead = true }: { lead?: boolean }) {
 /** Carte de lien/QR (grille Mes liens & QR, récents de l'accueil). */
 export function SkeletonQrCard() {
   return (
-    <div className="rounded-3xl p-3 shadow-[inset_0_0_0_1.5px_var(--line)]">
+    <div className="rounded-3xl p-3 shadow-[inset_0_0_0_1px_var(--line)]">
       <Bone className="h-[186px] rounded-[18px]" />
       <div className="grid gap-2 px-1.5 pb-1.5 pt-4">
         <Bone className="h-5 w-2/3 rounded-lg" />

@@ -68,7 +68,7 @@ export function LinksBoard({ links, signedIn }: { links: LinkItem[]; signedIn: b
       {/* Barre de recherche et filtres : seulement s'il y a de quoi chercher. */}
       {hasAnything && (
         <div className="mt-6 flex flex-wrap items-center gap-2.5">
-          <label className="flex h-11 min-w-[220px] max-w-[340px] flex-1 items-center gap-2.5 rounded-full bg-surface px-4 text-muted shadow-[inset_0_0_0_1.5px_var(--line-strong)] focus-within:shadow-[inset_0_0_0_1.5px_var(--brand),var(--ring)]">
+          <label className="flex h-11 min-w-[220px] max-w-[340px] flex-1 items-center gap-2.5 rounded-full bg-surface px-4 text-muted shadow-[inset_0_0_0_1px_var(--line-strong)] focus-within:shadow-[inset_0_0_0_1.5px_var(--brand),var(--ring)]">
             <MagnifyingGlassIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
             <span className="sr-only">Rechercher</span>
             <input

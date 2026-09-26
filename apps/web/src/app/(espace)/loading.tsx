@@ -9,7 +9,7 @@ export default function Loading() {
         <Bone className="mt-8 h-16 max-w-[760px] rounded-full" />
         <div className="mt-12 grid gap-3.5 md:grid-cols-3">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="rounded-3xl p-3.5 shadow-[inset_0_0_0_1.5px_var(--line)]">
+            <div key={i} className="rounded-3xl p-3.5 shadow-[inset_0_0_0_1px_var(--line)]">
               <Bone className="h-[140px] rounded-2xl" />
               <Bone className="mt-4 h-6 w-1/2 rounded-lg" />
               <Bone className="skeleton-text mt-3 w-full" />

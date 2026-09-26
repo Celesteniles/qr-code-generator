@@ -47,7 +47,7 @@ export default async function CartePage({ searchParams }: { searchParams: Promis
               const name = profile?.fullName || 'Carte sans nom'
               return (
                 <li key={link.id}>
-                  <Link href={`/carte/${link.slug}`} className="card flex items-center gap-4 p-4 transition hover:shadow-[0_0_0_1.5px_var(--line-strong),var(--shadow)]">
+                  <Link href={`/carte/${link.slug}`} className="card flex items-center gap-4 p-4 transition hover:shadow-[0_0_0_1px_var(--line-strong),var(--shadow)]">
                     <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl font-display text-lg font-bold"
                       style={{ background: theme, color: textOn(theme) }} aria-hidden="true">
                       {cardInitials(name) || '•'}

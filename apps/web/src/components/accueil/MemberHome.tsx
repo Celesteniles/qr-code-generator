@@ -153,7 +153,7 @@ export async function MemberHome({ ctx, viewer }: { ctx: SessionContext; viewer:
           ].filter(Boolean).join(' · ')
           return (
             <li key={l.id} className="w-[188px] shrink-0">
-              <Link href={`/liens/${l.id}`} className="block h-full rounded-[20px] bg-soft p-3 shadow-[inset_0_0_0_1px_var(--line)] transition hover:shadow-[inset_0_0_0_1.5px_var(--line-strong)]">
+              <Link href={`/liens/${l.id}`} className="block h-full rounded-[20px] bg-soft p-3 shadow-[inset_0_0_0_1px_var(--line)] transition hover:shadow-[inset_0_0_0_1px_var(--line-strong)]">
                 {design != null ? (
                   <div className="qr-thumb grid place-items-center">
                     <QrCanvas data={qrLinkUrl(l.slug)} design={toDesign(design)} size={148} />
@@ -175,7 +175,7 @@ export async function MemberHome({ ctx, viewer }: { ctx: SessionContext; viewer:
           )
         })}
         <li className="w-[188px] shrink-0">
-          <Link href="/creer" className="grid h-full min-h-[228px] place-items-center rounded-[20px] p-3 text-center shadow-[inset_0_0_0_1.5px_var(--line-strong)] transition hover:shadow-[inset_0_0_0_1.5px_var(--ink)]">
+          <Link href="/creer" className="grid h-full min-h-[228px] place-items-center rounded-[20px] p-3 text-center shadow-[inset_0_0_0_1px_var(--line-strong)] transition hover:shadow-[inset_0_0_0_1px_var(--subtle)]">
             <span>
               <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-ink text-bg"><PlusIcon className="h-6 w-6" aria-hidden="true" /></span>
               <strong className="mt-2.5 block text-sm">Créer</strong>

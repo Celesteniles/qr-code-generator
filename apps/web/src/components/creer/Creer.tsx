@@ -28,7 +28,7 @@ const MODES: { id: Mode; title: string; desc: string; icon: typeof LinkIcon; bg:
   { id: 'lien', title: 'Lien court', desc: 'À partager sur WhatsApp, Facebook, SMS · QR inclus', icon: LinkIcon, bg: 'bg-sky' },
   { id: 'qr', title: 'QR code', desc: 'À imprimer : affiche, menu, emballage', icon: QrCodeIcon, bg: 'bg-sun' },
 ]
-const modeCls = 'flex items-center gap-3.5 rounded-[20px] bg-surface px-4 py-3.5 text-left shadow-[inset_0_0_0_1.5px_var(--line-strong)] transition-shadow hover:shadow-[inset_0_0_0_1.5px_var(--ink)]'
+const modeCls = 'flex items-center gap-3.5 rounded-[20px] bg-surface px-4 py-3.5 text-left shadow-[inset_0_0_0_1px_var(--line-strong)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--subtle)]'
 
 export function Creer({ initialMode, initialUrl, initialType, deviceRoute, viewer }: CreerProps) {
   const guest = !viewer.user
@@ -70,7 +70,7 @@ export function Creer({ initialMode, initialUrl, initialType, deviceRoute, viewe
             const active = mode === m.id
             return (
               <button key={m.id} type="button" aria-pressed={active} onClick={() => switchMode(m.id)}
-                className={`${modeCls} ${active ? '!bg-soft !shadow-[inset_0_0_0_2px_var(--ink)]' : ''}`}>
+                className={`${modeCls} ${active ? '!bg-brand-tint !shadow-[inset_0_0_0_2px_var(--brand)]' : ''}`}>
                 <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-[14px] text-[#16161d] ${m.bg}`}><m.icon className="h-[22px] w-[22px]" /></span>
                 <span className="min-w-0">
                   <strong className="block font-display text-[17px] tracking-[-.01em]">{m.title}</strong>
