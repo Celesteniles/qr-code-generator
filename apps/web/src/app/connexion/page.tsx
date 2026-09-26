@@ -26,11 +26,7 @@ export default async function ConnexionPage({
     <div className="grid min-h-screen gap-3 p-3 lg:grid-cols-2">
       {/* Vitrine « Pour qui ? » : tient dans la hauteur de l'écran, sans texte coupé */}
       <aside className="relative hidden flex-col overflow-hidden rounded-[30px] bg-sky p-8 lg:sticky lg:top-3 lg:flex lg:h-[calc(100vh-24px)] xl:p-10">
-        <Logo />
         <UseCases />
-        <p className="mt-5 text-[13px] text-muted">
-          Paiement Airtel Money ou MTN MoMo · Aucune publicité pour vos clients
-        </p>
       </aside>
 
       <main className="grid place-items-center px-2 py-8 sm:px-5">

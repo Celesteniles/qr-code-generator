@@ -3,7 +3,7 @@
 import { useId, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ArrowLeftIcon, CheckIcon, ExclamationCircleIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import { ArrowLeftIcon, CheckIcon, ChevronDownIcon, ExclamationCircleIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import { signIn, signUp } from '@/lib/auth-client'
 import { Spinner } from '@/components/kit/Spinner'
 
@@ -102,7 +102,14 @@ export function AuthPanel({ initialMode, next, freeLinks }: { initialMode: AuthM
         <p className="lead mt-2">{isIn ? 'Vos liens et QR vous attendent.' : 'Gratuit, sans carte bancaire.'}</p>
 
         {!isIn && (
-          <ul className="mt-5 grid gap-2.5 text-sm">
+          // Repliée par défaut : le formulaire reste l'action principale
+          <details className="group mt-5 rounded-2xl bg-soft px-4 py-3 shadow-[inset_0_0_0_1px_var(--line)]">
+            <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+              <CheckIcon className="h-[18px] w-[18px] shrink-0 text-ok" aria-hidden="true" />
+              Inclus gratuitement
+              <ChevronDownIcon className="ml-auto h-4 w-4 text-muted transition-transform duration-200 group-open:rotate-180" aria-hidden="true" />
+            </summary>
+          <ul className="anim-rise mt-3 grid gap-2.5 text-sm">
             {[
               freeLinks !== null ? `${freeLinks} liens courts, avec leur QR modifiable` : 'Des liens courts, avec leur QR modifiable',
               'Le nombre de visites, jour par jour',
@@ -114,6 +121,7 @@ export function AuthPanel({ initialMode, next, freeLinks }: { initialMode: AuthM
               </li>
             ))}
           </ul>
+          </details>
         )}
 
         <form onSubmit={onSubmit} className="mt-6 grid gap-4" aria-describedby={error ? errId : undefined}>
