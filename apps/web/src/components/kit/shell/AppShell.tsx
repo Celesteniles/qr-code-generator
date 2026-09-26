@@ -101,13 +101,21 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
           <div className="flex items-center gap-2.5 px-2 py-1.5 text-[13px]">
             {viewer.user ? (
               <>
-                <span className="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-full bg-coral text-[13px] font-bold text-white">
-                  {initials(viewer.user.name || viewer.user.email)}
-                </span>
-                <div className="min-w-0 grow">
-                  <div className="truncate font-semibold">{viewer.user.name || viewer.user.email}</div>
-                  <div className="truncate text-xs text-subtle">{viewer.user.email}</div>
-                </div>
+                {/* Nom + email : accès à « Mon compte » */}
+                <Link
+                  href="/compte"
+                  aria-current={isCurrent(pathname, '/compte') ? 'page' : undefined}
+                  title="Mon compte"
+                  className={`-my-1 -ml-1.5 flex min-w-0 grow items-center gap-2.5 rounded-2xl py-1 pl-1.5 pr-2 transition hover:bg-soft ${isCurrent(pathname, '/compte') ? 'bg-surface shadow-[0_0_0_1px_var(--line)]' : ''}`}
+                >
+                  <span className="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-full bg-coral text-[13px] font-bold text-white">
+                    {initials(viewer.user.name || viewer.user.email)}
+                  </span>
+                  <span className="min-w-0 grow">
+                    <span className="block truncate font-semibold">{viewer.user.name || viewer.user.email}</span>
+                    <span className="block truncate text-xs text-subtle">{viewer.user.email}</span>
+                  </span>
+                </Link>
                 <SignOutButton />
               </>
             ) : (
@@ -133,6 +141,7 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
                   {initials(viewer.user!.name || viewer.user!.email)}
                 </summary>
                 <div className="card absolute right-0 top-11 z-50 w-56 p-2">
+                  <Link href="/compte" className="btn btn-ghost btn-sm w-full justify-start">Mon compte</Link>
                   <Link href="/offres" className="btn btn-ghost btn-sm w-full justify-start">Offres</Link>
                   <Link href="/bienvenue" className="btn btn-ghost btn-sm w-full justify-start">Visite guidée</Link>
                   <SignOutButton withLabel />
