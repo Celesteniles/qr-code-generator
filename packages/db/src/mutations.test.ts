@@ -72,6 +72,16 @@ describe('createLink', () => {
     expect(res).toEqual({ ok: false, error: 'domain_not_found' })
   })
 
+  it('rejette un slug de plus de 40 caractères, sans rien écrire', async () => {
+    const kv = fakeKv()
+    const rule = { type: 'static' as const, url: 'https://a.cg' }
+    expect((await createLink(deps(kv), { ...base, slug: 'a'.repeat(40), rule })).ok).toBe(true)
+    const res = await createLink(deps(kv, { newId: () => 'id2' }), { ...base, slug: 'b'.repeat(41), rule })
+    expect(res.ok).toBe(false)
+    expect(await db.query.links.findMany()).toHaveLength(1)
+    expect(kv.store.size).toBe(1)
+  })
+
   it('rejette une entrée invalide (slug avec espace)', async () => {
     const res = await createLink(deps(fakeKv()), { ...base, slug: 'a b', rule: { type: 'static', url: 'https://a.cg' } })
     expect(res.ok).toBe(false)
