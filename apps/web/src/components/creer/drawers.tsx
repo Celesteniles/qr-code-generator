@@ -183,7 +183,7 @@ export function SuccessDrawer({ info, onClose }: { info: SuccessInfo | null; onC
             <div className="hidden"><QrCanvas ref={qr} data={qrData} design={design} size={48} /></div>
           </>
         )}
-        <h2 className="h1 mt-6">{isQr ? 'C’est prêt !' : 'Votre lien est en ligne !'}</h2>
+        <h2 className="h1 mt-6">{isQr ? 'C’est prêt !' : 'Votre lien est en ligne !'}</h2>
         <p className="lead mt-2">
           {isQr
             ? 'Imprimez-le : si la destination change, vous la mettrez à jour ici, sans réimprimer.'

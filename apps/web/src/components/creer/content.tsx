@@ -18,39 +18,39 @@ const OTHER: ContentType[] = ['texte', 'email', 'sms', 'appel', 'lieu', 'reseaux
 
 type Icon = typeof LinkIcon
 export const TYPE_META: Record<ContentType, { label: string; icon: Icon; title: string; hint: string; fixedWhy?: string }> = {
-  site: { label: 'Site web', icon: LinkIcon, title: 'Quelle page doit-il ouvrir ?', hint: 'Collez le lien de la page : boutique, formulaire, vidéo, document…' },
-  menu: { label: 'Menu', icon: DocumentTextIcon, title: 'Où se trouve votre menu ?', hint: 'Collez le lien de votre menu en ligne.' },
-  whatsapp: { label: 'WhatsApp', icon: ChatBubbleLeftEllipsisIcon, title: 'Sur quel numéro vous écrire ?', hint: 'En scannant, la personne ouvre une discussion WhatsApp avec vous.' },
+  site: { label: 'Site web', icon: LinkIcon, title: 'Quelle page doit-il ouvrir ?', hint: 'Collez le lien de la page : boutique, formulaire, vidéo, document…' },
+  menu: { label: 'Menu', icon: DocumentTextIcon, title: 'Où se trouve votre menu ?', hint: 'Collez le lien de votre menu en ligne.' },
+  whatsapp: { label: 'WhatsApp', icon: ChatBubbleLeftEllipsisIcon, title: 'Sur quel numéro vous écrire ?', hint: 'En scannant, la personne ouvre une discussion WhatsApp avec vous.' },
   wifi: {
-    label: 'Wi‑Fi', icon: WifiIcon, title: 'Quel est votre réseau Wi‑Fi ?', hint: 'En scannant, le téléphone se connecte sans taper le mot de passe.',
+    label: 'Wi‑Fi', icon: WifiIcon, title: 'Quel est votre réseau Wi‑Fi ?', hint: 'En scannant, le téléphone se connecte sans taper le mot de passe.',
     fixedWhy: 'Un QR Wi‑Fi contient directement le nom du réseau et le mot de passe : le téléphone se connecte sans passer par internet. Il reste donc fixe. Si le mot de passe change, créez un nouveau QR.',
   },
   vcard: {
     label: 'Carte de visite', icon: UserIcon, title: 'Vos coordonnées', hint: 'En scannant, la personne enregistre votre contact dans son téléphone.',
     fixedWhy: 'Ce QR contient directement vos coordonnées : il reste fixe. Pour une carte que vous pourrez modifier sans réimprimer, utilisez la Carte de visite link.cg.',
   },
-  app: { label: 'Application', icon: DevicePhoneMobileIcon, title: 'Où trouver votre application ?', hint: 'Le lien de l’App Store, du Play Store ou de votre site.' },
+  app: { label: 'Application', icon: DevicePhoneMobileIcon, title: 'Où trouver votre application ?', hint: 'Le lien de l’App Store, du Play Store ou de votre site.' },
   texte: {
-    label: 'Texte', icon: DocumentTextIcon, title: 'Quel texte afficher ?', hint: 'Le texte s’affiche sur le téléphone, sans connexion.',
+    label: 'Texte', icon: DocumentTextIcon, title: 'Quel texte afficher ?', hint: 'Le texte s’affiche sur le téléphone, sans connexion.',
     fixedWhy: 'Ce QR contient directement votre texte, pas un lien : il reste fixe.',
   },
   email: {
-    label: 'Email', icon: EnvelopeIcon, title: 'À qui écrire ?', hint: 'En scannant, un email prêt à envoyer s’ouvre.',
+    label: 'Email', icon: EnvelopeIcon, title: 'À qui écrire ?', hint: 'En scannant, un email prêt à envoyer s’ouvre.',
     fixedWhy: 'Ce QR contient directement l’adresse et le message, pas un lien : il reste fixe.',
   },
   sms: {
-    label: 'SMS', icon: ChatBubbleBottomCenterTextIcon, title: 'À quel numéro envoyer le SMS ?', hint: 'En scannant, un SMS prêt à envoyer s’ouvre.',
+    label: 'SMS', icon: ChatBubbleBottomCenterTextIcon, title: 'À quel numéro envoyer le SMS ?', hint: 'En scannant, un SMS prêt à envoyer s’ouvre.',
     fixedWhy: 'Ce QR contient directement le numéro et le message, pas un lien : il reste fixe.',
   },
   appel: {
-    label: 'Appel', icon: PhoneIcon, title: 'Quel numéro appeler ?', hint: 'En scannant, le téléphone propose d’appeler ce numéro.',
+    label: 'Appel', icon: PhoneIcon, title: 'Quel numéro appeler ?', hint: 'En scannant, le téléphone propose d’appeler ce numéro.',
     fixedWhy: 'Ce QR contient directement le numéro, pas un lien : il reste fixe.',
   },
   lieu: {
-    label: 'Lieu', icon: MapPinIcon, title: 'Où se trouve le lieu ?', hint: 'En scannant, la carte s’ouvre sur ce point.',
+    label: 'Lieu', icon: MapPinIcon, title: 'Où se trouve le lieu ?', hint: 'En scannant, la carte s’ouvre sur ce point.',
     fixedWhy: 'Ce QR contient directement les coordonnées du lieu, pas un lien : il reste fixe.',
   },
-  reseaux: { label: 'Réseaux sociaux', icon: GlobeAltIcon, title: 'Quelle page de réseau social ?', hint: 'Votre page Facebook, Instagram, TikTok…' },
+  reseaux: { label: 'Réseaux sociaux', icon: GlobeAltIcon, title: 'Quelle page de réseau social ?', hint: 'Votre page Facebook, Instagram, TikTok…' },
 }
 
 export const SOCIALS = [

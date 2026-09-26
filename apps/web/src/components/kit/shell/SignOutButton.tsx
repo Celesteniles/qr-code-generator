@@ -66,7 +66,7 @@ export function SignOutButton({ withLabel = false }: { withLabel?: boolean }) {
         <span className="grid h-11 w-11 place-items-center rounded-2xl bg-soft text-ink shadow-[inset_0_0_0_1px_var(--line)]" aria-hidden="true">
           <ArrowRightStartOnRectangleIcon className="h-5 w-5" />
         </span>
-        <h2 id="signout-title" className="h2 mt-4">Se déconnecter ?</h2>
+        <h2 id="signout-title" className="h2 mt-4">Se déconnecter ?</h2>
         <p id="signout-desc" className="mt-2 text-[15px] text-muted">
           Vous quitterez votre espace sur cet appareil. Vos liens et vos QR imprimés continuent de fonctionner.
         </p>

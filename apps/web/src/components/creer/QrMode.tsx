@@ -128,7 +128,7 @@ export function QrMode({ initialType, initialUrl, viewer, onCreate }: {
   return (
     <form onSubmit={submit} noValidate className="grid items-start gap-7 xl:grid-cols-[minmax(0,1fr)_360px] xl:gap-10 2xl:grid-cols-[minmax(0,1fr)_400px]">
       <div>
-        <Question n={1} title="Que doit ouvrir votre QR ?" hint="Ce que la personne verra en scannant.">
+        <Question n={1} title="Que doit ouvrir votre QR ?" hint="Ce que la personne verra en scannant.">
           <TypePicker value={type} onChange={changeType} />
           <Link className="link mt-3 text-[13px]" href="/bienvenue"><EyeIcon className="h-4 w-4" />Pas sûr ? Voir des exemples</Link>
         </Question>
@@ -137,7 +137,7 @@ export function QrMode({ initialType, initialUrl, viewer, onCreate }: {
           <ContentFields type={type} v={values} set={set} appDevice={appDevice} />
         </Question>
 
-        <Question n={3} title="Pourrez-vous avoir besoin de le changer ?" hint={modifiableAllowed ? 'Par exemple quand votre menu évolue, sans réimprimer les tables.' : undefined}>
+        <Question n={3} title="Pourrez-vous avoir besoin de le changer ?" hint={modifiableAllowed ? 'Par exemple quand votre menu évolue, sans réimprimer les tables.' : undefined}>
           {modifiableAllowed ? (
             <>
               <div className="grid grid-cols-2 gap-2.5 sm:gap-3" role="group" aria-label="QR fixe ou modifiable">
@@ -163,7 +163,7 @@ export function QrMode({ initialType, initialUrl, viewer, onCreate }: {
                   />
                   <details className="mt-3">
                     <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-[13px] font-semibold text-brand [&::-webkit-details-marker]:hidden">
-                      <EyeIcon className="h-4 w-4" />Comment ça marche ?
+                      <EyeIcon className="h-4 w-4" />Comment ça marche ?
                     </summary>
                     <p className="mt-2 rounded-xl bg-soft px-3.5 py-3 text-[13px] text-muted">
                       Le QR imprimé contient toujours <b className="text-ink">{SHORT_HOST}/{cleanSlug || '…'}</b>. Quand quelqu&apos;un scanne, on l&apos;envoie
@@ -184,7 +184,7 @@ export function QrMode({ initialType, initialUrl, viewer, onCreate }: {
           )}
         </Question>
 
-        <Question n={4} title="À quoi doit-il ressembler ?" hint="Choisissez un style, affinez si vous voulez.">
+        <Question n={4} title="À quoi doit-il ressembler ?" hint="Choisissez un style, affinez si vous voulez.">
           <StyleEditor design={design} onChange={setDesign} />
         </Question>
       </div>

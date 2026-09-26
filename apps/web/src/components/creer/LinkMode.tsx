@@ -64,7 +64,7 @@ export function LinkMode({ initialUrl, deviceRoute, viewer, onCreate }: {
   return (
     <form onSubmit={submit} noValidate className="grid items-start gap-7 xl:grid-cols-[minmax(0,1fr)_360px] xl:gap-10 2xl:grid-cols-[minmax(0,1fr)_400px]">
       <div>
-        <Question n={1} title="Quel lien voulez-vous raccourcir ?" hint="Une page de votre boutique, un formulaire, une vidéo, un document…">
+        <Question n={1} title="Quel lien voulez-vous raccourcir ?" hint="Une page de votre boutique, un formulaire, une vidéo, un document…">
           <label className="block">
             <Sr>Lien long</Sr>
             <input
@@ -83,7 +83,7 @@ export function LinkMode({ initialUrl, deviceRoute, viewer, onCreate }: {
           </p>
         </Question>
 
-        <Question n={2} title="Quelle adresse courte ?" hint="C'est ce que les gens verront et taperont. Courte, lisible, à votre image.">
+        <Question n={2} title="Quelle adresse courte ?" hint="C'est ce que les gens verront et taperont. Courte, lisible, à votre image.">
           <SlugField
             value={slug}
             status={status}

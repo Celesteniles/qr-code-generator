@@ -83,7 +83,7 @@ export function CardEditor({ linkId, slug, initial, aside, footer }: {
         </p>
 
         <section className="card mt-6 p-[22px] sm:p-[26px]" aria-labelledby={f('qui')}>
-          <h2 id={f('qui')} className="h3">Qui êtes-vous ?</h2>
+          <h2 id={f('qui')} className="h3">Qui êtes-vous ?</h2>
           <div className="mt-4 flex items-center gap-4">
             <span className="grid h-[72px] w-[72px] shrink-0 place-items-center rounded-[24px] bg-coral font-display text-[26px] font-bold text-white" aria-hidden="true">
               {cardInitials(fields.fullName) || '•'}
@@ -110,7 +110,7 @@ export function CardEditor({ linkId, slug, initial, aside, footer }: {
         </section>
 
         <section className="card mt-4 p-[22px] sm:p-[26px]" aria-labelledby={f('joindre')}>
-          <h2 id={f('joindre')} className="h3">Comment vous joindre ?</h2>
+          <h2 id={f('joindre')} className="h3">Comment vous joindre ?</h2>
           <p className="mt-1 text-sm text-muted">Chaque info remplie devient un bouton sur la carte.</p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div>

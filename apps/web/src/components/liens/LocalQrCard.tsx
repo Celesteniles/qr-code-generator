@@ -60,7 +60,7 @@ export function LocalQrCard({ qr }: { qr: LocalQr }) {
         </button>
         {confirm ? (
           <button type="button" className="btn btn-danger btn-sm" onClick={() => forgetLocalQr(qr.id)} autoFocus>
-            Confirmer ?
+            Confirmer ?
           </button>
         ) : (
           <button type="button" className="icon-btn danger" aria-label={`Retirer « ${qr.label} » de cet appareil`} title="Retirer" onClick={() => setConfirm(true)}>

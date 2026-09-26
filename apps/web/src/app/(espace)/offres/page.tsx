@@ -38,23 +38,23 @@ const TAGLINE: Record<Plan, string> = {
 
 const FAQ = [
   {
-    q: 'Faut-il un compte pour créer un QR code ?',
+    q: 'Faut-il un compte pour créer un QR code ?',
     a: 'Non. Les QR fixes sont gratuits et sans compte. Le compte sert aux liens courts et aux QR modifiables, dont vous pouvez changer la destination après impression.',
   },
   {
-    q: 'Mes clients voient-ils de la publicité ?',
+    q: 'Mes clients voient-ils de la publicité ?',
     a: 'Non. En cliquant sur le lien ou en scannant le QR, ils arrivent directement à votre destination, sans page de publicité.',
   },
   {
-    q: 'Un QR fixe peut-il devenir modifiable ?',
+    q: 'Un QR fixe peut-il devenir modifiable ?',
     a: 'Pas le QR déjà imprimé : son contenu est gravé dedans. Mais on peut créer un lien court avec un QR au même style, à imprimer une dernière fois ; ensuite, vous changez la destination quand vous voulez.',
   },
   {
-    q: 'Pouvez-vous imprimer mes QR ?',
+    q: 'Pouvez-vous imprimer mes QR ?',
     a: 'Oui, l’impression est possible via NS Creative : autocollants de table, flyers, cartes de visite, kakémonos. Écrivez-nous pour un devis.',
   },
   {
-    q: 'Comment passer à l’offre Pro ?',
+    q: 'Comment passer à l’offre Pro ?',
     a: `Écrivez-nous à ${CONTACT}. Le paiement se fait par Airtel Money ou MTN MoMo.`,
   },
 ]

@@ -81,7 +81,7 @@ export function DeviceList({ devices }: { devices: DeviceItem[] }) {
           {confirmAll ? (
             <form action={(fd) => { setLast('all'); return revokeAll(fd) }}
               className="flex flex-wrap items-center gap-2" role="group" aria-label="Confirmer la déconnexion des autres appareils">
-              <span className="text-sm font-medium">Déconnecter {others.length} appareils ?</span>
+              <span className="text-sm font-medium">Déconnecter {others.length} appareils ?</span>
               <button type="button" className="btn btn-ghost btn-sm" onClick={() => setConfirmAll(false)}>Annuler</button>
               <SubmitButton label="Oui, tous les déconnecter" pendingLabel="Déconnexion…" />
             </form>

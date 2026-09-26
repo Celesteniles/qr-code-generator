@@ -51,7 +51,7 @@ export function TourPrompt() {
         </button>
       </div>
       <div className="p-6 pt-5">
-        <p className="eyebrow">Première visite ?</p>
+        <p className="eyebrow">Première visite ?</p>
         <h2 id="tour-prompt-title" className="h2 mt-1.5">Découvrez link.cg en 1 minute</h2>
         <p id="tour-prompt-desc" className="mt-2 text-[15px] text-muted">
           Trois questions pour trouver ce qui vous convient : un lien court à partager, un QR code à imprimer ou une carte de visite.
