@@ -146,12 +146,21 @@ export async function setLinkActive(deps: MutateDeps, linkId: string, active: bo
   return { ok: true, key: entry.key }
 }
 
-/** Supprime un lien : D1 puis KV (retrait de la vue de lecture). */
+/**
+ * Supprime un lien : D1 puis KV (retrait de la vue de lecture). Les données
+ * rattachées (profil de carte, style du QR, vérification) partent avec lui, dans
+ * le même lot : D1 applique les clés étrangères, qui ne sont pas en cascade.
+ */
 export async function deleteLink(deps: MutateDeps, linkId: string): Promise<LinkMutation> {
   const found = await linkWithHostname(deps.db, linkId)
   if (!found) return { ok: false, error: 'not_found' }
 
-  await deps.db.delete(schema.links).where(eq(schema.links.id, linkId))
+  await deps.db.batch([
+    deps.db.delete(schema.cardProfiles).where(eq(schema.cardProfiles.linkId, linkId)),
+    deps.db.delete(schema.qrDesigns).where(eq(schema.qrDesigns.linkId, linkId)),
+    deps.db.delete(schema.linkReviews).where(eq(schema.linkReviews.linkId, linkId)),
+    deps.db.delete(schema.links).where(eq(schema.links.id, linkId)),
+  ])
 
   const key = linkKey(found.hostname, found.link.slug)
   await deps.kv.delete(key)

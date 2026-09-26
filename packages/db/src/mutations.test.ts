@@ -13,6 +13,8 @@ function freshDb(): Db {
   const migDir = join(__dirname, '..', 'migrations')
   const file = readdirSync(migDir).find((f) => f.endsWith('.sql'))!
   const sql = readFileSync(join(migDir, file), 'utf8')
+  // Comme D1 : les clés étrangères sont appliquées.
+  client.execute('PRAGMA foreign_keys = ON')
   for (const stmt of sql.split('--> statement-breakpoint')) {
     const s = stmt.trim()
     if (s) client.execute(s)
@@ -122,6 +124,19 @@ describe('deleteLink', () => {
     expect(res).toEqual({ ok: true, key: 'link.cg:gone' })
     expect(kv.store.has('link.cg:gone')).toBe(false)
     expect(await db.query.links.findMany()).toHaveLength(0)
+  })
+
+  it('supprime aussi le profil de carte et le style du QR (clés étrangères)', async () => {
+    const kv = fakeKv()
+    await createLink(deps(kv, { newId: () => 'card' }), { ...base, slug: 'ma-carte', rule: { type: 'card' } })
+    await db.insert(schema.cardProfiles).values({ id: 'cp', linkId: 'card', fullName: 'Niles' })
+    await db.insert(schema.qrDesigns).values({ id: 'qd', linkId: 'card', config: {} })
+    await db.insert(schema.linkReviews).values({ linkId: 'card', status: 'clean' })
+    expect(await deleteLink({ db, kv }, 'card')).toEqual({ ok: true, key: 'link.cg:ma-carte' })
+    expect(await db.query.links.findMany()).toHaveLength(0)
+    expect(await db.query.cardProfiles.findMany()).toHaveLength(0)
+    expect(await db.query.qrDesigns.findMany()).toHaveLength(0)
+    expect(await db.query.linkReviews.findMany()).toHaveLength(0)
   })
 
   it('lien inexistant → not_found', async () => {
