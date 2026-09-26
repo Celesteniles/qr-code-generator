@@ -28,7 +28,8 @@ const MODES: { id: Mode; title: string; desc: string; icon: typeof LinkIcon; bg:
   { id: 'lien', title: 'Lien court', desc: 'À partager sur WhatsApp, Facebook, SMS · QR inclus', icon: LinkIcon, bg: 'bg-sky' },
   { id: 'qr', title: 'QR code', desc: 'À imprimer : affiche, menu, emballage', icon: QrCodeIcon, bg: 'bg-sun' },
 ]
-const modeCls = 'flex items-center gap-3.5 rounded-[20px] bg-surface px-4 py-3.5 text-left shadow-[inset_0_0_0_1px_var(--line-strong)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--subtle)]'
+// Mobile : trois colonnes, icône et titre seulement ; à partir de md, icône + titre + description.
+const modeCls = 'flex flex-col items-center gap-2 rounded-[18px] bg-surface px-2 py-3 text-center shadow-[inset_0_0_0_1px_var(--line-strong)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--subtle)] md:flex-row md:gap-3.5 md:rounded-[20px] md:px-4 md:py-3.5 md:text-left'
 
 export function Creer({ initialMode, initialUrl, initialType, deviceRoute, viewer }: CreerProps) {
   const guest = !viewer.user
@@ -65,25 +66,25 @@ export function Creer({ initialMode, initialUrl, initialType, deviceRoute, viewe
         <h1 className="h1">Que voulez-vous créer ?</h1>
         <p className="lead mt-2">Quelques questions simples. L&apos;aperçu se met à jour pendant que vous répondez.</p>
 
-        <div className="mt-6 grid gap-3 md:grid-cols-3" role="group" aria-label="Que voulez-vous créer ?">
+        <div className="mt-6 grid grid-cols-3 gap-2 md:gap-3" role="group" aria-label="Que voulez-vous créer ?">
           {MODES.map((m) => {
             const active = mode === m.id
             return (
               <button key={m.id} type="button" aria-pressed={active} onClick={() => switchMode(m.id)}
                 className={`${modeCls} ${active ? '!bg-brand-tint !shadow-[inset_0_0_0_2px_var(--brand)]' : ''}`}>
-                <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-[14px] text-[#16161d] ${m.bg}`}><m.icon className="h-[22px] w-[22px]" /></span>
+                <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-[14px] text-[#16161d] md:h-11 md:w-11 ${m.bg}`}><m.icon className="h-[22px] w-[22px]" aria-hidden="true" /></span>
                 <span className="min-w-0">
-                  <strong className="block font-display text-[17px] tracking-[-.01em]">{m.title}</strong>
-                  <span className="block text-[13px] text-muted">{m.desc}</span>
+                  <strong className="block font-display text-[15px] leading-tight tracking-[-.01em] md:text-[17px]">{m.title}</strong>
+                  <span className="hidden text-[13px] text-muted md:block">{m.desc}</span>
                 </span>
               </button>
             )
           })}
           <Link href="/carte" className={modeCls}>
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[14px] bg-coral-tint text-[#16161d]"><UserIcon className="h-[22px] w-[22px]" /></span>
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[14px] bg-coral-tint text-[#16161d] md:h-11 md:w-11"><UserIcon className="h-[22px] w-[22px]" aria-hidden="true" /></span>
             <span className="min-w-0">
-              <strong className="block font-display text-[17px] tracking-[-.01em]">Carte de visite</strong>
-              <span className="block text-[13px] text-muted">Votre profil pro en lien et QR</span>
+              <strong className="block font-display text-[15px] leading-tight tracking-[-.01em] md:text-[17px]">Carte de visite</strong>
+              <span className="hidden text-[13px] text-muted md:block">Votre profil pro en lien et QR</span>
             </span>
           </Link>
         </div>

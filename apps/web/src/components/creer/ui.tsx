@@ -14,11 +14,11 @@ import { Portal } from '@/components/kit/Portal'
 export function Question({ n, title, hint, children }: { n: number; title: ReactNode; hint?: ReactNode; children: ReactNode }) {
   const id = useId()
   return (
-    <section aria-labelledby={id} className="border-b border-line py-7 first:pt-2 last:border-b-0">
-      <div className="mb-[18px] flex items-start gap-3.5">
-        <span className="mt-0.5 grid h-[30px] w-[30px] shrink-0 place-items-center rounded-full bg-ink text-[13px] font-bold text-bg" aria-hidden="true">{n}</span>
+    <section aria-labelledby={id} className="border-b border-line py-6 first:pt-2 last:border-b-0 sm:py-7">
+      <div className="mb-4 flex items-start gap-3.5">
+        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-ink text-[13px] font-bold text-bg" aria-hidden="true">{n}</span>
         <div className="min-w-0">
-          <h2 id={id} className="h2">{title}</h2>
+          <h2 id={id} className="h2 !text-[20px] sm:!text-[22px]">{title}</h2>
           {hint && <p className="mt-0.5 text-sm text-muted">{hint}</p>}
         </div>
       </div>

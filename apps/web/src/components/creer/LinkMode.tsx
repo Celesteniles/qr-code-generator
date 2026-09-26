@@ -11,7 +11,7 @@ import { CopyButton, PlanUsage, Question, SlugField, Sr, useSlugCheck } from './
 import { Spinner } from '@/components/kit/Spinner'
 import { qrLinkUrl } from '@/lib/short-link'
 
-// Onglet « Lien court » : lien long → adresse courte → même destination ou selon le téléphone.
+// Onglet « Lien court » : lien long → adresse courte, et en option « selon le téléphone ».
 
 export function LinkMode({ initialUrl, deviceRoute, viewer, onCreate }: {
   initialUrl: string
@@ -51,7 +51,7 @@ export function LinkMode({ initialUrl, deviceRoute, viewer, onCreate }: {
     if (route === 'device') {
       const i = ios.trim() ? normalizeUrl(ios) : ''
       const a = android.trim() ? normalizeUrl(android) : ''
-      if (!i && !a) { setError('Ajoutez le lien iPhone ou Android, ou choisissez « Oui, la même page ».'); return }
+      if (!i && !a) { setError('Ajoutez le lien iPhone ou Android, ou désactivez « Selon le téléphone ».'); return }
       if ((i && !isWebUrl(i)) || (a && !isWebUrl(a))) { setError('Les liens iPhone et Android doivent commencer par https://.'); return }
       rule = { type: 'app', fallback: normalizeUrl(url), ...(i ? { ios: i } : {}), ...(a ? { android: a } : {}) }
     }
@@ -92,17 +92,19 @@ export function LinkMode({ initialUrl, deviceRoute, viewer, onCreate }: {
           />
         </Question>
 
-        <Question n={3} title="Même destination pour tout le monde ?" hint="Un lien peut aussi s'adapter au téléphone de la personne.">
-          <div className="grid gap-3 sm:grid-cols-2" role="group" aria-label="Destination">
-            <button type="button" className="choice" aria-pressed={route === 'same'} onClick={() => setRoute('same')}>
-              <strong>Oui, la même page</strong><span className="text-[13px] text-muted">Le cas le plus courant</span>
-            </button>
-            <button type="button" className="choice" aria-pressed={route === 'device'} onClick={() => setRoute('device')}>
-              <strong>Selon le téléphone</strong><span className="text-[13px] text-muted">iPhone → App Store, Android → Play Store, sinon votre lien</span>
-            </button>
+        {/* Option (cas des applications) : pas une étape, pour garder le parcours à deux questions. */}
+        <section className="border-t border-line py-6 sm:py-7 md:pl-11" aria-labelledby="route-titre">
+          <div className="flex items-start gap-4">
+            <div className="grow">
+              <h2 id="route-titre" className="h3">Selon le téléphone <span className="opt text-sm font-normal">· option</span></h2>
+              <p id="route-aide" className="mt-0.5 text-sm text-muted">Pour une application : iPhone vers l&apos;App Store, Android vers le Play Store, les autres vers votre lien.</p>
+            </div>
+            <button type="button" className="switch mt-1" role="switch" aria-checked={route === 'device'}
+              aria-labelledby="route-titre" aria-describedby="route-aide"
+              onClick={() => setRoute(route === 'device' ? 'same' : 'device')} />
           </div>
           {route === 'device' && (
-            <div className="mt-4">
+            <div className="anim-rise mt-4">
               <div className="grid gap-3.5 sm:grid-cols-2">
                 <label className="block"><span className="label">Sur iPhone</span>
                   <input className="input" type="url" inputMode="url" autoCapitalize="none" placeholder="https://apps.apple.com/…" value={ios} onChange={(e) => setIos(e.target.value)} /></label>
@@ -112,7 +114,7 @@ export function LinkMode({ initialUrl, deviceRoute, viewer, onCreate }: {
               <p className="help"><SparklesIcon />Les autres (ordinateur, tablette…) vont sur le lien de l&apos;étape 1.</p>
             </div>
           )}
-        </Question>
+        </section>
       </div>
 
       {/* ── Aperçu ── */}

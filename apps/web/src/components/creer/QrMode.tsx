@@ -140,7 +140,7 @@ export function QrMode({ initialType, initialUrl, viewer, onCreate }: {
         <Question n={3} title="Pourrez-vous avoir besoin de le changer ?" hint={modifiableAllowed ? 'Par exemple quand votre menu évolue, sans réimprimer les tables.' : undefined}>
           {modifiableAllowed ? (
             <>
-              <div className="grid gap-3 sm:grid-cols-2" role="group" aria-label="QR fixe ou modifiable">
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-3" role="group" aria-label="QR fixe ou modifiable">
                 <button type="button" className="choice" aria-pressed={kind === 'fixed'} onClick={() => setWantKind('fixed')}>
                   <Illustration name="fixed" height={96} className="overflow-hidden rounded-xl bg-soft" />
                   <strong>Non, c&apos;est définitif</strong><span className="text-[13px] text-muted">QR fixe · gratuit, sans compte</span>
@@ -189,8 +189,8 @@ export function QrMode({ initialType, initialUrl, viewer, onCreate }: {
         </Question>
       </div>
 
-      {/* ── Aperçu (en premier sur mobile) ── */}
-      <aside className="order-first grid gap-3.5 xl:sticky xl:top-6 xl:order-none" aria-label="Aperçu du QR">
+      {/* ── Aperçu : à droite sur grand écran, après les questions sinon (pas de cadre vide en tête) ── */}
+      <aside className="grid gap-3.5 xl:sticky xl:top-6" aria-label="Aperçu du QR">
         {kind === 'fixed' && (
           <label className="flex items-center gap-2">
             <span className="sr-only">Nom du QR (pour vous)</span>
