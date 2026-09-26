@@ -9,6 +9,7 @@ import { PasswordForm } from '@/components/compte/PasswordForm'
 import { DeviceList } from '@/components/compte/DeviceList'
 import { ThemePreference } from '@/components/compte/ThemePreference'
 import { getMyDevices } from './data'
+import { CompteTabs } from './CompteTabs'
 
 export const metadata: Metadata = { title: 'Mon compte — link.cg' }
 
@@ -24,6 +25,7 @@ export default async function ComptePage() {
     <div className="px-4 pb-14 pt-6 sm:px-8 lg:px-10 lg:pt-9">
       <h1 className="h1">Mon compte</h1>
       <p className="lead mt-2 max-w-[60ch]">Vos informations, votre mot de passe et les appareils connectés à votre espace.</p>
+      <CompteTabs current="/compte" />
 
       <div className="mt-8 grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="grid min-w-0 gap-4">
