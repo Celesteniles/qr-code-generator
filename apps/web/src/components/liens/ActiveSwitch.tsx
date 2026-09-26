@@ -1,12 +1,10 @@
 'use client'
 
 import { useId, useOptimistic, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
 import { toggleLinkAction } from '@/server/actions'
 
 /** « Lien en ligne » : met le lien (et son QR) en pause ou le réactive. */
 export function ActiveSwitch({ linkId, active }: { linkId: string; active: boolean }) {
-  const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [on, setOn] = useOptimistic(active)
   const titleId = useId()
@@ -20,7 +18,6 @@ export function ActiveSwitch({ linkId, active }: { linkId: string; active: boole
       fd.set('id', linkId)
       fd.set('active', String(next))
       await toggleLinkAction(fd)
-      router.refresh()
     })
   }
 

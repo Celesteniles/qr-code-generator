@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { TrashIcon } from '@heroicons/react/24/outline'
+import { Spinner } from '@/components/kit/Spinner'
 
 /**
  * « Supprimer ce lien », isolé et en deux temps. `action` est une action serveur
@@ -44,8 +45,8 @@ export function DeleteZone({ linkId, action }: { linkId: string; action: (formDa
 function ConfirmButton() {
   const { pending } = useFormStatus()
   return (
-    <button type="submit" className="btn btn-danger bg-bad-tint" disabled={pending} autoFocus>
-      <TrashIcon aria-hidden="true" />{pending ? 'Suppression…' : 'Oui, supprimer définitivement'}
+    <button type="submit" className="btn btn-danger bg-bad-tint" disabled={pending} aria-busy={pending} autoFocus>
+      {pending ? <><Spinner />Suppression…</> : <><TrashIcon aria-hidden="true" />Oui, supprimer définitivement</>}
     </button>
   )
 }

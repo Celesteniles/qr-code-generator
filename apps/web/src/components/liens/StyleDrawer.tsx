@@ -8,6 +8,7 @@ import { saveQrDesignAction } from '@/server/actions'
 import {
   DESIGN_PRESETS, DOT_TYPES, CORNER_TYPES, GRAD_DIRECTIONS, type QrDesign, type CornerSquareType,
 } from '@/lib/qr-design'
+import { Spinner } from '@/components/kit/Spinner'
 
 // Tiroir « Style du QR » de la fiche d'un lien (porté de l'ancien LinkQr du
 // dashboard) : modèles, couleur, dégradé, points, coins, logo.
@@ -224,8 +225,8 @@ export function StyleDrawer({ linkId, data, initial, onClose, onSaved }: {
 
         <div className="panel-foot">
           <button type="button" className="btn btn-ghost" onClick={onClose}>Annuler</button>
-          <button type="button" className="btn btn-cta ml-auto" onClick={save} disabled={pending}>
-            {pending ? 'Enregistrement…' : 'Enregistrer le style'}
+          <button type="button" className="btn btn-cta ml-auto" onClick={save} disabled={pending} aria-busy={pending}>
+            {pending ? <><Spinner />Enregistrement…</> : 'Enregistrer le style'}
           </button>
         </div>
       </div>

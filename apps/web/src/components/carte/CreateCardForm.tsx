@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowRightIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { createLinkAction } from '@/server/actions'
 import type { CreateState } from '@/server/config'
+import { Spinner } from '@/components/kit/Spinner'
 
 /** « Céleste Gakono » → « celeste-gakono » (adresse courte proposée). */
 function toSlug(name: string): string {
@@ -56,8 +57,8 @@ export function CreateCardForm({ first }: { first: boolean }) {
       </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
-        <button type="submit" className="btn btn-cta" disabled={pending || !!state?.ok}>
-          {pending || state?.ok ? 'Création…' : <>Créer ma carte <ArrowRightIcon /></>}
+        <button type="submit" className="btn btn-cta" disabled={pending || !!state?.ok} aria-busy={pending || !!state?.ok}>
+          {pending || state?.ok ? <><Spinner />Création…</> : <>Créer ma carte <ArrowRightIcon /></>}
         </button>
         <p aria-live="polite" role="status" className="text-sm">
           {state && !state.ok && (

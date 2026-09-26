@@ -58,7 +58,7 @@ export function CopyButton({ text, label = 'Copier le lien', withText = false, c
       aria-label={withText ? undefined : done ? 'Copié' : label}
       onClick={async () => { if (await copyText(text)) setDone(true) }}
     >
-      <Icon className={done ? 'text-ok' : undefined} />
+      <Icon className={done ? 'anim-pop text-ok' : undefined} />
       {withText && (done ? 'Copié' : 'Copier')}
       <span className="sr-only" aria-live="polite">{done ? 'Lien copié' : ''}</span>
     </button>
@@ -127,22 +127,34 @@ export type SlugStatus =
   | { state: 'done'; check: SlugCheck }
   | { state: 'error' }
 
+// Verdicts récents, partagés entre les champs : revenir à une adresse déjà testée
+// (effacer puis retaper, changer de mode) ne relance pas de vérification.
+const SLUG_TTL_MS = 30_000
+const slugVerdicts = new Map<string, { at: number; check: SlugCheck }>()
+function recentVerdict(slug: string): SlugCheck | null {
+  const hit = slugVerdicts.get(slug)
+  return hit && Date.now() - hit.at < SLUG_TTL_MS ? hit.check : null
+}
+
 /** Vérifie l'adresse pendant la saisie (400 ms après la dernière frappe). */
 export function useSlugCheck(slug: string): SlugStatus {
   const value = slug.trim()
   // Dernier verdict reçu, rattaché à l'adresse vérifiée : l'état affiché en découle.
   const [result, setResult] = useState<{ slug: string; check: SlugCheck | null } | null>(null)
+  const known = value ? recentVerdict(value) : null
   useEffect(() => {
-    if (!value) return
+    if (!value || recentVerdict(value)) return
     let cancelled = false
     const t = setTimeout(async () => {
       let check: SlugCheck | null = null
       try { check = await checkSlugAction(value) } catch { check = null }
+      if (check) slugVerdicts.set(value, { at: Date.now(), check })
       if (!cancelled) setResult({ slug: value, check })
     }, 400)
     return () => { cancelled = true; clearTimeout(t) }
   }, [value])
   if (!value) return { state: 'idle' }
+  if (known) return { state: 'done', check: known }
   if (!result || result.slug !== value) return { state: 'checking' }
   return result.check ? { state: 'done', check: result.check } : { state: 'error' }
 }
@@ -187,10 +199,10 @@ export function SlugField({ value, onChange, status, suggestion, label, extraHel
         />
       </span>
       <p id={helpId} className="help" aria-live="polite">
-        {status.state === 'checking' && <span className="text-subtle">Vérification…</span>}
+        {status.state === 'checking' && <span className="inline-flex items-center gap-1.5 text-subtle"><span className="spinner !h-3.5 !w-3.5" aria-hidden="true" />Vérification…</span>}
         {status.state === 'error' && <><ExclamationTriangleIcon className="text-warn" />Impossible de vérifier pour l&apos;instant. Vous pourrez quand même essayer de la créer.</>}
         {check?.available && (
-          <span className="flex gap-1.5 font-semibold text-ok"><CheckIcon className="text-ok" />
+          <span className="anim-pop flex gap-1.5 font-semibold text-ok"><CheckIcon className="text-ok" />
             {check.normalized !== value ? <>Libre sous la forme <b className="font-mono">{check.normalized}</b>.</> : 'Libre, elle est à vous.'}
             {extraHelp}
           </span>

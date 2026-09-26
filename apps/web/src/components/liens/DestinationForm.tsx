@@ -4,6 +4,7 @@ import { useActionState, useState } from 'react'
 import { CheckIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 import { updateLinkDestinationAction } from '@/server/actions'
 import type { UpdateDestinationState } from '@/server/config'
+import { Spinner } from '@/components/kit/Spinner'
 
 export type DestinationValues =
   | { type: 'static'; url: string }
@@ -39,7 +40,7 @@ export function DestinationForm({ linkId, initial }: { linkId: string; initial: 
             id="dest-url" name="url" type="url" required inputMode="url" autoComplete="url"
             className="input min-w-[220px] flex-1" placeholder="https://…" value={url} onChange={edit(setUrl)}
           />
-          <button type="submit" className="btn btn-cta h-[52px]" disabled={pending}>{pending ? 'Mise à jour…' : 'Mettre à jour'}</button>
+          <button type="submit" className="btn btn-cta h-[52px]" disabled={pending} aria-busy={pending}>{pending ? <><Spinner />Mise à jour…</> : 'Mettre à jour'}</button>
         </div>
       ) : (
         <div className="grid gap-4">
@@ -57,20 +58,20 @@ export function DestinationForm({ linkId, initial }: { linkId: string; initial: 
             <p className="help">Ordinateurs et téléphones non reconnus ouvrent cette adresse.</p>
           </div>
           <div>
-            <button type="submit" className="btn btn-cta" disabled={pending}>{pending ? 'Mise à jour…' : 'Mettre à jour'}</button>
+            <button type="submit" className="btn btn-cta" disabled={pending} aria-busy={pending}>{pending ? <><Spinner />Mise à jour…</> : 'Mettre à jour'}</button>
           </div>
         </div>
       )}
 
       <div aria-live="polite">
         {showResult && state.ok && (
-          <div className="tip mint mt-4">
+          <div className="tip mint anim-pop mt-4">
             <span className="tip-ico"><CheckIcon aria-hidden="true" /></span>
             <div><strong>Destination mise à jour</strong>Le lien partagé et le QR imprimé mènent maintenant à la nouvelle adresse.</div>
           </div>
         )}
         {showResult && !state.ok && (
-          <div className="tip bad mt-4" role="alert">
+          <div className="tip bad anim-pop mt-4" role="alert">
             <span className="tip-ico"><ExclamationTriangleIcon aria-hidden="true" /></span>
             <div><strong>La destination n&apos;a pas changé</strong>{state.message}</div>
           </div>

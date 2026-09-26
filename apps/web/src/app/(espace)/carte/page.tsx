@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { ArrowRightIcon, CheckIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
-import { getCardBySlug, listLinks } from '@link/db'
+import { getCardBySlug } from '@link/db'
+import { getWorkspaceLinks } from '@/server/links'
 import { getDb } from '@/server/data'
 import { getViewer } from '@/server/viewer'
 import { Illustration } from '@/components/kit/Illustration'
@@ -24,7 +25,7 @@ export default async function CartePage({ searchParams }: { searchParams: Promis
 
   const { liste } = await searchParams
   const db = getDb()
-  const cardLinks = (await listLinks(db, ctx.workspaceId)).filter((l) => l.kind === 'card')
+  const cardLinks = (await getWorkspaceLinks(ctx.workspaceId)).filter((l) => l.kind === 'card')
 
   // Une seule carte : on va droit à son éditeur (sauf si l'on veut voir la liste / en créer une autre).
   if (cardLinks.length === 1 && !liste) redirect(`/carte/${cardLinks[0].slug}`)

@@ -11,6 +11,7 @@ import { QrCanvas, type QrCanvasHandle } from '@/components/kit/QrCanvas'
 import { SHORT_HOST, shortUrl } from './helpers'
 import { publishLink, type LinkPayload } from './publish'
 import { CopyButton, Drawer } from './ui'
+import { Spinner } from '@/components/kit/Spinner'
 
 // Tiroirs de l'écran Créer : inscription au moment utile, puis succès.
 
@@ -79,8 +80,8 @@ export function SignupDrawer({ open, onClose, payload, nextPath }: {
       label="Créer votre compte"
       footer={
         <>
-        <button type="submit" form="creer-signup" className="btn btn-cta btn-lg w-full" disabled={busy || !payload}>
-          {busy ? 'Un instant…' : accountReady ? 'Enregistrer' : 'Créer mon compte et enregistrer'}
+        <button type="submit" form="creer-signup" className="btn btn-cta btn-lg w-full" disabled={busy || !payload} aria-busy={busy}>
+          {busy ? <><Spinner />Un instant…</> : accountReady ? 'Enregistrer' : 'Créer mon compte et enregistrer'}
         </button>
         {!accountReady && (
           <p className="text-center text-[13px] text-muted">
@@ -152,15 +153,15 @@ export function SuccessDrawer({ info, onClose }: { info: SuccessInfo | null; onC
       footer={
         <>
           {isQr ? (
-            <button type="button" className="btn btn-cta btn-lg w-full" onClick={download} disabled={downloading}>
-              <ArrowDownTrayIcon />{downloading ? 'Préparation…' : 'Télécharger pour l’impression'}
+            <button type="button" className="btn btn-cta btn-lg w-full" onClick={download} disabled={downloading} aria-busy={downloading}>
+              {downloading ? <><Spinner />Préparation…</> : <><ArrowDownTrayIcon />Télécharger pour l’impression</>}
             </button>
           ) : (
             <>
               <a className="btn btn-whatsapp btn-lg w-full" href={shareHref} target="_blank" rel="noopener noreferrer"><ShareIcon />Partager sur WhatsApp</a>
               <div className="flex gap-2">
                 <CopyButton text={url} withText />
-                <button type="button" className="btn btn-soft grow" onClick={download} disabled={downloading}><QrCodeIcon />{downloading ? 'Préparation…' : 'Télécharger le QR'}</button>
+                <button type="button" className="btn btn-soft grow" onClick={download} disabled={downloading} aria-busy={downloading}>{downloading ? <><Spinner />Préparation…</> : <><QrCodeIcon />Télécharger le QR</>}</button>
               </div>
             </>
           )}

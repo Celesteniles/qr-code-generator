@@ -1,6 +1,7 @@
 import 'server-only'
 import Link from 'next/link'
-import { getQrDesigns, listLinks, type LinkRow } from '@link/db'
+import { getQrDesigns, type LinkRow } from '@link/db'
+import { getWorkspaceLinks } from '@/server/links'
 import { ArrowRightIcon, CheckIcon, LightBulbIcon, PlusIcon } from '@heroicons/react/24/outline'
 import { QrCanvas } from '@/components/kit/QrCanvas'
 import type { Viewer } from '@/components/kit/shell/types'
@@ -41,7 +42,7 @@ const KIND_LABEL: Record<LinkRow['kind'], string> = {
 
 export async function MemberHome({ ctx, viewer }: { ctx: SessionContext; viewer: Viewer }) {
   const db = getDb()
-  const links = await listLinks(db, ctx.workspaceId)
+  const links = await getWorkspaceLinks(ctx.workspaceId)
   const slugs = links.map((l) => l.slug)
   const [scans, designs, daily] = await Promise.all([
     getScanCounts(),
@@ -138,7 +139,7 @@ export async function MemberHome({ ctx, viewer }: { ctx: SessionContext; viewer:
         <h2 className="h2">Vos liens et QR récents</h2>
         {links.length > 0 && <Link className="link ml-auto text-sm" href="/liens">Tout voir <ArrowRightIcon className="h-4 w-4" /></Link>}
       </div>
-      <ul className="mt-4 flex gap-3 overflow-x-auto px-0.5 pb-3 pt-1">
+      <ul className="stagger mt-4 flex gap-3 overflow-x-auto px-0.5 pb-3 pt-1">
         {recent.map((l) => {
           const design = designs[l.id]
           const sub = [

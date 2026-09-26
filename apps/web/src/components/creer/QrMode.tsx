@@ -15,6 +15,7 @@ import { SHORT_HOST, isWebUrl, normalizeUrl, readability, shortUrl, slugify, sug
 import type { CreateFn, LinkRule } from './publish'
 import { STYLE_PRESETS, StyleEditor } from './style'
 import { PlanUsage, Question, SlugField, useSlugCheck } from './ui'
+import { Spinner } from '@/components/kit/Spinner'
 
 // Onglet « QR code » : contenu → champs → fixe ou modifiable → style. Aperçu réel (qr-code-styling).
 
@@ -231,7 +232,7 @@ export function QrMode({ initialType, initialUrl, viewer, onCreate }: {
 
         {kind === 'fixed' ? (
           <div className="grid gap-2.5">
-            <button type="button" onClick={download} className="btn btn-cta btn-lg w-full" disabled={busy}><ArrowDownTrayIcon />{busy ? 'Préparation…' : 'Télécharger'}</button>
+            <button type="button" onClick={download} className="btn btn-cta btn-lg w-full" disabled={busy} aria-busy={busy}>{busy ? <><Spinner />Préparation…</> : <><ArrowDownTrayIcon />Télécharger</>}</button>
             <div className="flex flex-wrap justify-center gap-2">
               <div className="seg" role="group" aria-label="Format du fichier">
                 {(['png', 'svg'] as const).map((f) => (
@@ -250,8 +251,8 @@ export function QrMode({ initialType, initialUrl, viewer, onCreate }: {
           </div>
         ) : (
           <div className="grid gap-2.5">
-            <button type="submit" className="btn btn-cta btn-lg w-full" disabled={busy}>
-              {busy ? 'Création…' : <>{guest ? 'Enregistrer mon QR' : 'Créer mon QR modifiable'} <ArrowRightIcon /></>}
+            <button type="submit" className="btn btn-cta btn-lg w-full" disabled={busy} aria-busy={busy}>
+              {busy ? <><Spinner />Création…</> : <>{guest ? 'Enregistrer mon QR' : 'Créer mon QR modifiable'} <ArrowRightIcon /></>}
             </button>
             {guest ? (
               <div className="tip blue">

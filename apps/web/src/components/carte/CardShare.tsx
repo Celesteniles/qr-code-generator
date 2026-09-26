@@ -30,7 +30,7 @@ export function CopyCardLink({ slug }: { slug: string }) {
         <span className="truncate">link.cg/{slug}</span>
       </span>
       <button type="button" onClick={copy} className="icon-btn" aria-label={`Copier le lien link.cg/${slug}`}>
-        {copied === 'ok' ? <CheckIcon className="text-ok" /> : <DocumentDuplicateIcon />}
+        {copied === 'ok' ? <CheckIcon className="anim-pop text-ok" /> : <DocumentDuplicateIcon />}
       </button>
       <span className="text-xs font-semibold text-ok" aria-live="polite">
         {copied === 'ok' ? 'Lien copié' : copied === 'fail' ? <span className="text-bad">Copie impossible, sélectionnez le lien</span> : ''}

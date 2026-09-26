@@ -88,7 +88,7 @@ export function Creer({ initialMode, initialUrl, initialType, deviceRoute, viewe
           </Link>
         </div>
 
-        <div className="mt-6">
+        <div key={mode} className="anim-rise mt-6">
           {mode === 'lien'
             ? <LinkMode initialUrl={initialUrl} deviceRoute={deviceRoute} viewer={viewer} onCreate={create} />
             : <QrMode initialType={initialType ?? 'site'} initialUrl={initialUrl} viewer={viewer} onCreate={create} />}

@@ -24,7 +24,7 @@ export function CopyButton({ text, label = 'Copier le lien', className = '' }: {
 
   return (
     <button type="button" className={`icon-btn relative z-10 ${className}`} onClick={copy} aria-label={copied ? 'Lien copié' : label} title={copied ? 'Copié' : label}>
-      {copied ? <CheckIcon className="text-ok" /> : <DocumentDuplicateIcon />}
+      {copied ? <CheckIcon className="anim-pop text-ok" /> : <DocumentDuplicateIcon />}
       <span className="sr-only" aria-live="polite">{copied ? 'Lien copié' : ''}</span>
     </button>
   )

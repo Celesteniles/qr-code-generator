@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { PlusIcon } from '@heroicons/react/24/outline'
-import { listLinks, getQrDesigns, getCardBySlug } from '@link/db'
+import { getQrDesigns, getCardBySlug } from '@link/db'
+import { getWorkspaceLinks } from '@/server/links'
 import { getDb } from '@/server/data'
 import { getViewer } from '@/server/viewer'
 import { getScanCounts } from '@/server/scans'
@@ -13,7 +14,7 @@ export const metadata: Metadata = { title: 'Mes liens & QR — link.cg' }
 
 async function loadLinks(workspaceId: string): Promise<LinkItem[]> {
   const db = getDb()
-  const [links, scans] = await Promise.all([listLinks(db, workspaceId), getScanCounts()])
+  const [links, scans] = await Promise.all([getWorkspaceLinks(workspaceId), getScanCounts()])
   if (links.length === 0) return []
 
   const cards = links.filter((l) => l.kind === 'card')

@@ -1,6 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Pages déjà visitées : réaffichées depuis le cache du navigateur pendant 60 s
+  // (retour arrière, aller-retour entre écrans) au lieu d'être rechargées. Toute
+  // action serveur (revalidatePath) et la connexion/déconnexion vident ce cache,
+  // donc on ne montre jamais un état périmé après une modification.
+  experimental: {
+    staleTimes: { dynamic: 60, static: 300 },
+  },
   // Anciennes adresses (avant la refonte D) : liens partagés et favoris continuent
   // de fonctionner. Permanentes, car les nouvelles routes sont définitives.
   async redirects() {

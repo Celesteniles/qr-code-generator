@@ -284,5 +284,63 @@
   @media (max-width: 640px) { .drawer .panel { top: auto; left: 0; right: 0; bottom: 0; width: 100%; max-height: 92vh; border-radius: 26px 26px 0 0; } }
 }
 
+/* ── Mouvement ──────────────────────────────────────────────────────────────
+   Principes : court (150–350 ms), doux (ease-out), jamais bloquant. Le mouvement
+   accompagne un changement d'état (arrivée, attente, confirmation) ; il ne décore
+   pas. Tout est coupé si l'appareil demande de réduire les animations. */
+@layer components {
+  /* Arrivée d'une page (voir app/(espace)/template.tsx) et d'un bloc */
+  .anim-page { animation: rise .35s cubic-bezier(.2,.7,.2,1) both; }
+  .anim-rise { animation: rise .35s cubic-bezier(.2,.7,.2,1) both; }
+  .anim-pop { animation: pop .28s cubic-bezier(.2,.9,.3,1.3) both; }
+  .anim-fade { animation: fade .25s ease-out both; }
+  /* Squelettes : invisibles pendant 150 ms, pour ne pas clignoter si la page arrive vite */
+  .anim-fade-late { animation: fade .2s ease-out .15s both; }
+
+  /* Cascade : les enfants directs arrivent l'un après l'autre (8 premiers) */
+  .stagger > * { animation: rise .4s cubic-bezier(.2,.7,.2,1) both; }
+  .stagger > :nth-child(2) { animation-delay: 40ms; }
+  .stagger > :nth-child(3) { animation-delay: 80ms; }
+  .stagger > :nth-child(4) { animation-delay: 120ms; }
+  .stagger > :nth-child(5) { animation-delay: 160ms; }
+  .stagger > :nth-child(6) { animation-delay: 200ms; }
+  .stagger > :nth-child(7) { animation-delay: 240ms; }
+  .stagger > :nth-child(n+8) { animation-delay: 280ms; }
+
+  /* Squelette : forme grise qui « respire » pendant le chargement */
+  .skeleton {
+    border-radius: 12px;
+    background: linear-gradient(90deg, var(--soft) 0%, color-mix(in srgb, var(--line) 70%, var(--soft)) 40%, var(--soft) 80%) 0 0 / 300% 100%;
+    animation: shimmer 1.4s ease-in-out infinite;
+  }
+  .skeleton-text { height: .9em; border-radius: 6px; }
+
+  /* Indicateur d'activité (hérite de la couleur du texte) */
+  .spinner {
+    display: inline-block; width: 1em; height: 1em; flex-shrink: 0; border-radius: 50%;
+    border: 2px solid currentColor; border-right-color: transparent; animation: spin .7s linear infinite;
+  }
+  .btn[aria-busy="true"] { cursor: progress; }
+  .btn[aria-busy="true"]:disabled { opacity: .85; }
+
+}
+
 @keyframes fade { from { opacity: 0; } }
 @keyframes slide { from { opacity: 0; transform: translateX(24px); } }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+@keyframes pop { from { opacity: 0; transform: scale(.94); } }
+@keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Les squelettes et spinners restent lisibles sans mouvement */
+  .skeleton { background: var(--soft); }
+  .spinner { border-right-color: currentColor; opacity: .6; }
+}

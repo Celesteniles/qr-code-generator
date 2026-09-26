@@ -5,6 +5,7 @@ import { CheckIcon, ExclamationCircleIcon, EyeIcon } from '@heroicons/react/24/o
 import { updateCardAction } from '@/server/actions'
 import { CardView } from './CardView'
 import { cardInitials, THEMES, type CardFields } from './card-model'
+import { Spinner } from '@/components/kit/Spinner'
 
 type Status = { kind: 'idle' } | { kind: 'saved' } | { kind: 'error'; message: string }
 
@@ -144,12 +145,12 @@ export function CardEditor({ linkId, slug, initial, aside }: {
         </section>
 
         <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-          <button type="submit" className="btn btn-cta btn-lg" disabled={pending}>
-            {pending ? 'Enregistrement…' : 'Enregistrer les changements'}
+          <button type="submit" className="btn btn-cta btn-lg" disabled={pending} aria-busy={pending}>
+            {pending ? <><Spinner />Enregistrement…</> : 'Enregistrer les changements'}
           </button>
           <p className="text-sm" aria-live="polite" role="status">
             {status.kind === 'saved' ? (
-              <span className="inline-flex items-center gap-1.5 font-semibold text-ok">
+              <span className="anim-pop inline-flex items-center gap-1.5 font-semibold text-ok">
                 <CheckIcon className="h-4 w-4" aria-hidden="true" />C&apos;est enregistré. Vos contacts voient la nouvelle version immédiatement.
               </span>
             ) : status.kind === 'error' ? (

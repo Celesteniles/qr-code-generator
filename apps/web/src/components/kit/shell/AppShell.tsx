@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import Link, { useLinkStatus } from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
 import {
@@ -27,13 +27,24 @@ const NAV_SECONDARY: NavItem[] = [
   { href: '/offres', label: 'Offres', icon: CreditCardIcon },
 ]
 
+/**
+ * Icône d'un lien de navigation : remplacée par un spinner dès le clic, le temps
+ * que la page arrive (retour immédiat, même sur une connexion lente).
+ * Doit être rendue à l'intérieur du <Link> concerné.
+ */
+function NavIcon({ icon: Icon, className }: { icon: typeof HomeIcon; className: string }) {
+  const { pending } = useLinkStatus()
+  return pending
+    ? <span className={`spinner ${className} p-[2px]`} aria-hidden="true" />
+    : <Icon className={className} aria-hidden="true" />
+}
+
 function isCurrent(pathname: string, href: string) {
   return href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`)
 }
 
 function NavLink({ item, pathname, guest }: { item: NavItem; pathname: string; guest: boolean }) {
   const current = isCurrent(pathname, item.href)
-  const Icon = item.icon
   return (
     <Link
       href={item.href}
@@ -42,7 +53,7 @@ function NavLink({ item, pathname, guest }: { item: NavItem; pathname: string; g
         current ? 'bg-surface font-semibold text-ink shadow-[0_0_0_1px_var(--line),var(--shadow)]' : 'text-ink/80 hover:bg-soft hover:text-ink'
       }`}
     >
-      <Icon className="h-[18px] w-[18px] shrink-0" />
+      <NavIcon icon={item.icon} className="h-[18px] w-[18px] shrink-0" />
       {item.label}
       {item.needsAccount && guest && <LockClosedIcon className="ml-auto h-[15px] w-[15px] text-subtle" aria-label="Compte requis" />}
     </Link>
@@ -58,7 +69,7 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
       {/* ── Barre latérale (desktop) ── */}
       <aside className="sticky top-0 hidden h-screen flex-col gap-0.5 px-4 py-[22px] lg:flex">
         <div className="px-2.5 pb-[22px]"><Logo /></div>
-        <Link href="/creer" className="btn btn-cta mb-[18px] w-full"><PlusIcon />Créer</Link>
+        <Link href="/creer" className="btn btn-cta mb-[18px] w-full"><NavIcon icon={PlusIcon} className="h-[18px] w-[18px]" />Créer</Link>
         <nav className="flex flex-col gap-0.5" aria-label="Navigation principale">
           {NAV.map((item) => <NavLink key={item.href} item={item} pathname={pathname} guest={guest} />)}
           <div className="h-3.5" />
@@ -144,15 +155,15 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
         ].map(({ href, label, icon: Icon }) => (
           <Link key={href} href={href} aria-current={isCurrent(pathname, href) ? 'page' : undefined}
             className={`grid place-items-center gap-0.5 py-1 text-[11px] font-semibold ${isCurrent(pathname, href) ? 'text-ink' : 'text-subtle'}`}>
-            <Icon className="h-5 w-5" />{label}
+            <NavIcon icon={Icon} className="h-5 w-5" />{label}
           </Link>
         ))}
         <Link href="/creer" aria-label="Créer un lien ou un QR" className="grid place-items-center">
-          <span className="-mt-[22px] grid h-12 w-12 place-items-center rounded-2xl bg-ink text-bg shadow-[0_12px_24px_-10px_rgba(22,22,29,.6)]"><PlusIcon className="h-6 w-6" /></span>
+          <span className="-mt-[22px] grid h-12 w-12 place-items-center rounded-2xl bg-ink text-bg shadow-[0_12px_24px_-10px_rgba(22,22,29,.6)]"><NavIcon icon={PlusIcon} className="h-6 w-6" /></span>
         </Link>
         <Link href={guest ? '/connexion' : '/carte'} aria-current={isCurrent(pathname, guest ? '/connexion' : '/carte') ? 'page' : undefined}
           className={`grid place-items-center gap-0.5 py-1 text-[11px] font-semibold ${isCurrent(pathname, '/carte') ? 'text-ink' : 'text-subtle'}`}>
-          <UserIcon className="h-5 w-5" />{guest ? 'Compte' : 'Carte'}
+          <NavIcon icon={UserIcon} className="h-5 w-5" />{guest ? 'Compte' : 'Carte'}
         </Link>
       </nav>
     </div>

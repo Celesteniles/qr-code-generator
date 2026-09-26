@@ -110,7 +110,7 @@ export function LinksBoard({ links, signedIn }: { links: LinkItem[]; signedIn: b
       )}
 
       {shownLinks.length > 0 && (
-        <div className="mt-5 grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-4">
+        <div className="stagger mt-5 grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-4">
           {shownLinks.map((l) => <LinkCard key={l.id} link={l} />)}
         </div>
       )}

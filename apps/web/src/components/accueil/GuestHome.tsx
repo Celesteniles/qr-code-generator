@@ -56,7 +56,7 @@ export function GuestHome() {
       <p className="help"><SparklesIcon aria-hidden="true" />Le QR du lien est inclus, prêt à imprimer.</p>
 
       <h2 className="h2 mt-12">Ou choisissez ce que vous créez</h2>
-      <div className="mt-4 grid gap-3.5 min-[900px]:grid-cols-3">
+      <div className="stagger mt-4 grid gap-3.5 min-[900px]:grid-cols-3">
         {PRODUCTS.map((p) => (
           <Link key={p.href} href={p.href}
             className="group flex flex-col gap-3 rounded-[24px] bg-surface p-3.5 shadow-[inset_0_0_0_1.5px_var(--line-strong)] transition hover:-translate-y-0.5 hover:shadow-[inset_0_0_0_1.5px_var(--ink),0_18px_40px_-26px_rgba(22,22,29,.5)]">
@@ -81,7 +81,7 @@ export function GuestHome() {
       </div>
 
       <h2 className="h2 mt-12">Idées pour commencer</h2>
-      <ul className="mt-5 grid gap-3.5 min-[640px]:grid-cols-2 min-[1100px]:grid-cols-3">
+      <ul className="stagger mt-5 grid gap-3.5 min-[640px]:grid-cols-2 min-[1100px]:grid-cols-3">
         {INTENTS.map((i) => (
           <li key={i.label}>
             <Link href={i.href}
@@ -97,7 +97,7 @@ export function GuestHome() {
       </ul>
 
       <h2 className="h2 mt-12">Comment ça marche</h2>
-      <ol className="mt-5 grid gap-3.5 min-[860px]:grid-cols-3">
+      <ol className="stagger mt-5 grid gap-3.5 min-[860px]:grid-cols-3">
         {STEPS.map((s, k) => (
           <li key={s.t} className="zone p-5">
             <span className="grid h-[30px] w-[30px] place-items-center rounded-full bg-ink text-[13px] font-bold text-bg" aria-hidden="true">{k + 1}</span>

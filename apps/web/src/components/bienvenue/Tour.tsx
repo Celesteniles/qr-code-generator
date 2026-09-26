@@ -78,7 +78,7 @@ export function Tour() {
               <span className="eyebrow">Étape 1 sur 3</span>
               <h1 ref={heading} tabIndex={-1} id="q-intent" className="h1 mt-2 outline-none">Que voulez-vous partager ?</h1>
               <p className="lead mt-2">Choisissez l&apos;exemple le plus proche, on prépare le reste pour vous.</p>
-              <div className="mt-8 grid grid-cols-1 gap-3.5 min-[480px]:grid-cols-2 min-[860px]:grid-cols-3" role="group" aria-labelledby="q-intent">
+              <div className="stagger mt-8 grid grid-cols-1 gap-3.5 min-[480px]:grid-cols-2 min-[860px]:grid-cols-3" role="group" aria-labelledby="q-intent">
                 {CHOICES.map((c) => (
                   <button key={c.id} type="button" className="choice" aria-pressed={choiceId === c.id} onClick={() => pick(c.id)}>
                     <Illustration name={c.ill} height={120} className={`w-full overflow-hidden rounded-[14px] ${c.bg}`} />

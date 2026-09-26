@@ -8,6 +8,7 @@ import { DEFAULT_DESIGN } from '@/lib/qr-design'
 import { SHORT_HOST, hostOf, isWebUrl, normalizeUrl, shortUrl, slugify, suggestSlug } from './helpers'
 import type { CreateFn, LinkRule } from './publish'
 import { CopyButton, PlanUsage, Question, SlugField, Sr, useSlugCheck } from './ui'
+import { Spinner } from '@/components/kit/Spinner'
 
 // Onglet « Lien court » : lien long → adresse courte → même destination ou selon le téléphone.
 
@@ -160,8 +161,8 @@ export function LinkMode({ initialUrl, deviceRoute, viewer, onCreate }: {
         {error && (
           <p role="alert" className="tip bad"><span className="tip-ico"><ExclamationTriangleIcon /></span><span>{error}</span></p>
         )}
-        <button type="submit" className="btn btn-cta btn-lg w-full" disabled={busy}>
-          {busy ? 'Création…' : <>Créer mon lien <ArrowRightIcon /></>}
+        <button type="submit" className="btn btn-cta btn-lg w-full" disabled={busy} aria-busy={busy}>
+          {busy ? <><Spinner />Création…</> : <>Créer mon lien <ArrowRightIcon /></>}
         </button>
         {guest ? (
           <div className="tip blue">

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowLeftIcon, CheckIcon, ExclamationCircleIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import { signIn, signUp } from '@/lib/auth-client'
+import { Spinner } from '@/components/kit/Spinner'
 
 export type AuthMode = 'connexion' | 'inscription'
 
@@ -152,8 +153,8 @@ export function AuthPanel({ initialMode, next, freeLinks }: { initialMode: AuthM
             )}
           </div>
 
-          <button type="submit" className="btn btn-cta btn-lg w-full" disabled={pending}>
-            {pending ? (isIn ? 'Connexion…' : 'Création du compte…') : isIn ? 'Se connecter' : 'Créer mon compte'}
+          <button type="submit" className="btn btn-cta btn-lg w-full" disabled={pending} aria-busy={pending}>
+            {pending ? <><Spinner />{isIn ? 'Connexion…' : 'Création du compte…'}</> : isIn ? 'Se connecter' : 'Créer mon compte'}
           </button>
           {isIn && (
             <p className="text-center text-sm text-muted">

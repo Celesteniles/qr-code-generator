@@ -74,7 +74,7 @@ export default async function OffresPage() {
         </p>
       </div>
 
-      <div className="mt-8 grid items-stretch gap-4 min-[960px]:grid-cols-3">
+      <div className="stagger mt-8 grid items-stretch gap-4 min-[960px]:grid-cols-3">
         {order.map((p) => {
           const pop = p.id === 'pro'
           const isCurrent = signedIn && current === p.label

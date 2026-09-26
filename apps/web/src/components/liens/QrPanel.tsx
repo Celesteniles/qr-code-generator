@@ -1,7 +1,6 @@
 'use client'
 
 import { useCallback, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { ArrowDownTrayIcon, ChatBubbleOvalLeftEllipsisIcon, ShareIcon, SparklesIcon } from '@heroicons/react/24/outline'
 import { QrCanvas, type QrCanvasHandle } from '@/components/kit/QrCanvas'
 import { DEFAULT_DESIGN, type QrDesign } from '@/lib/qr-design'
@@ -17,7 +16,6 @@ export function QrPanel({ linkId, slug, url, initialDesign }: {
   url: string
   initialDesign: QrDesign | null
 }) {
-  const router = useRouter()
   const [design, setDesign] = useState<QrDesign>(initialDesign ?? DEFAULT_DESIGN)
   const [styling, setStyling] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -29,8 +27,7 @@ export function QrPanel({ linkId, slug, url, initialDesign }: {
     setDesign(d)
     setStyling(false)
     setSaved(true)
-    router.refresh()
-  }, [router])
+  }, [])
 
   async function share() {
     if (typeof navigator !== 'undefined' && navigator.share) {
