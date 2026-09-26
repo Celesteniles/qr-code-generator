@@ -7,4 +7,12 @@ interface CloudflareEnv {
   CF_ANALYTICS_TOKEN?: string
   /** Clé API Google Safe Browsing. Optionnelle : sans elle, les URLs ne sont pas vérifiées (log d'avertissement). */
   SAFE_BROWSING_KEY?: string
+  /** Clé secrète Turnstile. Avec TURNSTILE_SITE_KEY, active le captcha (cf. server/turnstile.ts). */
+  TURNSTILE_SECRET_KEY?: string
+  /**
+   * Clé publique Turnstile. Sans elle, ni captcha ni widget. Publique, mais posée
+   * comme secret (pas de var par environnement à maintenir). Si elle passe un jour
+   * dans les vars de wrangler.jsonc, retirer cette ligne (`wrangler types` la typera).
+   */
+  TURNSTILE_SITE_KEY?: string
 }

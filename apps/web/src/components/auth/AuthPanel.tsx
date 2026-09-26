@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeftIcon, CheckIcon, ChevronDownIcon, ExclamationCircleIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import { signIn, signUp } from '@/lib/auth-client'
 import { Spinner } from '@/components/kit/Spinner'
+import { Turnstile, type TurnstileHandle } from './Turnstile'
 
 export type AuthMode = 'connexion' | 'inscription'
 
@@ -15,6 +16,9 @@ type AuthError = { code?: string; message?: string; status?: number } | null | u
 function explain(mode: AuthMode, err: AuthError): string {
   const code = err?.code ?? ''
   if (err?.status === 429) return 'Trop de tentatives d\'affilée. Patientez une minute, puis réessayez.'
+  if (code === 'VERIFICATION_FAILED' || code === 'MISSING_RESPONSE') {
+    return 'La vérification anti-robot n\'a pas abouti. Attendez qu\'elle se termine, puis réessayez.'
+  }
   if (mode === 'connexion') {
     if (code === 'INVALID_EMAIL_OR_PASSWORD' || code === 'INVALID_PASSWORD' || err?.status === 401) {
       return 'Cet email et ce mot de passe ne correspondent pas. Vérifiez l\'adresse et les majuscules, ou créez un compte si vous n\'en avez pas encore.'
@@ -32,12 +36,20 @@ function explain(mode: AuthMode, err: AuthError): string {
   return 'La création du compte n\'a pas abouti. Vérifiez votre réseau, puis réessayez.'
 }
 
-export function AuthPanel({ initialMode, next, freeLinks }: { initialMode: AuthMode; next: string; freeLinks: number | null }) {
+export function AuthPanel({ initialMode, next, freeLinks, turnstileSiteKey }: {
+  initialMode: AuthMode
+  next: string
+  freeLinks: number | null
+  /** Clé publique Turnstile ; absente → pas de widget (le serveur n'exige alors rien). */
+  turnstileSiteKey?: string | null
+}) {
   const router = useRouter()
   const [mode, setMode] = useState<AuthMode>(initialMode)
   const [error, setError] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
   const [showPw, setShowPw] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const captchaRef = useRef<TurnstileHandle>(null)
   const id = useId()
   const tabIn = useRef<HTMLButtonElement>(null)
   const tabUp = useRef<HTMLButtonElement>(null)
@@ -64,17 +76,25 @@ export function AuthPanel({ initialMode, next, freeLinks }: { initialMode: AuthM
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setError(null)
+    if (turnstileSiteKey && !captchaToken) {
+      setError('Vérification anti-robot en cours. Patientez un instant, puis réessayez.')
+      return
+    }
     setPending(true)
     const data = new FormData(e.currentTarget)
     const email = String(data.get('email') ?? '').trim()
     const password = String(data.get('password') ?? '')
+    // Jeton Turnstile dans l'en-tête lu par le plugin captcha de Better Auth.
+    const fetchOptions = captchaToken ? { headers: { 'x-captcha-response': captchaToken } } : undefined
     try {
       const res = mode === 'connexion'
-        ? await signIn.email({ email, password })
-        : await signUp.email({ name: String(data.get('name') ?? '').trim(), email, password })
+        ? await signIn.email({ email, password, fetchOptions })
+        : await signUp.email({ name: String(data.get('name') ?? '').trim(), email, password, fetchOptions })
       if (res.error) {
         setError(explain(mode, res.error))
         setPending(false)
+        // Un jeton ne sert qu'une fois : nouveau défi pour le prochain essai.
+        captchaRef.current?.reset()
         return
       }
       router.push(next)
@@ -82,6 +102,7 @@ export function AuthPanel({ initialMode, next, freeLinks }: { initialMode: AuthM
     } catch {
       setError('Connexion au serveur impossible. Vérifiez votre réseau, puis réessayez.')
       setPending(false)
+      captchaRef.current?.reset()
     }
   }
 
@@ -151,6 +172,11 @@ export function AuthPanel({ initialMode, next, freeLinks }: { initialMode: AuthM
             </div>
             {!isIn && <p id={`${id}-pw-help`} className="help">8 caractères minimum. Une phrase courte que vous retenez facilement fait très bien l&apos;affaire.</p>}
           </div>
+
+          {turnstileSiteKey && (
+            <Turnstile ref={captchaRef} siteKey={turnstileSiteKey} onToken={setCaptchaToken}
+              onUnavailable={() => setError('La vérification anti-robot ne se charge pas. Vérifiez votre réseau ou désactivez le bloqueur de publicités, puis rechargez la page.')} />
+          )}
 
           <div role="alert">
             {error && (

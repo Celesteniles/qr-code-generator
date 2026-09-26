@@ -1,12 +1,15 @@
 import 'server-only'
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { captcha } from 'better-auth/plugins'
 import { drizzle } from 'drizzle-orm/d1'
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 import { authSchema, schema, ensureWorkspaceForUser, type Db } from '@link/db'
+import { turnstileKeys } from './turnstile'
 
 function createAuth(env: CloudflareEnv) {
   const db = drizzle(env.DB, { schema })
+  const turnstile = turnstileKeys(env)
   return betterAuth({
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
@@ -19,6 +22,16 @@ function createAuth(env: CloudflareEnv) {
       // String() élargit le type littéral figé par `wrangler types`.
       disableSignUp: String(env.DISABLE_SIGNUP) === 'true',
     },
+    // Turnstile sur l'inscription et la connexion, seulement si les clés sont posées
+    // (cf. server/turnstile.ts) : sans elles, pas de plugin, rien n'est exigé. Le
+    // jeton arrive dans l'en-tête x-captcha-response (cf. AuthPanel).
+    plugins: turnstile
+      ? [captcha({
+          provider: 'cloudflare-turnstile',
+          secretKey: turnstile.secretKey,
+          endpoints: ['/sign-up/email', '/sign-in/email'],
+        })]
+      : [],
     databaseHooks: {
       user: {
         create: {
