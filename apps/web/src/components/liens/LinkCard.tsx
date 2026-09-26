@@ -7,6 +7,7 @@ import { DEFAULT_DESIGN } from '@/lib/qr-design'
 import { CopyButton } from './CopyButton'
 import { downloadQr, qrFileName } from './qr-file'
 import { SHORT_HOST, typeLabel, nf, type LinkItem } from './model'
+import { qrLinkUrl } from '@/lib/short-link'
 
 const TYPE_ICON = { static: LinkIcon, app: DevicePhoneMobileIcon, card: UserIcon }
 
@@ -39,7 +40,7 @@ export function LinkCard({ link }: { link: LinkItem }) {
         <div className="relative grid place-items-center rounded-[18px] bg-soft px-2.5 pb-[22px] pt-12 shadow-[inset_0_0_0_1px_var(--line)]">
           {type}{status}
           <div className={`qr-thumb rounded-2xl p-2.5 ${link.active ? '' : 'opacity-50 grayscale'}`}>
-            <QrCanvas data={link.shortUrl} design={design} size={132} />
+            <QrCanvas data={qrLinkUrl(link.slug)} design={design} size={132} />
           </div>
         </div>
       )}
@@ -67,7 +68,7 @@ export function LinkCard({ link }: { link: LinkItem }) {
           className="icon-btn relative z-10"
           aria-label="Télécharger le QR (PNG)"
           title="Télécharger le QR"
-          onClick={() => downloadQr(link.shortUrl, design, 'png', qrFileName(link.slug))}
+          onClick={() => downloadQr(qrLinkUrl(link.slug), design, 'png', qrFileName(link.slug))}
         >
           {linkFirst ? <QrCodeIcon /> : <ArrowDownTrayIcon />}
         </button>

@@ -12,6 +12,7 @@ import { SHORT_HOST, shortUrl } from './helpers'
 import { publishLink, type LinkPayload } from './publish'
 import { CopyButton, Drawer } from './ui'
 import { Spinner } from '@/components/kit/Spinner'
+import { qrLinkUrl } from '@/lib/short-link'
 
 // Tiroirs de l'écran Créer : inscription au moment utile, puis succès.
 
@@ -136,6 +137,7 @@ export function SuccessDrawer({ info, onClose }: { info: SuccessInfo | null; onC
   const [downloading, setDownloading] = useState(false)
   if (!info) return null
   const url = shortUrl(info.slug)
+  const qrData = qrLinkUrl(info.slug)
   const design = info.design ?? DEFAULT_DESIGN
   const shareHref = `https://wa.me/?text=${encodeURIComponent(url)}`
 
@@ -173,12 +175,12 @@ export function SuccessDrawer({ info, onClose }: { info: SuccessInfo | null; onC
     >
       <div className="text-center">
         {isQr ? (
-          <div className="board !p-7"><div className="qrbox"><QrCanvas ref={qr} data={url} design={design} size={180} /></div></div>
+          <div className="board !p-7"><div className="qrbox"><QrCanvas ref={qr} data={qrData} design={design} size={180} /></div></div>
         ) : (
           <>
             <Illustration name="shortlink" height={160} className="overflow-hidden rounded-[20px] bg-sky" />
             {/* QR du lien, pour le téléchargement (non affiché) */}
-            <div className="hidden"><QrCanvas ref={qr} data={url} design={design} size={48} /></div>
+            <div className="hidden"><QrCanvas ref={qr} data={qrData} design={design} size={48} /></div>
           </>
         )}
         <h2 className="h1 mt-6">{isQr ? 'C’est prêt !' : 'Votre lien est en ligne !'}</h2>

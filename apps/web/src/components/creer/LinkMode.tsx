@@ -9,6 +9,7 @@ import { SHORT_HOST, hostOf, isWebUrl, normalizeUrl, shortUrl, slugify, suggestS
 import type { CreateFn, LinkRule } from './publish'
 import { CopyButton, PlanUsage, Question, SlugField, Sr, useSlugCheck } from './ui'
 import { Spinner } from '@/components/kit/Spinner'
+import { qrLinkUrl } from '@/lib/short-link'
 
 // Onglet « Lien court » : lien long → adresse courte → même destination ou selon le téléphone.
 
@@ -132,7 +133,7 @@ export function LinkMode({ initialUrl, deviceRoute, viewer, onCreate }: {
           <div className="mt-3 flex items-center gap-2.5 border-t border-line pt-3">
             <div className="qr-thumb !rounded-[10px] !p-1">
               {preview
-                ? <QrCanvas data={preview} design={DEFAULT_DESIGN} size={144} className="!h-12 !w-12" />
+                ? <QrCanvas data={qrLinkUrl(cleanSlug)} design={DEFAULT_DESIGN} size={144} className="!h-12 !w-12" />
                 : <div className="h-12 w-12 rounded-md bg-soft" aria-hidden="true" />}
             </div>
             <div className="grow text-[13px]">

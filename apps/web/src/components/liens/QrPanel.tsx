@@ -8,6 +8,7 @@ import { CopyButton } from './CopyButton'
 import { StyleDrawer } from './StyleDrawer'
 import { qrFileName } from './qr-file'
 import { SHORT_HOST } from './model'
+import { qrLinkUrl } from '@/lib/short-link'
 
 /** Colonne gauche de la fiche : le QR, l'adresse courte, partager, télécharger, style. */
 export function QrPanel({ linkId, slug, url, initialDesign }: {
@@ -40,7 +41,7 @@ export function QrPanel({ linkId, slug, url, initialDesign }: {
   return (
     <div className="grid gap-3.5">
       <div className="board">
-        <div className="qrbox"><QrCanvas ref={qr} data={url} design={design} size={240} /></div>
+        <div className="qrbox"><QrCanvas ref={qr} data={qrLinkUrl(slug)} design={design} size={240} /></div>
       </div>
 
       <div className="flex items-center gap-1.5 rounded-full bg-soft py-1.5 pl-4 pr-1.5 font-mono text-[13px]">
@@ -75,7 +76,7 @@ export function QrPanel({ linkId, slug, url, initialDesign }: {
           : 'Changer le style crée un nouveau visuel : réimprimez seulement si vous le souhaitez. Le lien, lui, ne change jamais.'}
       </p>
 
-      {styling && <StyleDrawer linkId={linkId} data={url} initial={design} onClose={close} onSaved={onSaved} />}
+      {styling && <StyleDrawer linkId={linkId} data={qrLinkUrl(slug)} initial={design} onClose={close} onSaved={onSaved} />}
     </div>
   )
 }

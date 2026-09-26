@@ -11,11 +11,12 @@ import { QrCanvas, type QrCanvasHandle } from '@/components/kit/QrCanvas'
 import { saveLocalQr } from '@/lib/local-qr'
 import type { QrDesign } from '@/lib/qr-design'
 import { buildContent, canBeModifiable, ContentFields, initialValues, TYPE_META, TypePicker, type ContentType, type ContentValues } from './content'
-import { SHORT_HOST, isWebUrl, normalizeUrl, readability, shortUrl, slugify, suggestSlug } from './helpers'
+import { SHORT_HOST, isWebUrl, normalizeUrl, readability, slugify, suggestSlug } from './helpers'
 import type { CreateFn, LinkRule } from './publish'
 import { STYLE_PRESETS, StyleEditor } from './style'
 import { PlanUsage, Question, SlugField, useSlugCheck } from './ui'
 import { Spinner } from '@/components/kit/Spinner'
+import { qrLinkUrl } from '@/lib/short-link'
 
 // Onglet « QR code » : contenu → champs → fixe ou modifiable → style. Aperçu réel (qr-code-styling).
 
@@ -64,7 +65,7 @@ export function QrMode({ initialType, initialUrl, viewer, onCreate }: {
   const cleanSlug = slugify(slug)
   // La vérification ne tourne que pour un QR modifiable.
   const status = useSlugCheck(kind === 'modifiable' ? slug : '')
-  const qrData = kind === 'modifiable' ? (cleanSlug ? shortUrl(cleanSlug) : '') : built.data
+  const qrData = kind === 'modifiable' ? (cleanSlug ? qrLinkUrl(cleanSlug) : '') : built.data
   const read = readability(design)
   const label = name.trim() || built.label
 

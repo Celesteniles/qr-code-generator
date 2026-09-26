@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import { ArrowDownTrayIcon, CheckIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline'
 import { QrCanvas, type QrCanvasHandle } from '@/components/kit/QrCanvas'
 import { DEFAULT_DESIGN } from '@/lib/qr-design'
+import { qrLinkUrl } from '@/lib/short-link'
 
 /** Adresse courte publique d'une carte. */
 export function cardShortUrl(slug: string) {
@@ -56,7 +57,7 @@ export function CardQr({ slug }: { slug: string }) {
   return (
     <section className="card mt-5 flex items-center gap-4 p-4" aria-labelledby="carte-qr-titre">
       <div className="qr-thumb shrink-0">
-        <QrCanvas ref={qr} data={cardShortUrl(slug)} design={DEFAULT_DESIGN} size={112} />
+        <QrCanvas ref={qr} data={qrLinkUrl(slug)} design={DEFAULT_DESIGN} size={112} />
       </div>
       <div className="min-w-0">
         <h2 id="carte-qr-titre" className="text-sm font-semibold">Le QR de votre carte</h2>

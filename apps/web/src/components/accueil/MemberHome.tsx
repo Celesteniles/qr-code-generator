@@ -11,6 +11,7 @@ import { getDailyVisits, getScanCounts } from '@/server/scans'
 import type { SessionContext } from '@/server/session'
 import { Shortener } from './Shortener'
 import { VisitsChart } from './VisitsChart'
+import { qrLinkUrl } from '@/lib/short-link'
 
 // Accueil de l'inscrit. Tout ce qui est affiché se déduit de ses données réelles :
 // pas de tendance, pas d'« idée » inventée. Référence : docs/maquettes/d-accueil.html.
@@ -151,7 +152,7 @@ export async function MemberHome({ ctx, viewer }: { ctx: SessionContext; viewer:
               <Link href={`/liens/${l.id}`} className="block h-full rounded-[20px] bg-soft p-3 shadow-[inset_0_0_0_1px_var(--line)] transition hover:shadow-[inset_0_0_0_1.5px_var(--line-strong)]">
                 {design != null ? (
                   <div className="qr-thumb grid place-items-center">
-                    <QrCanvas data={`https://${SHORT_HOST}/${l.slug}`} design={toDesign(design)} size={148} />
+                    <QrCanvas data={qrLinkUrl(l.slug)} design={toDesign(design)} size={148} />
                   </div>
                 ) : (
                   <div className="flex h-[164px] flex-col items-start justify-end gap-2.5 rounded-[14px] bg-surface p-3.5 shadow-[0_10px_24px_-16px_rgba(22,22,29,.5)]">
