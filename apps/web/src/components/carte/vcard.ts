@@ -4,11 +4,11 @@
 
 import { filledSocials, websiteHref, whatsappHref, type CardFields } from './card-model'
 import { normalizePhone } from '@/lib/phone'
+import { vcardRaw as raw, vcardText as esc } from '@link/shared'
 
-/** Échappe une valeur texte vCard (\ , ; et retours à la ligne). */
-function esc(v: string): string {
-  return v.replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;')
-}
+// Toute valeur passe par esc (texte : \ , ; et retours à la ligne échappés) ou raw
+// (TEL, EMAIL, URL : caractères de contrôle retirés). Un CR/LF laissé tel quel
+// ouvrirait une nouvelle ligne, donc une propriété injectée dans la fiche.
 
 export function cardVCard(fields: CardFields, cardUrl: string): string {
   const name = fields.fullName.trim()
@@ -18,14 +18,16 @@ export function cardVCard(fields: CardFields, cardUrl: string): string {
   lines.push(`FN:${esc(name)}`)
   if (fields.org.trim()) lines.push(`ORG:${esc(fields.org.trim())}`)
   if (fields.title.trim()) lines.push(`TITLE:${esc(fields.title.trim())}`)
-  if (fields.phone.trim()) lines.push(`TEL;TYPE=CELL:${normalizePhone(fields.phone) ?? fields.phone.trim()}`)
-  if (fields.email.trim()) lines.push(`EMAIL;TYPE=INTERNET:${fields.email.trim()}`)
+  const tel = raw(normalizePhone(fields.phone) ?? fields.phone)
+  if (tel) lines.push(`TEL;TYPE=CELL:${tel}`)
+  const email = raw(fields.email)
+  if (email) lines.push(`EMAIL;TYPE=INTERNET:${email}`)
   const site = websiteHref(fields.website)
-  if (site) lines.push(`URL:${site}`)
+  if (site) lines.push(`URL:${raw(site)}`)
   const wa = fields.whatsapp.trim() ? whatsappHref(fields.whatsapp) : null
-  if (wa) lines.push(`URL;TYPE=WhatsApp:${wa}`)
-  for (const { net, href } of filledSocials(fields.socials)) lines.push(`URL;TYPE=${net.label.replace(/[^A-Za-z]/g, '')}:${href}`)
-  lines.push(`URL;TYPE=Carte:${cardUrl}`)
+  if (wa) lines.push(`URL;TYPE=WhatsApp:${raw(wa)}`)
+  for (const { net, href } of filledSocials(fields.socials)) lines.push(`URL;TYPE=${net.label.replace(/[^A-Za-z]/g, '')}:${raw(href)}`)
+  lines.push(`URL;TYPE=Carte:${raw(cardUrl)}`)
   lines.push('END:VCARD')
   // Fins de ligne CRLF, comme le demande la norme (certains carnets y tiennent).
   return lines.join('\r\n') + '\r\n'
