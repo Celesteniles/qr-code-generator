@@ -1,15 +1,22 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createLink, setLinkActive, deleteLink, updateLinkRule, upsertCardProfile, upsertQrDesign, getLink, getWorkspace, listLinks, takenSlugs, type CardProfileInput, type SocialLink } from '@link/db'
+import { createLink, setLinkActive, deleteLink, updateLinkRule, upsertCardProfile, upsertQrDesign, getLink, getWorkspace, listLinks, takenSlugs, checkLinkCreationRate, checkLinkUpdateRate, type CardProfileInput, type SocialLink, type ThrottleResult } from '@link/db'
 import { canCreateLink, PLANS, type Rule, type Plan } from '@link/shared'
 import { getDb, getKv } from './data'
 import { getSessionContext } from './session'
+import { getUrlChecker } from './safebrowsing'
 import { SOCIAL_NETWORKS, socialHref } from '@/components/carte/card-model'
 import { normalizePhone } from '@/lib/phone'
 import { DEFAULT_DOMAIN, type CreateState, type UpdateDestinationState, type SlugCheck } from './config'
 
 const HEX_COLOR = /^#[0-9a-f]{6}$/i
+
+/** Limite de débit atteinte → phrase claire, avec le délai d'attente. */
+function throttleMessage(res: Extract<ThrottleResult, { ok: false }>, what: string): string {
+  const wait = res.retryInMinutes <= 1 ? 'une minute' : `${res.retryInMinutes} minutes`
+  return `Vous avez ${what} ${res.max} liens en moins d'une heure. Par sécurité, patientez ${wait} avant de continuer.`
+}
 
 /**
  * Numéro WhatsApp → lien wa.me (le champ `url` des réseaux doit rester cliquable).
@@ -104,8 +111,13 @@ export async function createLinkAction(_prev: CreateState, formData: FormData): 
     return fail(`Limite du palier ${PLANS[plan].label} atteinte (${PLANS[plan].maxLinks} liens).`)
   }
 
+  // Anti-abus : pas de création en rafale (lien de phishing → link.cg entier bloqué).
+  const rate = await checkLinkCreationRate(db, ctx.workspaceId, plan)
+  if (!rate.ok) return fail(throttleMessage(rate, 'créé'))
+
+  // Toute destination passe par Safe Browsing (si SAFE_BROWSING_KEY est posée).
   const res = await createLink(
-    { db, kv: getKv() },
+    { db, kv: getKv(), checkUrl: getUrlChecker() },
     { workspaceId: ctx.workspaceId, domainId: DEFAULT_DOMAIN, slug, rule },
   )
 
@@ -123,7 +135,7 @@ export async function createLinkAction(_prev: CreateState, formData: FormData): 
   return fail(
     res.error === 'slug_taken' ? 'Ce raccourci est déjà utilisé sur link.cg. Essayez-en un autre.'
     : res.error === 'domain_not_found' ? 'Domaine introuvable.'
-    : res.error === 'unsafe_url' ? 'Cette URL a été jugée dangereuse.'
+    : res.error === 'unsafe_url' ? 'Cette adresse a été signalée comme dangereuse, ou n\'a pas pu être vérifiée. Réessayez dans un instant, ou choisissez une autre adresse.'
     : res.error === 'invalid' ? res.issues[0] ?? 'Entrée invalide.'
     : 'Erreur inconnue.',
   )
@@ -260,12 +272,17 @@ export async function updateLinkDestinationAction(
     rule = { type: 'static', url }
   }
 
-  const res = await updateLinkRule({ db, kv: getKv() }, id, rule)
+  // Anti-abus : un compte ne change pas en rafale la destination de ses liens.
+  const ws = await getWorkspace(db, ctx.workspaceId)
+  const rate = await checkLinkUpdateRate(db, ctx.workspaceId, (ws?.plan ?? 'free') as Plan, link)
+  if (!rate.ok) return { ok: false, message: throttleMessage(rate, 'modifié') }
+
+  const res = await updateLinkRule({ db, kv: getKv(), checkUrl: getUrlChecker() }, id, rule)
   if (!res.ok) {
     return {
       ok: false,
       message:
-        res.error === 'unsafe_url' ? `Cette adresse a été signalée comme dangereuse : ${res.url}`
+        res.error === 'unsafe_url' ? `Cette adresse a été signalée comme dangereuse, ou n'a pas pu être vérifiée : ${res.url}. Réessayez dans un instant, ou choisissez une autre adresse.`
         : res.error === 'not_found' ? 'Ce lien est introuvable.'
         : res.error === 'not_editable' ? 'Ce lien mène à votre carte de visite : modifiez plutôt la carte.'
         : 'Cette adresse ne semble pas valide. Vérifiez qu\'elle commence par https://',
@@ -293,7 +310,11 @@ function normalizeSlug(raw: string): string {
 /** Vérifie qu'une adresse courte est libre sur link.cg et propose des alternatives. */
 export async function checkSlugAction(slug: string): Promise<SlugCheck> {
   // Pas de session : le visiteur prépare son lien avant de s'inscrire. Une seule
-  // requête D1 par appel (adresse + candidats ensemble) borne le coût.
+  // requête D1 par appel (adresse + candidats ensemble, entrée tronquée à 200
+  // caractères) borne le coût ; rien n'est écrit. Pas de limite par IP ici : elle
+  // demanderait le binding Rate Limiting de Workers ("ratelimits" dans
+  // wrangler.jsonc, puis `await env.SLUG_LIMITER.limit({ key: ip })` avec l'IP de
+  // l'en-tête cf-connecting-ip). À ajouter si ce point d'entrée est abusé.
   const normalized = normalizeSlug(String(slug ?? '').slice(0, 200))
   if (normalized.length < SLUG_MIN) {
     return { normalized, available: false, message: `L'adresse doit contenir au moins ${SLUG_MIN} lettres ou chiffres.`, suggestions: [] }
