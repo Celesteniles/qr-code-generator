@@ -67,7 +67,7 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[264px_minmax(0,1fr)]">
       {/* ── Barre latérale (desktop) ── */}
-      <aside className="sticky top-0 hidden h-screen flex-col gap-0.5 px-4 py-[22px] lg:flex">
+      <aside className="sticky top-0 hidden h-screen flex-col gap-0.5 overflow-y-auto px-4 py-[22px] lg:flex [&>*]:shrink-0">
         <div className="px-2.5 pb-[22px]"><Logo /></div>
         <Link href="/creer" className="btn btn-cta mb-[18px] w-full"><NavIcon icon={PlusIcon} className="h-[18px] w-[18px]" />Créer</Link>
         <nav className="flex flex-col gap-0.5" aria-label="Navigation principale">
