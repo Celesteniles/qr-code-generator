@@ -12,12 +12,14 @@ type Status = { kind: 'idle' } | { kind: 'saved' } | { kind: 'error'; message: s
 
 // Éditeur de carte : sections-questions à gauche, aperçu téléphone en direct à
 // droite (le même composant que la page publique).
-export function CardEditor({ linkId, slug, initial, aside }: {
+export function CardEditor({ linkId, slug, initial, aside, footer }: {
   linkId: string
   slug: string
   initial: CardFields
   /** Contenu sous l'aperçu (QR de la carte). */
   aside?: ReactNode
+  /** Sous le formulaire, hors de lui : pause et suppression (ils ont leurs propres formulaires). */
+  footer?: ReactNode
 }) {
   const [fields, setFields] = useState<CardFields>(initial)
   const [saved, setSaved] = useState(() => JSON.stringify(initial))
@@ -72,6 +74,7 @@ export function CardEditor({ linkId, slug, initial, aside }: {
 
   return (
     <div className="grid items-start gap-10 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="min-w-0">
       <form onSubmit={onSubmit}>
         <h1 className="h1">Votre carte de visite</h1>
         <p className="lead mt-2 max-w-[62ch]">
@@ -207,6 +210,8 @@ export function CardEditor({ linkId, slug, initial, aside }: {
           </p>
         </div>
       </form>
+      {footer}
+      </div>
 
       <aside className="xl:sticky xl:top-6" aria-label="Aperçu de votre carte">
         <p className="eyebrow flex justify-center"><EyeIcon className="h-4 w-4" aria-hidden="true" />Ce que voient vos contacts</p>

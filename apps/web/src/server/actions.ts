@@ -132,6 +132,8 @@ function revalidateLink(id: string) {
   revalidatePath('/')
   revalidatePath('/liens')
   revalidatePath(`/liens/${id}`)
+  // Cartes : liste et éditeurs (/carte, /carte/[slug]).
+  revalidatePath('/carte', 'layout')
 }
 
 /** Vérifie que le lien appartient à l'espace de l'utilisateur connecté. */

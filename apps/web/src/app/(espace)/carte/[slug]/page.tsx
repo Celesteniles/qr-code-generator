@@ -8,8 +8,18 @@ import { getViewer } from '@/server/viewer'
 import { CardEditor } from '@/components/carte/CardEditor'
 import { CardQr, CopyCardLink } from '@/components/carte/CardShare'
 import { fieldsFromProfile } from '@/components/carte/card-model'
+import { ActiveSwitch } from '@/components/liens/ActiveSwitch'
+import { DeleteZone } from '@/components/liens/DeleteZone'
+import { deleteLinkAction } from '@/server/actions'
 
 export const metadata: Metadata = { title: 'Modifier ma carte · link.cg' }
+
+/** Supprime la carte puis revient aux cartes. */
+async function deleteAndLeave(formData: FormData) {
+  'use server'
+  await deleteLinkAction(formData)
+  redirect('/carte?liste=1')
+}
 
 export default async function EditCartePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -38,6 +48,16 @@ export default async function EditCartePage({ params }: { params: Promise<{ slug
         slug={card.link.slug}
         initial={fieldsFromProfile(card.profile)}
         aside={<CardQr slug={card.link.slug} />}
+        footer={
+          <div className="mt-12 grid gap-4" aria-label="Gérer la carte" role="region">
+            <section className="card p-[22px] sm:p-[26px]">
+              <ActiveSwitch linkId={card.link.id} active={card.link.active} noun="carte" />
+            </section>
+            <section className="rounded-[26px] p-[22px] shadow-[inset_0_0_0_1.5px_var(--bad-tint)] sm:p-[26px]">
+              <DeleteZone linkId={card.link.id} action={deleteAndLeave} noun="carte" />
+            </section>
+          </div>
+        }
       />
     </div>
   )

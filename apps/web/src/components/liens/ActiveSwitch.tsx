@@ -3,8 +3,8 @@
 import { useId, useOptimistic, useTransition } from 'react'
 import { toggleLinkAction } from '@/server/actions'
 
-/** « Lien en ligne » : met le lien (et son QR) en pause ou le réactive. */
-export function ActiveSwitch({ linkId, active }: { linkId: string; active: boolean }) {
+/** « Lien en ligne » : met le lien (et son QR) en pause ou le réactive. Sert aussi aux cartes. */
+export function ActiveSwitch({ linkId, active, noun = 'lien' }: { linkId: string; active: boolean; noun?: 'lien' | 'carte' }) {
   const [pending, startTransition] = useTransition()
   const [on, setOn] = useOptimistic(active)
   const titleId = useId()
@@ -24,10 +24,15 @@ export function ActiveSwitch({ linkId, active }: { linkId: string; active: boole
   return (
     <div className="flex items-start gap-4">
       <div className="grow">
-        <h2 id={titleId} className="h3">{on ? 'Lien en ligne' : 'Lien en pause'}</h2>
+        <h2 id={titleId} className="h3">{noun === 'carte' ? (on ? 'Carte en ligne' : 'Carte en pause') : (on ? 'Lien en ligne' : 'Lien en pause')}</h2>
         <p id={descId} className="mt-1 text-sm text-muted">
-          En pause, le lien et son QR affichent une page neutre « Ce lien n&apos;est plus actif » au lieu d&apos;une erreur.
-          Vous pouvez le réactiver quand vous voulez.
+          {noun === 'carte' ? (
+            <>En pause, votre carte n&apos;est plus visible : son lien et son QR affichent une page neutre. Vos informations
+              sont gardées, et vous pouvez la réactiver quand vous voulez.</>
+          ) : (
+            <>En pause, le lien et son QR affichent une page neutre « Ce lien n&apos;est plus actif » au lieu d&apos;une erreur.
+              Vous pouvez le réactiver quand vous voulez.</>
+          )}
         </p>
       </div>
       <button

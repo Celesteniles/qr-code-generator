@@ -13,15 +13,12 @@ import { fieldsFromProfile } from '@/components/carte/card-model'
 
 export const dynamic = 'force-dynamic'
 
-const loadCard = cache(async (slug: string) => {
-  const card = await getCardBySlug(getDb(), slug)
-  return card && card.link.active ? card : null
-})
+const loadCard = cache((slug: string) => getCardBySlug(getDb(), slug))
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const card = await loadCard(slug)
-  const p = card?.profile
+  const p = card?.link.active ? card.profile : null
   if (!p) return { title: 'Carte de visite · link.cg' }
   const role = [p.title, p.org].filter(Boolean).join(' · ')
   return {
@@ -34,6 +31,19 @@ export default async function PublicCardPage({ params }: { params: Promise<{ slu
   const { slug } = await params
   const card = await loadCard(slug)
   if (!card) notFound()
+
+  // En pause : page neutre (comme un lien en pause), sans rien révéler du profil.
+  if (!card.link.active) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-bg px-4 py-10 text-center">
+        <div className="card max-w-sm p-8">
+          <h1 className="h3">Cette carte n&apos;est plus active</h1>
+          <p className="mt-2 text-muted">Son propriétaire l&apos;a mise en pause. Elle sera de nouveau visible s&apos;il la réactive.</p>
+          <Link href="/" className="link mt-4">Créez votre carte gratuite sur link.cg</Link>
+        </div>
+      </main>
+    )
+  }
 
   if (!card.profile) {
     return (
