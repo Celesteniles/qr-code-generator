@@ -54,3 +54,6 @@ next-env.d.ts
 # PDF généré (la source markdown suffit dans git)
 docs/Presentation.pdf
 docs/.presentation.tmp.html
+
+# Variables locales de wrangler / OpenNext (next dev) : jamais commitées
+.dev.vars

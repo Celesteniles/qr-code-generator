@@ -7,6 +7,8 @@ import { getDb } from './data'
 export interface SessionContext {
   userId: string
   email: string
+  /** Nom saisi à l'inscription (personne ou activité). */
+  name: string
   workspaceId: string
 }
 
@@ -23,5 +25,5 @@ export async function getSessionContext(): Promise<SessionContext | null> {
     (await getUserWorkspaceId(db, session.user.id)) ??
     (await ensureWorkspaceForUser(db, session.user.id, session.user.name || session.user.email))
 
-  return { userId: session.user.id, email: session.user.email, workspaceId }
+  return { userId: session.user.id, email: session.user.email, name: session.user.name || '', workspaceId }
 }

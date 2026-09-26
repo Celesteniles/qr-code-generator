@@ -1,81 +1,58 @@
+import type { Metadata } from 'next'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { cache } from 'react'
 import { getCardBySlug } from '@link/db'
 import { getDb } from '@/server/data'
-import { Blobs } from '@/components/ui'
-import { VCardButton } from './VCardButton'
+import { CardView } from '@/components/carte/CardView'
+import { SaveContactButton } from '@/components/carte/SaveContactButton'
+import { fieldsFromProfile } from '@/components/carte/card-model'
+
+// Page publique d'une carte de visite, ouverte par les contacts (lien ou QR).
+// Hors coquille de l'application : c'est la carte de la personne, pas link.cg.
 
 export const dynamic = 'force-dynamic'
 
-function initials(name: string): string {
-  return name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase() ?? '').join('')
+const loadCard = cache(async (slug: string) => {
+  const card = await getCardBySlug(getDb(), slug)
+  return card && card.link.active ? card : null
+})
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const card = await loadCard(slug)
+  const p = card?.profile
+  if (!p) return { title: 'Carte de visite · link.cg' }
+  const role = [p.title, p.org].filter(Boolean).join(' · ')
+  return {
+    title: p.fullName,
+    description: role ? `${role} — carte de visite sur link.cg` : 'Carte de visite sur link.cg',
+  }
 }
 
-export default async function CardPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function PublicCardPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const card = await getCardBySlug(getDb(), slug)
-  if (!card || !card.link.active) notFound()
+  const card = await loadCard(slug)
+  if (!card) notFound()
 
-  const p = card.profile
-  if (!p) {
+  if (!card.profile) {
     return (
-      <Shell>
-        <p className="text-center text-zinc-500 text-sm py-8">Cette carte n&apos;est pas encore configurée.</p>
-      </Shell>
+      <main className="grid min-h-screen place-items-center bg-bg px-4 py-10 text-center">
+        <div className="card max-w-sm p-8">
+          <h1 className="h3">Cette carte n&apos;est pas encore prête</h1>
+          <p className="mt-2 text-muted">Son propriétaire ne l&apos;a pas encore remplie. Réessayez un peu plus tard.</p>
+          <Link href="/" className="link mt-4">Créez votre carte gratuite sur link.cg</Link>
+        </div>
+      </main>
     )
   }
 
+  const fields = fieldsFromProfile(card.profile)
   return (
-    <Shell>
-      <div className="flex flex-col items-center text-center">
-        <div className="w-20 h-20 rounded-2xl bg-brand text-white flex items-center justify-center text-2xl font-bold mb-4">
-          {initials(p.fullName) || '•'}
-        </div>
-        <h1 className="text-xl font-bold text-[color:var(--foreground)]">{p.fullName}</h1>
-        {(p.title || p.org) && (
-          <p className="text-sm text-[color:var(--muted)] mt-1">
-            {[p.title, p.org].filter(Boolean).join(' · ')}
-          </p>
-        )}
+    <main className="min-h-screen bg-[#f6f3ee] sm:grid sm:place-items-start sm:bg-[#e9e3d8] sm:px-4 sm:py-10">
+      <div className="mx-auto w-full max-w-[440px] sm:overflow-hidden sm:rounded-[32px] sm:shadow-[0_30px_70px_-30px_rgba(22,22,29,.45)]">
+        <CardView fields={fields} saveButton={<SaveContactButton fields={fields} />} />
       </div>
-
-      <div className="mt-6 space-y-2">
-        {p.phone && <Action href={`tel:${p.phone}`} label="Appeler" value={p.phone} />}
-        {p.email && <Action href={`mailto:${p.email}`} label="Email" value={p.email} />}
-        {p.socials?.map((s) => (
-          <Action key={s.url} href={s.url} label={s.label} value={s.url.replace(/^https?:\/\//, '')} external />
-        ))}
-      </div>
-
-      <VCardButton profile={p} />
-
-      <p className="text-center text-xs text-zinc-400 mt-6">
-        Carte propulsée par{' '}
-        <a href="https://qrcode.cg" className="hover:text-blue-500 underline underline-offset-2">link.cg</a>
-      </p>
-    </Shell>
-  )
-}
-
-function Shell({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10 relative">
-      <Blobs />
-      <div className="w-full max-w-sm card-soft p-7 relative z-10">
-        {children}
-      </div>
-    </div>
-  )
-}
-
-function Action({ href, label, value, external }: { href: string; label: string; value: string; external?: boolean }) {
-  return (
-    <a
-      href={href}
-      {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-      className="flex items-center justify-between gap-3 rounded-2xl border border-[color:var(--border)] px-4 py-3 hover:border-brand hover:bg-grad-soft transition-colors"
-    >
-      <span className="text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">{label}</span>
-      <span className="text-sm font-medium text-[color:var(--foreground)] truncate">{value}</span>
-    </a>
+    </main>
   )
 }

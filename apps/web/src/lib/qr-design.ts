@@ -58,7 +58,8 @@ export function toQrOptions(design: QrDesign, data: string, size: number): any {
       }
     : {}
   return {
-    width: size, height: size, data, margin: 8,
+    // Marge proportionnelle : une marge fixe écrase les modules des petites vignettes.
+    width: size, height: size, data, margin: Math.max(2, Math.round(size * 0.035)),
     qrOptions: { errorCorrectionLevel: 'H' },
     image: design.logo || undefined,
     imageOptions: { crossOrigin: 'anonymous', margin: 4, imageSize: design.logoSize ?? 0.3, hideBackgroundDots: true },
