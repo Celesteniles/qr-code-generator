@@ -65,4 +65,11 @@ describe('carte de visite', () => {
     const res = await getCardBySlug(db, 'celeste')
     expect(res?.profile?.socials).toEqual([{ label: 'Site', url: 'https://nscreative.cg' }])
   })
+
+  it('enregistre et relit la couleur de thème', async () => {
+    await upsertCardProfile(db, 'lnk', { fullName: 'C', theme: '#e11d48' }, () => 'p1')
+    expect((await getCardBySlug(db, 'celeste'))?.profile?.theme).toBe('#e11d48')
+    await upsertCardProfile(db, 'lnk', { fullName: 'C' }, () => 'p1')
+    expect((await getCardBySlug(db, 'celeste'))?.profile?.theme).toBeUndefined()
+  })
 })

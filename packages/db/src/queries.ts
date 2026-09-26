@@ -1,6 +1,6 @@
 // Lectures D1 pour le dashboard (chemin froid — le chemin chaud passe par KV).
 
-import { eq, desc } from 'drizzle-orm'
+import { and, eq, desc, inArray } from 'drizzle-orm'
 import * as schema from './schema'
 import type { Db } from './mutations'
 import type { LinkRow } from './schema'
@@ -28,4 +28,14 @@ export async function defaultDomain(db: Db, workspaceId: string) {
   return db.query.domains.findFirst({
     where: (d, { and }) => and(eq(d.workspaceId, workspaceId), eq(d.isDefault, true)),
   })
+}
+
+/** Parmi `slugs`, ceux déjà utilisés sur un domaine (une seule requête). */
+export async function takenSlugs(db: Db, domainId: string, slugs: string[]): Promise<Set<string>> {
+  if (!slugs.length) return new Set()
+  const rows = await db
+    .select({ slug: schema.links.slug })
+    .from(schema.links)
+    .where(and(eq(schema.links.domainId, domainId), inArray(schema.links.slug, slugs)))
+  return new Set(rows.map((r) => r.slug))
 }

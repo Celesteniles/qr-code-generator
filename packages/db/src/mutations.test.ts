@@ -4,7 +4,8 @@ import { join } from 'node:path'
 import { createClient } from '@libsql/client'
 import { drizzle } from 'drizzle-orm/libsql'
 import * as schema from './schema'
-import { createLink, setLinkActive, deleteLink, type Db, type KVWriter } from './mutations'
+import { takenSlugs } from './queries'
+import { createLink, setLinkActive, deleteLink, updateLinkRule, type Db, type KVWriter } from './mutations'
 
 // Base SQLite en mémoire (asynchrone, comme D1) avec la migration réelle appliquée.
 function freshDb(): Db {
@@ -125,5 +126,81 @@ describe('deleteLink', () => {
 
   it('lien inexistant → not_found', async () => {
     expect(await deleteLink({ db, kv: fakeKv() }, 'nope')).toEqual({ ok: false, error: 'not_found' })
+  })
+})
+
+describe('updateLinkRule', () => {
+  async function seed(kv: KVWriter, rule: unknown = { type: 'static', url: 'https://a.cg' }) {
+    await createLink(deps(kv, { newId: () => 'lid' }), { ...base, slug: 'dest', rule })
+  }
+
+  it('change l\'URL : D1 (rule, updatedAt) puis KV', async () => {
+    const kv = fakeKv()
+    await seed(kv)
+    const res = await updateLinkRule({ db, kv, now: () => 5000 }, 'lid', { type: 'static', url: 'https://b.cg' })
+    expect(res).toEqual({ ok: true, key: 'link.cg:dest' })
+    const row = await db.query.links.findFirst()
+    expect(row!.rule).toEqual({ type: 'static', url: 'https://b.cg' })
+    expect(row!.updatedAt).toBe(5000)
+    expect(JSON.parse(kv.store.get('link.cg:dest')!).rule).toEqual({ type: 'static', url: 'https://b.cg' })
+  })
+
+  it('static → app met à jour kind, et inversement', async () => {
+    const kv = fakeKv()
+    await seed(kv)
+    await updateLinkRule({ db, kv }, 'lid', { type: 'app', ios: 'https://i.cg', fallback: 'https://f.cg' })
+    expect((await db.query.links.findFirst())!.kind).toBe('app')
+    expect(JSON.parse(kv.store.get('link.cg:dest')!).rule.type).toBe('app')
+    await updateLinkRule({ db, kv }, 'lid', { type: 'static', url: 'https://s.cg' })
+    expect((await db.query.links.findFirst())!.kind).toBe('static')
+  })
+
+  it('conserve l\'état inactif en KV', async () => {
+    const kv = fakeKv()
+    await seed(kv)
+    await setLinkActive({ db, kv }, 'lid', false)
+    await updateLinkRule({ db, kv }, 'lid', { type: 'static', url: 'https://b.cg' })
+    expect(JSON.parse(kv.store.get('link.cg:dest')!).active).toBe(false)
+    expect((await db.query.links.findFirst())!.active).toBe(false)
+  })
+
+  it('URL dangereuse → unsafe_url, rien n\'est écrit', async () => {
+    const kv = fakeKv()
+    await seed(kv)
+    const before = kv.store.get('link.cg:dest')
+    const res = await updateLinkRule({ db, kv, checkUrl: async () => false }, 'lid', { type: 'static', url: 'https://bad.example' })
+    expect(res).toEqual({ ok: false, error: 'unsafe_url', url: 'https://bad.example' })
+    expect(kv.store.get('link.cg:dest')).toBe(before)
+    expect((await db.query.links.findFirst())!.rule).toEqual({ type: 'static', url: 'https://a.cg' })
+  })
+
+  it('règle invalide ou card → invalid', async () => {
+    const kv = fakeKv()
+    await seed(kv)
+    const r1 = await updateLinkRule({ db, kv }, 'lid', { type: 'static', url: 'javascript:alert(1)' })
+    expect(r1.ok === false && r1.error).toBe('invalid')
+    const r2 = await updateLinkRule({ db, kv }, 'lid', { type: 'card' })
+    expect(r2.ok === false && r2.error).toBe('invalid')
+  })
+
+  it('lien carte → not_editable', async () => {
+    const kv = fakeKv()
+    await seed(kv, { type: 'card' })
+    expect(await updateLinkRule({ db, kv }, 'lid', { type: 'static', url: 'https://b.cg' }))
+      .toEqual({ ok: false, error: 'not_editable' })
+  })
+
+  it('lien inexistant → not_found', async () => {
+    expect(await updateLinkRule({ db, kv: fakeKv() }, 'nope', { type: 'static', url: 'https://b.cg' }))
+      .toEqual({ ok: false, error: 'not_found' })
+  })
+})
+
+describe('takenSlugs', () => {
+  it('renvoie uniquement les slugs pris sur le domaine', async () => {
+    await createLink(deps(fakeKv(), { newId: () => 'a' }), { ...base, slug: 'pris', rule: { type: 'static', url: 'https://a.cg' } })
+    expect(await takenSlugs(db, 'dom_1', ['pris', 'libre'])).toEqual(new Set(['pris']))
+    expect(await takenSlugs(db, 'autre', ['pris'])).toEqual(new Set())
+    expect(await takenSlugs(db, 'dom_1', [])).toEqual(new Set())
   })
 })

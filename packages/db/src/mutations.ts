@@ -157,3 +157,56 @@ export async function deleteLink(deps: MutateDeps, linkId: string): Promise<Link
   await deps.kv.delete(key)
   return { ok: true, key }
 }
+
+// ── Changement de destination ─────────────────────────────────────────────────
+
+export type UpdateRuleResult =
+  | { ok: true; key: string }
+  | { ok: false; error: 'not_found' }
+  | { ok: false; error: 'invalid'; issues: string[] }
+  | { ok: false; error: 'not_editable' }
+  | { ok: false; error: 'unsafe_url'; url: string }
+
+export interface UpdateRuleDeps extends MutateDeps {
+  checkUrl?: UrlChecker
+}
+
+/**
+ * Change la destination d'un lien (règle `static` ou `app`) : D1 puis KV.
+ * `kind` suit le type de la nouvelle règle (un lien simple peut devenir « selon le
+ * téléphone » et inversement). Un lien carte n'est pas éditable ici : sa
+ * destination est la page de carte, basculer orphelinerait le profil.
+ * L'état actif/inactif et l'expiration sont conservés.
+ */
+export async function updateLinkRule(deps: UpdateRuleDeps, linkId: string, raw: unknown): Promise<UpdateRuleResult> {
+  const parsed = ruleSchema.safeParse(raw)
+  if (!parsed.success) {
+    return { ok: false, error: 'invalid', issues: parsed.error.issues.map((i) => i.message) }
+  }
+  const rule = parsed.data
+  if (rule.type === 'card') return { ok: false, error: 'invalid', issues: ['règle card non modifiable'] }
+
+  const found = await linkWithHostname(deps.db, linkId)
+  if (!found) return { ok: false, error: 'not_found' }
+  if (found.link.kind === 'card') return { ok: false, error: 'not_editable' }
+
+  if (deps.checkUrl) {
+    for (const url of urlsOf(rule)) {
+      if (!(await deps.checkUrl(url))) return { ok: false, error: 'unsafe_url', url }
+    }
+  }
+
+  const ts = (deps.now ?? (() => Date.now()))()
+
+  // 1. Vérité D1.
+  await deps.db.update(schema.links)
+    .set({ rule, kind: rule.type, updatedAt: ts })
+    .where(eq(schema.links.id, linkId))
+
+  // 2. Propagation KV, après D1.
+  const entry = serializeEntry(
+    compileLink({ ...found.link, rule, kind: rule.type, updatedAt: ts }, found.hostname),
+  )
+  await deps.kv.put(entry.key, entry.value)
+  return { ok: true, key: entry.key }
+}

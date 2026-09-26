@@ -18,6 +18,8 @@ export interface CardProfileInput {
   phone?: string
   email?: string
   socials?: SocialLink[]
+  /** Couleur d'accent de la carte publique (#rrggbb). */
+  theme?: string
 }
 
 export interface CardProfile extends CardProfileInput {
@@ -42,7 +44,7 @@ export async function upsertCardProfile(
     email: input.email ?? null,
     socials: input.socials ?? null,
     avatarKey: null,
-    theme: null,
+    theme: input.theme ?? null,
   }
   if (existing) {
     await db.update(schema.cardProfiles).set(values).where(eq(schema.cardProfiles.id, existing.id))
@@ -74,6 +76,7 @@ export async function getCardBySlug(db: Db, slug: string): Promise<CardBySlug | 
         phone: row.phone ?? undefined,
         email: row.email ?? undefined,
         socials: (row.socials as SocialLink[] | null) ?? undefined,
+        theme: row.theme ?? undefined,
       }
     : null
   return { link, profile }
