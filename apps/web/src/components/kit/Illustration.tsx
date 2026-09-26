@@ -5,6 +5,7 @@
 //   <Illustration name="menu" className="h-32 bg-sun rounded-2xl" />
 
 const F = (v: string) => `style="fill:var(--${v})"`
+const T = (v: string, font: 'mono' | 'display') => `style="fill:var(--${v});font-family:var(--f-${font})"`
 const S = (v: string, w = 3) => `style="fill:none;stroke:var(--${v});stroke-width:${w};stroke-linecap:round;stroke-linejoin:round"`
 
 // Mini QR stylisé : 3 repères + motif fixe
@@ -46,7 +47,7 @@ const ILL: Record<string, () => string> = {
     `<ellipse cx="120" cy="138" rx="86" ry="10" ${F('ink')} opacity=".08"/>` +
     `<path d="M76 34 h88 a8 8 0 0 1 8 8 v88 h-104 v-88 a8 8 0 0 1 8 -8Z" ${F('surface')}/>` +
     `<rect x="68" y="124" width="104" height="10" rx="3" ${F('coral')}/>` +
-    `<text x="120" y="54" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="700" font-size="13" ${F('ink')}>MENU</text>` +
+    `<text x="120" y="54" text-anchor="middle" font-weight="700" font-size="13" ${T('ink', 'display')}>MENU</text>` +
     qr(98, 64, 44) + lines(88, 114, 64, 1) +
     `<path d="M44 60v34M38 60v12a6 6 0 0 0 12 0V60M44 94v28" ${S('ink', 3)}/>` +
     `<path d="M196 60c8 4 8 30 0 34v28" ${S('ink', 3)}/>` + spark(206, 34, 7, 'coral'),
@@ -114,10 +115,10 @@ const ILL: Record<string, () => string> = {
 
   shortlink: () => blob('sky') +
     `<rect x="22" y="42" width="196" height="26" rx="13" ${F('surface')}/>` +
-    `<text x="36" y="59" font-family="Geist Mono, monospace" font-size="10" ${F('subtle')}>https://boutique.com/p?id=8842&amp;ref=…</text>` +
+    `<text x="36" y="59" font-size="10" textLength="166" lengthAdjust="spacingAndGlyphs" ${T('subtle', 'mono')}>https://boutique.com/p?id=8842&amp;ref=…</text>` +
     `<path d="M120 76v18" ${S('ink', 3)}/><path d="M112 88l8 8 8-8" ${S('ink', 3)}/>` +
     `<rect x="54" y="102" width="132" height="36" rx="18" ${F('ink')}/>` +
-    `<text x="120" y="125" text-anchor="middle" font-family="Geist Mono, monospace" font-weight="600" font-size="13" ${F('surface')}>link.cg/promo</text>` +
+    `<text x="120" y="125" text-anchor="middle" font-weight="600" font-size="13" textLength="104" lengthAdjust="spacingAndGlyphs" ${T('surface', 'mono')}>link.cg/promo</text>` +
     qr(190, 104, 30, 'brand') + spark(210, 30, 8) + spark(30, 120, 5, 'coral'),
 
   share: () => blob('mint') +
@@ -125,15 +126,15 @@ const ILL: Record<string, () => string> = {
     `<g transform="rotate(-6 65 86)"><rect x="42" y="60" width="44" height="22" rx="7" ${F('leaf')}/><rect x="46" y="66" width="30" height="4" rx="2" ${F('surface')}/><rect x="46" y="73" width="20" height="4" rx="2" ${F('surface')}/></g>` +
     `<path d="M108 58h92a12 12 0 0 1 12 12v28a12 12 0 0 1-12 12h-58l-18 14v-14h-16a12 12 0 0 1-12-12V70a12 12 0 0 1 12-12Z" ${F('surface')}/>` +
     `<rect x="112" y="68" width="30" height="30" rx="8" ${F('brand')}/><path d="M121 83h12M127 77v12" ${S('surface', 3)}/>` +
-    `<text x="150" y="80" font-family="Geist Mono, monospace" font-weight="600" font-size="11" ${F('ink')}>link.cg/</text>` +
-    `<text x="150" y="94" font-family="Geist Mono, monospace" font-weight="600" font-size="11" ${F('brand')}>promo</text>` +
+    `<text x="150" y="80" font-weight="600" font-size="11" textLength="46" lengthAdjust="spacingAndGlyphs" ${T('ink', 'mono')}>link.cg/</text>` +
+    `<text x="150" y="94" font-weight="600" font-size="11" textLength="30" lengthAdjust="spacingAndGlyphs" ${T('brand', 'mono')}>promo</text>` +
     spark(210, 34, 8) + spark(116, 130, 5, 'coral'),
   team: () => blob('coral-tint') +
     [[34, 58, -8, 'brand', 'AK'], [82, 40, 0, 'coral', 'MB'], [130, 58, 8, 'leaf', 'JN']].map(([x, y, r, c, ini]) =>
       `<g transform="rotate(${r} ${Number(x) + 38} ${Number(y) + 48})">` +
       `<rect x="${x}" y="${y}" width="76" height="96" rx="12" ${F('surface')}/>` +
       `<circle cx="${Number(x) + 38}" cy="${Number(y) + 28}" r="14" ${F(String(c))}/>` +
-      `<text x="${Number(x) + 38}" y="${Number(y) + 32}" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="700" font-size="11" ${F('surface')}>${ini}</text>` +
+      `<text x="${Number(x) + 38}" y="${Number(y) + 32}" text-anchor="middle" font-weight="700" font-size="11" ${T('surface', 'display')}>${ini}</text>` +
       lines(Number(x) + 14, Number(y) + 52, 48, 2, 'line', 9) +
       qr(Number(x) + 26, Number(y) + 72, 18, String(c)) + `</g>`).join('') +
     spark(214, 30, 8) + spark(28, 34, 5, 'brand'),
