@@ -128,6 +128,16 @@ const ILL: Record<string, () => string> = {
     `<text x="150" y="80" font-family="Geist Mono, monospace" font-weight="600" font-size="11" ${F('ink')}>link.cg/</text>` +
     `<text x="150" y="94" font-family="Geist Mono, monospace" font-weight="600" font-size="11" ${F('brand')}>promo</text>` +
     spark(210, 34, 8) + spark(116, 130, 5, 'coral'),
+  team: () => blob('coral-tint') +
+    [[34, 58, -8, 'brand', 'AK'], [82, 40, 0, 'coral', 'MB'], [130, 58, 8, 'leaf', 'JN']].map(([x, y, r, c, ini]) =>
+      `<g transform="rotate(${r} ${Number(x) + 38} ${Number(y) + 48})">` +
+      `<rect x="${x}" y="${y}" width="76" height="96" rx="12" ${F('surface')}/>` +
+      `<circle cx="${Number(x) + 38}" cy="${Number(y) + 28}" r="14" ${F(String(c))}/>` +
+      `<text x="${Number(x) + 38}" y="${Number(y) + 32}" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="700" font-size="11" ${F('surface')}>${ini}</text>` +
+      lines(Number(x) + 14, Number(y) + 52, 48, 2, 'line', 9) +
+      qr(Number(x) + 26, Number(y) + 72, 18, String(c)) + `</g>`).join('') +
+    spark(214, 30, 8) + spark(28, 34, 5, 'brand'),
+
   hello: () => blob('sky') + `<circle cx="120" cy="84" r="44" ${F('sun')}/>` +
     `<circle cx="104" cy="78" r="5" ${F('ink')}/><circle cx="136" cy="78" r="5" ${F('ink')}/><path d="M104 98c8 8 24 8 32 0" ${S('ink', 4)}/>` +
     `<path d="M168 60c10-6 18 2 14 12" ${S('coral', 4)}/>` + spark(60, 44, 8, 'brand') + spark(190, 118, 6),
@@ -135,7 +145,7 @@ const ILL: Record<string, () => string> = {
 
 export type IllustrationName =
   | 'welcome' | 'link' | 'menu' | 'card' | 'wifi' | 'app' | 'whatsapp' | 'modifiable' | 'fixed'
-  | 'stats' | 'empty' | 'account' | 'print' | 'lock' | 'shortlink' | 'share' | 'hello'
+  | 'stats' | 'empty' | 'account' | 'print' | 'lock' | 'shortlink' | 'share' | 'hello' | 'team'
 
 /** Illustration décorative (aria-hidden). Largeur 100 %, hauteur fixée via className ou height. */
 export function Illustration({ name, className = '', height }: { name: IllustrationName; className?: string; height?: number }) {

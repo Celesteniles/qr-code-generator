@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { PLANS } from '@link/shared'
 import { Logo } from '@/components/kit/Logo'
-import { Illustration } from '@/components/kit/Illustration'
+import { UseCases } from '@/components/auth/UseCases'
 import { AuthPanel } from '@/components/auth/AuthPanel'
 import { safeNext } from '@/components/auth/safe-next'
 
@@ -24,16 +24,13 @@ export default async function ConnexionPage({
 
   return (
     <div className="grid min-h-screen gap-3 p-3 lg:grid-cols-2">
-      <aside className="relative hidden flex-col overflow-hidden rounded-[30px] bg-sky p-10 lg:flex">
+      {/* Vitrine « Pour qui ? » : tient dans la hauteur de l'écran, sans texte coupé */}
+      <aside className="relative hidden flex-col overflow-hidden rounded-[30px] bg-sky p-8 lg:sticky lg:top-3 lg:flex lg:h-[calc(100vh-24px)] xl:p-10">
         <Logo />
-        <Illustration name="modifiable" className="my-auto max-w-[520px] self-center" />
-        <div className="max-w-[40ch]">
-          <p className="eyebrow">Exemple d&apos;usage</p>
-          <p className="mt-2 font-display text-[22px] font-semibold leading-[1.25] tracking-[-.02em]">
-            Un restaurant imprime le QR de son menu sur chaque table. Les plats et les prix changent :
-            il met à jour le lien, les QR imprimés restent les mêmes.
-          </p>
-        </div>
+        <UseCases />
+        <p className="mt-5 text-[13px] text-muted">
+          Paiement Airtel Money ou MTN MoMo · Aucune publicité pour vos clients
+        </p>
       </aside>
 
       <main className="grid place-items-center px-2 py-8 sm:px-5">
