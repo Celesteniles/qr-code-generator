@@ -6,6 +6,7 @@ import { updateCardAction } from '@/server/actions'
 import { CardView } from './CardView'
 import { cardInitials, SOCIAL_NETWORKS, socialHref, THEMES, type CardFields, type SocialKey } from './card-model'
 import { SOCIAL_ICONS } from './social-icons'
+import { PhoneField } from '@/components/kit/PhoneField'
 import { Spinner } from '@/components/kit/Spinner'
 
 type Status = { kind: 'idle' } | { kind: 'saved' } | { kind: 'error'; message: string }
@@ -115,13 +116,11 @@ export function CardEditor({ linkId, slug, initial, aside, footer }: {
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div>
               <label className="label" htmlFor={f('phone')}>Téléphone</label>
-              <input id={f('phone')} className="input" type="tel" inputMode="tel" autoComplete="tel" value={fields.phone}
-                onChange={(e) => set('phone', e.target.value)} placeholder="06 123 45 67" />
+              <PhoneField id={f('phone')} value={fields.phone} onChange={(v) => set('phone', v)} />
             </div>
             <div>
               <label className="label" htmlFor={f('wa')}>WhatsApp <span className="opt">· optionnel</span></label>
-              <input id={f('wa')} className="input" type="tel" inputMode="tel" value={fields.whatsapp}
-                onChange={(e) => set('whatsapp', e.target.value)} placeholder="06 123 45 67" aria-describedby={f('wa-help')} />
+              <PhoneField id={f('wa')} value={fields.whatsapp} onChange={(v) => set('whatsapp', v)} autoComplete="off" aria-describedby={f('wa-help')} />
               <p id={f('wa-help')} className="help">
                 {fields.phone.trim() && !fields.whatsapp.trim() ? (
                   <button type="button" className="link text-[13px]" onClick={() => set('whatsapp', fields.phone)}>

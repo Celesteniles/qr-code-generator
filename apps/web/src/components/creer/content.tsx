@@ -1,11 +1,13 @@
 'use client'
 
-import { useState, type ReactNode } from 'react'
+import { useId, useState, type ReactNode } from 'react'
 import {
   LinkIcon, DocumentTextIcon, ChatBubbleLeftEllipsisIcon, WifiIcon, UserIcon, DevicePhoneMobileIcon,
   EllipsisHorizontalIcon, EnvelopeIcon, ChatBubbleBottomCenterTextIcon, PhoneIcon, MapPinIcon, GlobeAltIcon,
   SparklesIcon, ChevronDownIcon,
 } from '@heroicons/react/24/outline'
+import { PhoneField } from '@/components/kit/PhoneField'
+import { formatPhone } from '@/lib/phone'
 import { toUrl, toText, toWifi, toVCard, toEmail, toSms, toPhone, toGeo, toApp, toSocial } from '@link/qr'
 import { hostOf, isWebUrl, normalizeUrl, waUrl, type ContentType } from './helpers'
 import { Field } from './ui'
@@ -119,7 +121,7 @@ export function buildContent(type: ContentType, v: ContentValues): BuiltContent 
     }
     case 'whatsapp': {
       const u = waUrl(v.waPhone, v.waMsg)
-      return { data: u, link: u || null, label: v.waPhone.trim() ? `WhatsApp ${v.waPhone.trim()}` : 'WhatsApp' }
+      return { data: u, link: u || null, label: v.waPhone.trim() ? `WhatsApp ${formatPhone(v.waPhone)}` : 'WhatsApp' }
     }
     case 'wifi':
       return { data: v.ssid.trim() ? toWifi({ ssid: v.ssid, password: v.wifiPass, security: v.wifiSec, hidden: v.wifiHidden }) : '', link: null, label: v.ssid.trim() ? `Wi‑Fi ${v.ssid.trim()}` : 'Wi‑Fi' }
@@ -130,8 +132,8 @@ export function buildContent(type: ContentType, v: ContentValues): BuiltContent 
     }
     case 'texte': return { data: v.text.trim() ? toText(v.text) : '', link: null, label: 'Texte' }
     case 'email': return { data: v.mailTo.trim() ? toEmail({ to: v.mailTo.trim(), subject: v.mailSubject, body: v.mailBody }) : '', link: null, label: v.mailTo.trim() ? `Email ${v.mailTo.trim()}` : 'Email' }
-    case 'sms': return { data: v.smsPhone.trim() ? toSms({ phone: v.smsPhone.trim(), message: v.smsMsg }) : '', link: null, label: v.smsPhone.trim() ? `SMS ${v.smsPhone.trim()}` : 'SMS' }
-    case 'appel': return { data: v.tel.trim() ? toPhone(v.tel.trim()) : '', link: null, label: v.tel.trim() ? `Appel ${v.tel.trim()}` : 'Appel' }
+    case 'sms': return { data: v.smsPhone.trim() ? toSms({ phone: v.smsPhone.trim(), message: v.smsMsg }) : '', link: null, label: v.smsPhone.trim() ? `SMS ${formatPhone(v.smsPhone)}` : 'SMS' }
+    case 'appel': return { data: v.tel.trim() ? toPhone(v.tel.trim()) : '', link: null, label: v.tel.trim() ? `Appel ${formatPhone(v.tel)}` : 'Appel' }
     case 'lieu': return { data: toGeo({ lat: v.lat.trim(), lng: v.lng.trim(), query: v.place }), link: null, label: v.place.trim() || 'Lieu' }
   }
 }
@@ -185,7 +187,15 @@ export function ContentFields({ type, v, set, appDevice }: {
     <input className="input" value={String(v[k])} onChange={(e) => set(k, e.target.value as never)} {...props} />
   )
   const urlProps = { type: 'url', inputMode: 'url' as const, autoCapitalize: 'none', autoCorrect: 'off', spellCheck: false }
-  const tel = { type: 'tel', inputMode: 'tel' as const, autoComplete: 'tel', placeholder: '+242 06 123 45 67' }
+  const pid = useId()
+  // Téléphone : indicatif + numéro, valeur au format international (hors <label> : le champ a son sélecteur).
+  const phone = (k: 'waPhone' | 'phone' | 'smsPhone' | 'tel', label: string, hint?: ReactNode) => (
+    <div>
+      <label className="label" htmlFor={`${pid}-${k}`}>{label}</label>
+      <PhoneField id={`${pid}-${k}`} value={v[k]} onChange={(x) => set(k, x as never)} aria-describedby={hint ? `${pid}-${k}-h` : undefined} />
+      {hint && <p id={`${pid}-${k}-h`} className="help">{hint}</p>}
+    </div>
+  )
 
   switch (type) {
     case 'site':
@@ -199,7 +209,7 @@ export function ContentFields({ type, v, set, appDevice }: {
     case 'whatsapp':
       return (
         <div className="grid gap-[18px]">
-          <Field label="Numéro WhatsApp" hint="Avec l’indicatif du pays. Un numéro qui commence par 06 ou 05 est compris comme un numéro du Congo (+242).">{input('waPhone', tel)}</Field>
+          {phone('waPhone', 'Numéro WhatsApp', 'Choisissez le pays, puis tapez le numéro. En scannant, la personne ouvre une discussion avec ce numéro.')}
           <Field label="Message déjà écrit" opt>
             <textarea className="input" rows={2} value={v.waMsg} onChange={(e) => set('waMsg', e.target.value)} placeholder="Bonjour, je vous contacte depuis votre affiche." />
           </Field>
@@ -235,7 +245,7 @@ export function ContentFields({ type, v, set, appDevice }: {
             <Field label="Nom">{input('last', { autoComplete: 'family-name' })}</Field>
           </div>
           <div className="grid gap-[18px] sm:grid-cols-2">
-            <Field label="Téléphone">{input('phone', tel)}</Field>
+            {phone('phone', 'Téléphone')}
             <Field label="Email">{input('email', { type: 'email', inputMode: 'email', autoComplete: 'email', placeholder: 'vous@exemple.cg' })}</Field>
           </div>
           <button type="button" className="link w-fit text-sm" aria-expanded={more} onClick={() => setMore((m) => !m)}>
@@ -277,12 +287,12 @@ export function ContentFields({ type, v, set, appDevice }: {
     case 'sms':
       return (
         <div className="grid gap-[18px]">
-          <Field label="Numéro">{input('smsPhone', tel)}</Field>
+          {phone('smsPhone', 'Numéro')}
           <Field label="Message déjà écrit" opt><textarea className="input" rows={2} value={v.smsMsg} onChange={(e) => set('smsMsg', e.target.value)} /></Field>
         </div>
       )
     case 'appel':
-      return <Field label="Numéro à appeler">{input('tel', tel)}</Field>
+      return phone('tel', 'Numéro à appeler')
     case 'lieu':
       return (
         <div className="grid gap-[18px]">

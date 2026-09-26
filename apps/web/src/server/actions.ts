@@ -6,20 +6,19 @@ import { canCreateLink, PLANS, type Rule, type Plan } from '@link/shared'
 import { getDb, getKv } from './data'
 import { getSessionContext } from './session'
 import { SOCIAL_NETWORKS, socialHref } from '@/components/carte/card-model'
+import { normalizePhone } from '@/lib/phone'
 import { DEFAULT_DOMAIN, type CreateState, type UpdateDestinationState, type SlugCheck } from './config'
 
 const HEX_COLOR = /^#[0-9a-f]{6}$/i
 
 /**
  * Numéro WhatsApp → lien wa.me (le champ `url` des réseaux doit rester cliquable).
- * Un numéro congolais saisi en local (06 123 45 67) reçoit l'indicatif 242 ; le 0
- * est conservé, il fait partie du numéro international au Congo-Brazzaville.
+ * Normalisé au format international ; sans indicatif, compris comme congolais
+ * (06 123 45 67 → 242061234567 : le 0 fait partie du numéro au Congo-Brazzaville).
  */
 function whatsappUrl(raw: string): string | null {
-  let digits = raw.replace(/[^\d]/g, '')
-  if (digits.startsWith('00')) digits = digits.slice(2)
-  if (digits.length === 9 && digits.startsWith('0')) digits = '242' + digits
-  return digits.length >= 8 && digits.length <= 15 ? `https://wa.me/${digits}` : null
+  const e164 = normalizePhone(raw)
+  return e164 ? `https://wa.me/${e164.slice(1)}` : null
 }
 
 /** Champs de profil de carte lus depuis un formulaire. */
@@ -27,6 +26,9 @@ function cardProfileFromForm(formData: FormData): CardProfileInput | { error: st
   const website = String(formData.get('website') ?? '').trim()
   const whatsapp = String(formData.get('whatsapp') ?? '').trim()
   const theme = String(formData.get('theme') ?? '').trim()
+  const rawPhone = String(formData.get('cardPhone') ?? '').trim()
+  const phone = rawPhone ? normalizePhone(rawPhone) : null
+  if (rawPhone && !phone) return { error: 'Ce numéro de téléphone ne semble pas valide. Vérifiez l’indicatif du pays et le numéro.' }
 
   if (theme && !HEX_COLOR.test(theme)) return { error: 'Cette couleur n\'est pas reconnue. Choisissez-en une dans la palette.' }
 
@@ -38,7 +40,7 @@ function cardProfileFromForm(formData: FormData): CardProfileInput | { error: st
   }
   if (whatsapp) {
     const url = whatsappUrl(whatsapp)
-    if (!url) return { error: 'Ce numéro WhatsApp ne semble pas valide. Exemple : 06 123 45 67.' }
+    if (!url) return { error: 'Ce numéro WhatsApp ne semble pas valide. Vérifiez l’indicatif du pays et le numéro.' }
     socials.push({ label: 'WhatsApp', url })
   }
   for (const net of SOCIAL_NETWORKS) {
@@ -53,7 +55,7 @@ function cardProfileFromForm(formData: FormData): CardProfileInput | { error: st
     fullName: String(formData.get('fullName') ?? '').trim(),
     title: String(formData.get('title') ?? '').trim() || undefined,
     org: String(formData.get('org') ?? '').trim() || undefined,
-    phone: String(formData.get('cardPhone') ?? '').trim() || undefined,
+    phone: phone ?? undefined,
     email: String(formData.get('cardEmail') ?? '').trim() || undefined,
     socials: socials.length ? socials : undefined,
     theme: theme ? theme.toLowerCase() : undefined,

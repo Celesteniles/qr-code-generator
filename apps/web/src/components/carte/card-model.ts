@@ -3,6 +3,7 @@
 // chose à partir des mêmes champs.
 
 import type { CardProfile } from '@link/db'
+import { normalizePhone } from '@/lib/phone'
 
 /** Champs d'une carte tels que saisis dans l'éditeur. */
 export interface CardFields {
@@ -150,21 +151,13 @@ export function cardInitials(name: string): string {
   return name.trim().split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase() ?? '').join('')
 }
 
-/** Chiffres d'un numéro (pour wa.me). */
-export function phoneDigits(raw: string): string {
-  let d = raw.replace(/[^\d]/g, '')
-  if (d.startsWith('00')) d = d.slice(2)
-  return d
-}
-
 /**
- * Lien WhatsApp. Même règle que le serveur : un numéro congolais saisi en local
- * (06 123 45 67) reçoit l'indicatif 242.
+ * Lien WhatsApp. Même règle que le serveur : numéro normalisé au format
+ * international, un numéro saisi sans indicatif étant compris comme congolais.
  */
 export function whatsappHref(raw: string): string | null {
-  let d = phoneDigits(raw)
-  if (d.length === 9 && d.startsWith('0')) d = '242' + d
-  return d.length >= 8 && d.length <= 15 ? `https://wa.me/${d}` : null
+  const e164 = normalizePhone(raw)
+  return e164 ? `https://wa.me/${e164.slice(1)}` : null
 }
 
 /** Adresse web cliquable (« nscreative.cg » → « https://nscreative.cg »). */

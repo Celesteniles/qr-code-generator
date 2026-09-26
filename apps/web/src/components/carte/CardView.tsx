@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type { ComponentType, ReactNode, SVGProps } from 'react'
 import { PhoneIcon, EnvelopeIcon, GlobeAltIcon, UserPlusIcon } from '@heroicons/react/24/outline'
 import { WhatsAppIcon } from '@/components/kit/BrandIcons'
+import { formatPhone, telHref } from '@/lib/phone'
 import { SOCIAL_ICONS } from './social-icons'
 import {
   cardInitials, filledSocials, safeTheme, socialHandle, textOn, websiteHref, websiteLabel, whatsappHref,
@@ -37,13 +38,13 @@ export function CardView({
   const networks = filledSocials(fields.socials)
 
   const quick: Action[] = [
-    phone && { key: 'tel', label: 'Appeler', href: `tel:${phone.replace(/\s+/g, '')}`, icon: PhoneIcon, color: '#0060ff' },
+    phone && { key: 'tel', label: 'Appeler', href: telHref(phone), icon: PhoneIcon, color: '#0060ff' },
     wa && { key: 'wa', label: 'WhatsApp', href: wa, icon: WhatsAppIcon, color: '#25d366', external: true },
     email && { key: 'mail', label: 'Email', href: `mailto:${email}`, icon: EnvelopeIcon, color: '#c8472d' },
   ].filter(Boolean) as Action[]
 
   const details: (Action & { value: string })[] = [
-    phone && { key: 'tel', label: 'Téléphone', value: phone, href: `tel:${phone.replace(/\s+/g, '')}`, icon: PhoneIcon, color: '' },
+    phone && { key: 'tel', label: 'Téléphone', value: formatPhone(phone), href: telHref(phone), icon: PhoneIcon, color: '' },
     email && { key: 'mail', label: 'Email', value: email, href: `mailto:${email}`, icon: EnvelopeIcon, color: '' },
     site && { key: 'web', label: 'Site web', value: websiteLabel(fields.website), href: site, icon: GlobeAltIcon, color: '', external: true },
   ].filter(Boolean) as (Action & { value: string })[]
