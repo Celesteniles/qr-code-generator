@@ -9,6 +9,7 @@ import {
   DESIGN_PRESETS, DOT_TYPES, CORNER_TYPES, GRAD_DIRECTIONS, type QrDesign, type CornerSquareType,
 } from '@/lib/qr-design'
 import { Spinner } from '@/components/kit/Spinner'
+import { Portal } from '@/components/kit/Portal'
 
 // Tiroir « Style du QR » de la fiche d'un lien (porté de l'ancien LinkQr du
 // dashboard) : modèles, couleur, dégradé, points, coins, logo.
@@ -107,6 +108,7 @@ export function StyleDrawer({ linkId, data, initial, onClose, onSaved }: {
   }
 
   return (
+    <Portal>
     <div className="drawer">
       <div className="scrim" onClick={onClose} aria-hidden="true" />
       <div ref={panel} className="panel" role="dialog" aria-modal="true" aria-labelledby={titleId}>
@@ -231,6 +233,7 @@ export function StyleDrawer({ linkId, data, initial, onClose, onSaved }: {
         </div>
       </div>
     </div>
+    </Portal>
   )
 }
 

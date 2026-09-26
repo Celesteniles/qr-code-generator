@@ -6,6 +6,7 @@ import { checkSlugAction } from '@/server/actions'
 import type { SlugCheck } from '@/server/config'
 import type { Viewer } from '@/components/kit/shell/types'
 import { SHORT_HOST, slugify } from './helpers'
+import { Portal } from '@/components/kit/Portal'
 
 // Briques d'interface de l'écran Créer (questions numérotées, tiroir, copie, adresse courte).
 
@@ -105,6 +106,7 @@ export function Drawer({ open, onClose, label, children, footer }: {
 
   if (!open) return null
   return (
+    <Portal>
     <div className="drawer">
       <div className="scrim" onClick={onClose} aria-hidden="true" />
       <div ref={panel} className="panel" role="dialog" aria-modal="true" aria-label={label}>
@@ -116,6 +118,7 @@ export function Drawer({ open, onClose, label, children, footer }: {
         {footer && <div className="panel-foot flex-col">{footer}</div>}
       </div>
     </div>
+    </Portal>
   )
 }
 
