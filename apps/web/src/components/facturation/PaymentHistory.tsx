@@ -5,6 +5,7 @@ import { PLANS } from '@link/shared'
 import { Illustration } from '@/components/kit/Illustration'
 import { METHOD_LABEL, formatFcfa, formatPeriod, formatShortDate } from './format'
 import { StatusPill } from './StatusPill'
+import { PaymentMethodInline } from '@/components/kit/PaymentMethod'
 
 const receiptHref = (id: string) => `/compte/facturation/${encodeURIComponent(id)}`
 /** Date affichée : celle du paiement s'il a abouti, sinon celle de la demande. */
@@ -39,7 +40,7 @@ export function PaymentHistory({ payments, planLabel }: { payments: PaymentRow[]
                 <td>{PLANS[p.plan].label}</td>
                 <td className="text-muted">{formatPeriod(p.periodStart, p.periodEnd, true)}</td>
                 <td className="whitespace-nowrap text-right font-semibold tabular-nums">{formatFcfa(p.amount)}</td>
-                <td className="whitespace-nowrap">{METHOD_LABEL[p.method]}</td>
+                <td><PaymentMethodInline method={p.method} label={METHOD_LABEL[p.method]} /></td>
                 <td><StatusPill status={p.status} /></td>
                 <td className="whitespace-nowrap text-right">
                   <Link href={receiptHref(p.id)} className="link text-[13px]" aria-label={`Voir le reçu ${p.receiptNumber}`}>
@@ -66,7 +67,7 @@ export function PaymentHistory({ payments, planLabel }: { payments: PaymentRow[]
             <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-[13px]">
               <dt className="text-muted">Montant</dt><dd className="text-right font-semibold tabular-nums">{formatFcfa(p.amount)}</dd>
               <dt className="text-muted">Date</dt><dd className="text-right">{formatShortDate(shownDate(p))}</dd>
-              <dt className="text-muted">Moyen</dt><dd className="text-right">{METHOD_LABEL[p.method]}</dd>
+              <dt className="text-muted">Moyen</dt><dd className="flex justify-end"><PaymentMethodInline method={p.method} label={METHOD_LABEL[p.method]} size={18} /></dd>
               <dt className="text-muted">N° de reçu</dt><dd className="text-right font-mono">{p.receiptNumber}</dd>
             </dl>
             <Link href={receiptHref(p.id)} className="btn btn-soft btn-sm mt-3 w-full">

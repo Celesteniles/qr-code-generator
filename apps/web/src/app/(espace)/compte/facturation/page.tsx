@@ -9,13 +9,10 @@ import { SectionHead } from '@/components/compte/SectionHead'
 import { PaymentHistory } from '@/components/facturation/PaymentHistory'
 import { formatDate } from '@/components/facturation/format'
 import { CompteTabs } from '../CompteTabs'
+import { MOBILE_MONEY, PaymentMethodChip } from '@/components/kit/PaymentMethod'
 
 export const metadata: Metadata = { title: 'Facturation — link.cg' }
 
-const METHODS = [
-  { name: 'Airtel Money', tone: 'bg-coral-tint text-[#a4321a]' },
-  { name: 'MTN MoMo', tone: 'bg-sun text-[#7a4b00]' },
-]
 
 export default async function FacturationPage() {
   const { ctx } = await getViewer()
@@ -46,12 +43,8 @@ export default async function FacturationPage() {
           <SectionHead icon={<DevicePhoneMobileIcon />} tone="bg-ok-tint text-ok" id="f-moyens" title="Moyens de paiement">
             Les abonnements se règlent par mobile money.
           </SectionHead>
-          <ul className="flex flex-wrap gap-2">
-            {METHODS.map((m) => (
-              <li key={m.name} className={`inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm font-semibold ${m.tone}`}>
-                <DevicePhoneMobileIcon className="h-[18px] w-[18px]" aria-hidden="true" />{m.name}
-              </li>
-            ))}
+          <ul className="flex flex-wrap gap-2.5" aria-label="Moyens de paiement acceptés">
+            {MOBILE_MONEY.map((m) => <li key={m}><PaymentMethodChip method={m} /></li>)}
           </ul>
           <p className="mt-4 text-sm text-muted">
             Pour changer d&apos;offre, écrivez-nous à{' '}

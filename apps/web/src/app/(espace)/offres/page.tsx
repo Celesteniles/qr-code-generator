@@ -4,6 +4,7 @@ import { CheckIcon } from '@heroicons/react/24/outline'
 import { PLANS, type Plan, type PlanSpec } from '@link/shared'
 import { Illustration } from '@/components/kit/Illustration'
 import { getViewer } from '@/server/viewer'
+import { MOBILE_MONEY, PaymentMethodChip } from '@/components/kit/PaymentMethod'
 
 // Offres (proposition D). Référence : docs/maquettes/d-offres.html.
 // Le prix Pro n'est pas fixé : on ne l'invente pas.
@@ -121,8 +122,7 @@ export default async function OffresPage() {
           <h2 id="pay-title" className="h2">Payez comme vous en avez l&apos;habitude</h2>
           <p className="mt-2 text-muted">Mobile money, sans carte bancaire. Écrivez-nous, on vous indique comment régler.</p>
           <div className="mt-3.5 flex flex-wrap gap-2.5">
-            <span className="inline-flex h-10 items-center rounded-xl bg-[#e40000] px-4 text-sm font-bold text-white">Airtel Money</span>
-            <span className="inline-flex h-10 items-center rounded-xl bg-[#ffcc00] px-4 text-sm font-bold text-[#16161d]">MTN MoMo</span>
+            {MOBILE_MONEY.map((m) => <PaymentMethodChip key={m} method={m} />)}
           </div>
         </div>
       </section>

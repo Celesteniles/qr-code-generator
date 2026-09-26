@@ -4,6 +4,7 @@ import { PLANS } from '@link/shared'
 import type { Issuer } from '@/server/billing-config'
 import { METHOD_LABEL, formatDate, formatFcfa, formatPeriod } from './format'
 import { StatusPill } from './StatusPill'
+import { PaymentMethodInline } from '@/components/kit/PaymentMethod'
 
 // Feuille d'impression : masque la coquille (barre latérale, en-tête et onglets
 // mobiles), force le thème clair sur fond blanc, format A4. Les éléments marqués
@@ -143,7 +144,7 @@ export function Receipt({ payment: p, client, issuer, serviceName }: {
         <section className="mt-8" aria-labelledby="recu-paiement">
           <h2 id="recu-paiement" className="text-xs font-semibold uppercase tracking-wide text-muted">Paiement</h2>
           <dl className="mt-1 text-sm">
-            <Row label="Moyen de paiement">{METHOD_LABEL[p.method]}</Row>
+            <Row label="Moyen de paiement"><PaymentMethodInline method={p.method} label={METHOD_LABEL[p.method]} size={18} /></Row>
             <Row label="Référence opérateur">{p.providerReference && <span className="font-mono">{p.providerReference}</span>}</Row>
             <Row label="Téléphone">{phone && <span className="font-mono">{phone}</span>}</Row>
             <Row label="Date du paiement">{p.paidAt ? formatDate(p.paidAt) : null}</Row>
