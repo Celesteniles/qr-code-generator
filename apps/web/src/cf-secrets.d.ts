@@ -15,4 +15,6 @@ interface CloudflareEnv {
    * dans les vars de wrangler.jsonc, retirer cette ligne (`wrangler types` la typera).
    */
   TURNSTILE_SITE_KEY?: string
+  /** Clé API Brevo (e-mails transactionnels, cf. server/email.ts). Sans elle, aucun e-mail ne part. */
+  BREVO_API_KEY?: string
 }
