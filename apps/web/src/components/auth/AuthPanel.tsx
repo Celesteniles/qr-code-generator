@@ -7,6 +7,7 @@ import { ArrowLeftIcon, CheckIcon, ChevronDownIcon, ExclamationCircleIcon, EyeIc
 import { signIn, signUp } from '@/lib/auth-client'
 import { Spinner } from '@/components/kit/Spinner'
 import { Turnstile, type TurnstileHandle } from './Turnstile'
+import { verifyEmailPath } from './verify-path'
 
 export type AuthMode = 'connexion' | 'inscription'
 
@@ -86,10 +87,13 @@ export function AuthPanel({ initialMode, next, freeLinks, turnstileSiteKey }: {
     const password = String(data.get('password') ?? '')
     // Jeton Turnstile dans l'en-tête lu par le plugin captcha de Better Auth.
     const fetchOptions = captchaToken ? { headers: { 'x-captcha-response': captchaToken } } : undefined
+    // Adresse à confirmer : lien reçu par e-mail, qui ramène sur /verifier-email
+    // puis vers `next` (la visite guidée après une inscription).
+    const verifyPath = verifyEmailPath(next)
     try {
       const res = mode === 'connexion'
         ? await signIn.email({ email, password, fetchOptions })
-        : await signUp.email({ name: String(data.get('name') ?? '').trim(), email, password, fetchOptions })
+        : await signUp.email({ name: String(data.get('name') ?? '').trim(), email, password, callbackURL: verifyPath, fetchOptions })
       if (res.error) {
         setError(explain(mode, res.error))
         setPending(false)
@@ -97,7 +101,9 @@ export function AuthPanel({ initialMode, next, freeLinks, turnstileSiteKey }: {
         captchaRef.current?.reset()
         return
       }
-      router.push(next)
+      // Compte non vérifié (toute inscription, ou connexion avant d'avoir ouvert
+      // le lien) : l'espace reste fermé tant que l'adresse n'est pas confirmée.
+      router.push(res.data?.user.emailVerified ? next : verifyPath)
       router.refresh()
     } catch {
       setError('Connexion au serveur impossible. Vérifiez votre réseau, puis réessayez.')
