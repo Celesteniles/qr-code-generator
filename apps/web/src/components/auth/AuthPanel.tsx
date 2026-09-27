@@ -32,8 +32,23 @@ function explain(mode: AuthMode, err: AuthError): string {
   if (code === 'PASSWORD_TOO_SHORT') return 'Mot de passe trop court : 8 caractères minimum.'
   if (code === 'PASSWORD_TOO_LONG') return 'Mot de passe trop long : 128 caractères maximum.'
   if (code === 'INVALID_EMAIL') return 'Cette adresse email ne semble pas complète. Exemple : vous@exemple.cg.'
+  if (code === 'DISPOSABLE_EMAIL' && err?.message) return err.message
   if (code.includes('SIGN_UP') && code.includes('DISABLED')) return 'Les inscriptions sont fermées pour le moment. Revenez un peu plus tard.'
   return 'La création du compte n\'a pas abouti. Vérifiez votre réseau, puis réessayez.'
+}
+
+/**
+ * Contrôle instantané des adresses jetables, en plus de celui du serveur. La liste
+ * (~140 Ko) est chargée à part, seulement à l'inscription ; hors ligne, on laisse
+ * le serveur trancher.
+ */
+async function disposableMessage(email: string): Promise<string | null> {
+  try {
+    const m = await import('@link/shared/disposable-email')
+    return m.isDisposableEmail(email) ? m.DISPOSABLE_EMAIL_MESSAGE : null
+  } catch {
+    return null
+  }
 }
 
 export function AuthPanel({ initialMode, next, freeLinks, turnstileSiteKey }: {
@@ -50,6 +65,7 @@ export function AuthPanel({ initialMode, next, freeLinks, turnstileSiteKey }: {
   const [showPw, setShowPw] = useState(false)
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
   const captchaRef = useRef<TurnstileHandle>(null)
+  const lastDisposable = useRef<string | null>(null)
   const id = useId()
   const tabIn = useRef<HTMLButtonElement>(null)
   const tabUp = useRef<HTMLButtonElement>(null)
@@ -84,6 +100,15 @@ export function AuthPanel({ initialMode, next, freeLinks, turnstileSiteKey }: {
     const data = new FormData(e.currentTarget)
     const email = String(data.get('email') ?? '').trim()
     const password = String(data.get('password') ?? '')
+    if (mode === 'inscription') {
+      const disposable = await disposableMessage(email)
+      if (disposable) {
+        lastDisposable.current = disposable
+        setError(disposable)
+        setPending(false)
+        return
+      }
+    }
     // Jeton Turnstile dans l'en-tête lu par le plugin captcha de Better Auth.
     const fetchOptions = captchaToken ? { headers: { 'x-captcha-response': captchaToken } } : undefined
     try {
@@ -155,7 +180,13 @@ export function AuthPanel({ initialMode, next, freeLinks, turnstileSiteKey }: {
           <div>
             <label className="label" htmlFor={`${id}-email`}>Email</label>
             <input id={`${id}-email`} name="email" type="email" className="input" required autoComplete="email"
-              inputMode="email" autoCapitalize="none" spellCheck={false} placeholder="vous@exemple.cg" />
+              inputMode="email" autoCapitalize="none" spellCheck={false} placeholder="vous@exemple.cg"
+              onBlur={isIn ? undefined : async (e) => {
+                const disposable = await disposableMessage(e.currentTarget.value)
+                // Adresse corrigée : on retire l'avertissement, pas les autres erreurs.
+                setError((cur) => disposable ?? (cur === lastDisposable.current ? null : cur))
+                if (disposable) lastDisposable.current = disposable
+              }} />
           </div>
           <div>
             <label className="label" htmlFor={`${id}-pw`}>Mot de passe</label>

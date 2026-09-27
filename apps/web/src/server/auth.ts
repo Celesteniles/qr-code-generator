@@ -2,10 +2,23 @@ import 'server-only'
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { captcha } from 'better-auth/plugins'
+import { APIError, createAuthMiddleware } from 'better-auth/api'
 import { drizzle } from 'drizzle-orm/d1'
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 import { authSchema, schema, ensureWorkspaceForUser, type Db } from '@link/db'
 import { turnstileKeys } from './turnstile'
+import { DISPOSABLE_EMAIL_CODE, DISPOSABLE_EMAIL_MESSAGE, isDisposableEmail } from '@link/shared/disposable-email'
+
+// Adresses jetables (Yopmail, Mailinator…) refusées à l'inscription et au changement
+// d'adresse, pour limiter les faux comptes. Liste : @link/shared/disposable-email.
+const rejectDisposableEmail = createAuthMiddleware(async (ctx) => {
+  const email = ctx.path === '/sign-up/email' ? ctx.body?.email
+    : ctx.path === '/change-email' ? ctx.body?.newEmail
+    : undefined
+  if (typeof email === 'string' && isDisposableEmail(email)) {
+    throw new APIError('BAD_REQUEST', { code: DISPOSABLE_EMAIL_CODE, message: DISPOSABLE_EMAIL_MESSAGE })
+  }
+})
 
 function createAuth(env: CloudflareEnv) {
   const db = drizzle(env.DB, { schema })
@@ -57,6 +70,7 @@ function createAuth(env: CloudflareEnv) {
           endpoints: ['/sign-up/email', '/sign-in/email'],
         })]
       : [],
+    hooks: { before: rejectDisposableEmail },
     databaseHooks: {
       user: {
         create: {
