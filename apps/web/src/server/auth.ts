@@ -7,6 +7,7 @@ import { drizzle } from 'drizzle-orm/d1'
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 import { authSchema, schema, ensureWorkspaceForUser, type Db } from '@link/db'
 import { turnstileKeys } from './turnstile'
+import { googleKeys } from './google'
 import { sendEmail } from './email'
 import { verificationEmail } from './email-templates/verification'
 import { resetPasswordEmail } from './email-templates/reset-password'
@@ -31,6 +32,7 @@ const rejectDisposableEmail = createAuthMiddleware(async (ctx) => {
 function createAuth(env: CloudflareEnv) {
   const db = drizzle(env.DB, { schema })
   const turnstile = turnstileKeys(env)
+  const google = googleKeys(env)
   return betterAuth({
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
@@ -75,6 +77,22 @@ function createAuth(env: CloudflareEnv) {
         await sendEmail({ to: user.email, name: user.name || undefined, ...mail })
       },
     },
+    // Connexion avec Google, si les secrets sont posés (cf. server/google.ts).
+    // Google garantit l'adresse (email_verified) : pas d'e-mail de confirmation.
+    // Liaison à un compte existant de même adresse : réglage par défaut de Better
+    // Auth, qui l'exige aussi vérifiée côté link.cg. Sinon, quelqu'un qui aurait
+    // inscrit l'adresse d'autrui avec un mot de passe garderait l'accès au compte
+    // une fois le vrai propriétaire passé par Google.
+    socialProviders: google
+      ? {
+          google: {
+            clientId: google.clientId,
+            clientSecret: google.clientSecret,
+            // Toujours proposer le choix du compte (téléphones partagés).
+            prompt: 'select_account',
+          },
+        }
+      : {},
     // Limitation des essais, par IP et par route. Par défaut Better Auth compte en
     // mémoire : sur Workers, chaque isolat a la sienne, la limite ne tiendrait pas.
     // Compteurs en D1 (table rate_limit, migration 0004). `enabled` explicite : le
@@ -90,6 +108,7 @@ function createAuth(env: CloudflareEnv) {
       customRules: {
         '/sign-in/email': { window: 60, max: 5 },
         '/sign-up/email': { window: 60, max: 5 },
+        '/sign-in/social': { window: 60, max: 10 },
         '/change-password': { window: 60, max: 5 },
         // Chaque appel envoie un e-mail : strict, pour ne pas servir de relais à spam.
         '/send-verification-email': { window: 60, max: 3 },

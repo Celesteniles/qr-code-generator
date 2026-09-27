@@ -7,6 +7,7 @@ import { ArrowLeftIcon, CheckIcon, ChevronDownIcon, ExclamationCircleIcon, EyeIc
 import { signIn, signUp } from '@/lib/auth-client'
 import { Spinner } from '@/components/kit/Spinner'
 import { Turnstile, type TurnstileHandle } from './Turnstile'
+import { GoogleButton } from './GoogleButton'
 import { verifyEmailPath } from './verify-path'
 
 export type AuthMode = 'connexion' | 'inscription'
@@ -52,16 +53,29 @@ async function disposableMessage(email: string): Promise<string | null> {
   }
 }
 
-export function AuthPanel({ initialMode, next, freeLinks, turnstileSiteKey }: {
+/** Codes d'erreur renvoyés par Better Auth au retour de Google (?error=…). */
+function explainOAuth(code: string): string {
+  if (code === 'account_not_linked') {
+    return 'Un compte existe déjà avec cette adresse, mais elle n\'a pas encore été confirmée. Connectez-vous avec votre mot de passe, confirmez l\'adresse, puis Google fonctionnera.'
+  }
+  if (code === 'access_denied') return 'Connexion avec Google annulée.'
+  return 'La connexion avec Google n\'a pas abouti. Réessayez, ou utilisez votre email et votre mot de passe.'
+}
+
+export function AuthPanel({ initialMode, next, freeLinks, turnstileSiteKey, google = false, oauthError = null }: {
   initialMode: AuthMode
   next: string
   freeLinks: number | null
   /** Clé publique Turnstile ; absente → pas de widget (le serveur n'exige alors rien). */
   turnstileSiteKey?: string | null
+  /** « Continuer avec Google » proposé (secrets Google posés sur le Worker). */
+  google?: boolean
+  /** Code d'erreur au retour de Google (paramètre ?error=), s'il y en a un. */
+  oauthError?: string | null
 }) {
   const router = useRouter()
   const [mode, setMode] = useState<AuthMode>(initialMode)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(oauthError ? explainOAuth(oauthError) : null)
   const [pending, setPending] = useState(false)
   const [showPw, setShowPw] = useState(false)
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
@@ -174,6 +188,15 @@ export function AuthPanel({ initialMode, next, freeLinks, turnstileSiteKey }: {
             ))}
           </ul>
           </details>
+        )}
+
+        {google && (
+          <div className="mt-6">
+            <GoogleButton next={next} onError={setError} />
+            <p className="mt-5 flex items-center gap-3 text-xs text-subtle before:h-px before:grow before:bg-line after:h-px after:grow after:bg-line">
+              ou avec votre email
+            </p>
+          </div>
         )}
 
         <form onSubmit={onSubmit} className="mt-6 grid gap-4" aria-describedby={error ? errId : undefined}>
