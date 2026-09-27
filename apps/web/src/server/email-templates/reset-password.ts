@@ -1,8 +1,8 @@
 import 'server-only'
+import { brandHeader } from './brand'
 
 // E-mail « Mot de passe oublié » : HTML simple lisible par toutes les messageries
-// (tableaux, styles en ligne, pas d'image ni de police externe) + version texte.
-// Gabarit autonome : pas de dépendance à un layout partagé.
+// (tableaux, styles en ligne, seule image : le logo, pas de police externe) + version texte.
 
 export interface ResetPasswordEmail {
   subject: string
@@ -61,8 +61,8 @@ export function resetPasswordEmail({ name, url, validity = '1 heure' }: {
     <td align="center" style="padding:24px 12px;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;background:#ffffff;border-radius:16px;">
         <tr>
-          <td style="padding:28px 28px 8px 28px;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:bold;color:#16161d;">
-            link.cg
+          <td style="padding:28px 28px 8px 28px;">
+            ${brandHeader(url)}
           </td>
         </tr>
         <tr>

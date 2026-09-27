@@ -1,7 +1,9 @@
 // E-mail « Confirmez votre adresse » envoyé à l'inscription (et sur demande depuis
 // /verifier-email). HTML volontairement sobre pour passer partout (Gmail, Outlook,
-// messageries des opérateurs) : tableaux, styles en ligne, aucune image distante.
+// messageries des opérateurs) : tableaux, styles en ligne, seule image : le logo.
 // Une version texte accompagne toujours le HTML.
+
+import { brandHeader } from './brand'
 
 export interface VerificationEmailInput {
   /** Nom saisi à l'inscription ; vide → « Bonjour, ». */
@@ -61,7 +63,7 @@ export function verificationEmail({ name, url, validityHours }: VerificationEmai
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#efe9df;">
 <tr><td align="center" style="padding:24px 12px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;background-color:#ffffff;border-radius:20px;border:1px solid #dcd4c6;">
-<tr><td style="padding:28px 28px 8px 28px;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:bold;color:#16161d;">link.cg</td></tr>
+<tr><td style="padding:28px 28px 8px 28px;">${brandHeader(url)}</td></tr>
 <tr><td style="padding:8px 28px 0 28px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:24px;color:#16161d;">
 <p style="margin:0 0 16px 0;">${escapeHtml(hello)}</p>
 <p style="margin:0 0 24px 0;">Merci d'avoir créé votre espace sur link.cg. Pour l'utiliser, confirmez votre adresse e-mail&nbsp;:</p>
