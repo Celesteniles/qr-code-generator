@@ -1,10 +1,9 @@
 import 'server-only'
-import { headers } from 'next/headers'
 import { and, desc, eq, gt } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/d1'
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 import { authSchema } from '@link/db'
-import { getAuth } from '@/server/auth'
+import { getVerifiedSession } from '@/server/session'
 import { describeUserAgent, maskIp, relativeTime, shortDate, type DeviceItem } from '@/components/compte/devices'
 
 /**
@@ -13,7 +12,7 @@ import { describeUserAgent, maskIp, relativeTime, shortDate, type DeviceItem } f
  * jour). Les jetons ne sortent jamais d'ici : seul l'identifiant est transmis.
  */
 export async function getMyDevices(): Promise<DeviceItem[] | null> {
-  const session = await getAuth().api.getSession({ headers: await headers() })
+  const session = await getVerifiedSession()
   if (!session) return null
 
   const db = drizzle(getCloudflareContext().env.DB, { schema: authSchema })

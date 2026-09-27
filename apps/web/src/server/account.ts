@@ -7,10 +7,12 @@ import { drizzle } from 'drizzle-orm/d1'
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 import { authSchema } from '@link/db'
 import { getAuth } from './auth'
+import { getVerifiedSession } from './session'
 
 // Actions de la page « Mon compte ». Chacune relit la session côté serveur :
 // on n'agit jamais sur un identifiant fourni par le navigateur sans vérifier
-// qu'il appartient bien à l'utilisateur connecté.
+// qu'il appartient bien à l'utilisateur connecté, et à une adresse vérifiée
+// (getVerifiedSession : un compte non vérifié n'agit pas ici).
 //
 // Le changement de mot de passe passe par le client Better Auth
 // (/api/auth/change-password) : il y bénéficie de la limitation d'essais et du
@@ -28,7 +30,7 @@ export async function updateNameAction(_prev: AccountState, formData: FormData):
 
   const h = await headers()
   const auth = getAuth()
-  const session = await auth.api.getSession({ headers: h })
+  const session = await getVerifiedSession()
   if (!session) return { ok: false, message: 'Votre session a expiré. Reconnectez-vous puis réessayez.' }
   if (session.user.name === name) return { ok: true }
 
@@ -49,7 +51,7 @@ export async function revokeSessionAction(_prev: AccountState, formData: FormDat
 
   const h = await headers()
   const auth = getAuth()
-  const current = await auth.api.getSession({ headers: h })
+  const current = await getVerifiedSession()
   if (!current) return { ok: false, message: 'Votre session a expiré. Reconnectez-vous puis réessayez.' }
   if (id === current.session.id) {
     return { ok: false, message: 'Pour quitter cet appareil, utilisez le bouton « Se déconnecter ».' }
@@ -78,7 +80,7 @@ export async function revokeSessionAction(_prev: AccountState, formData: FormDat
 export async function revokeOtherSessionsAction(): Promise<AccountState> {
   const h = await headers()
   const auth = getAuth()
-  const current = await auth.api.getSession({ headers: h })
+  const current = await getVerifiedSession()
   if (!current) return { ok: false, message: 'Votre session a expiré. Reconnectez-vous puis réessayez.' }
   try {
     await auth.api.revokeOtherSessions({ headers: h })

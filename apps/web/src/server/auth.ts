@@ -7,7 +7,12 @@ import { drizzle } from 'drizzle-orm/d1'
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 import { authSchema, schema, ensureWorkspaceForUser, type Db } from '@link/db'
 import { turnstileKeys } from './turnstile'
+import { sendEmail } from './email'
+import { verificationEmail } from './email-templates/verification'
 import { DISPOSABLE_EMAIL_CODE, DISPOSABLE_EMAIL_MESSAGE, isDisposableEmail } from '@link/shared/disposable-email'
+
+/** Validité du lien de confirmation d'adresse. */
+const VERIFICATION_HOURS = 24
 
 // Adresses jetables (Yopmail, Mailinator…) refusées à l'inscription et au changement
 // d'adresse, pour limiter les faux comptes. Liste : @link/shared/disposable-email.
@@ -29,11 +34,27 @@ function createAuth(env: CloudflareEnv) {
     database: drizzleAdapter(db, { provider: 'sqlite', schema: authSchema }),
     emailAndPassword: {
       enabled: true,
-      // Pas encore de service d'e-mail : vérification désactivée pour l'instant.
+      // La connexion reste possible sans adresse vérifiée : l'utilisateur doit
+      // pouvoir se reconnecter pour renvoyer le lien. C'est l'application qui
+      // bloque ensuite l'accès à l'espace (cf. server/session.ts, /verifier-email).
       requireEmailVerification: false,
       // Verrouillage optionnel de l'inscription (var DISABLE_SIGNUP=true).
       // String() élargit le type littéral figé par `wrangler types`.
       disableSignUp: String(env.DISABLE_SIGNUP) === 'true',
+    },
+    // Vérification de l'adresse : lien envoyé à l'inscription, valable 24 h, qui
+    // connecte l'utilisateur à l'ouverture. L'envoi est attendu (borné par le
+    // délai du module d'e-mail) ; à l'inscription, Better Auth rattrape et
+    // journalise son échec : le compte est créé quand même, et le lien peut être
+    // redemandé depuis /verifier-email (où l'erreur, elle, remonte à l'écran).
+    emailVerification: {
+      sendOnSignUp: true,
+      autoSignInAfterVerification: true,
+      expiresIn: VERIFICATION_HOURS * 60 * 60,
+      sendVerificationEmail: async ({ user, url }) => {
+        const mail = verificationEmail({ name: user.name, url, validityHours: VERIFICATION_HOURS })
+        await sendEmail({ to: user.email, name: user.name || undefined, ...mail })
+      },
     },
     // Limitation des essais, par IP et par route. Par défaut Better Auth compte en
     // mémoire : sur Workers, chaque isolat a la sienne, la limite ne tiendrait pas.
@@ -51,6 +72,8 @@ function createAuth(env: CloudflareEnv) {
         '/sign-in/email': { window: 60, max: 5 },
         '/sign-up/email': { window: 60, max: 5 },
         '/change-password': { window: 60, max: 5 },
+        // Chaque appel envoie un e-mail : strict, pour ne pas servir de relais à spam.
+        '/send-verification-email': { window: 60, max: 3 },
         // Lue à chaque affichage de page (useSession) : pas d'écriture D1 pour elle.
         '/get-session': false,
       },
