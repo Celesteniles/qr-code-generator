@@ -2,16 +2,17 @@ import 'server-only'
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 
 // Envoi des e-mails transactionnels (vérification d'adresse, mot de passe oublié)
-// via l'API Brevo. Expéditeur : noreply@email.nscreative.cg — le domaine
-// email.nscreative.cg doit être authentifié dans Brevo (SPF, DKIM, DMARC), sinon
-// les messages partent en indésirables ou sont refusés.
+// via l'API Brevo. Expéditeur : noreply@qrcode.cg — le même domaine que le site
+// et les liens des e-mails : un expéditeur d'un autre domaine (nscreative.cg)
+// ressemblait à du phishing et finissait en indésirables. qrcode.cg doit rester
+// authentifié dans Brevo (DKIM, DMARC, SPF).
 //
 // Secret : BREVO_API_KEY (wrangler secret put BREVO_API_KEY). Sans lui, aucun
 // e-mail ne part : l'erreur est journalisée et remontée à l'appelant, jamais
 // simulée.
 
 const ENDPOINT = 'https://api.brevo.com/v3/smtp/email'
-const SENDER = { name: 'link.cg', email: 'noreply@email.nscreative.cg' }
+const SENDER = { name: 'link.cg', email: 'noreply@qrcode.cg' }
 /** Au-delà, on abandonne : un envoi bloqué ne doit pas figer l'inscription. */
 const TIMEOUT_MS = 8000
 
