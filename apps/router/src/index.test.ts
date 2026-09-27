@@ -74,9 +74,28 @@ describe('router fetch', () => {
     expect(res.status).toBe(404)
   })
 
-  it('racine → 200 sans redirection', async () => {
+  it('racine → 302 vers le site (qrcode.cg par défaut, HOME_URL sinon)', async () => {
     const res = await get('https://link.cg/', makeEnv({}))
-    expect(res.status).toBe(200)
+    expect(res.status).toBe(302)
+    expect(res.headers.get('location')).toBe('https://qrcode.cg')
+    const custom = await get('https://link.cg', { ...makeEnv({}), HOME_URL: 'https://beta.qrcode.cg/' })
+    expect(custom.headers.get('location')).toBe('https://beta.qrcode.cg')
+  })
+
+  it('favicon → celui du site', async () => {
+    const res = await get('https://link.cg/favicon.ico', makeEnv({}))
+    expect(res.status).toBe(302)
+    expect(res.headers.get('location')).toBe('https://qrcode.cg/favicon.ico')
+  })
+
+  it('pages d\'erreur en HTML, sans rien reprendre de l\'adresse demandée', async () => {
+    const res = await get('https://link.cg/%3Cscript%3Ealert(1)%3C%2Fscript%3E', makeEnv({}))
+    expect(res.status).toBe(404)
+    expect(res.headers.get('content-type')).toContain('text/html')
+    const html = await res.text()
+    expect(html).toContain('Ce lien n’existe pas')
+    expect(html).not.toContain('<script')
+    expect(html).toContain('href="https://qrcode.cg"')
   })
 
   it('résout par hostname (domaine personnalisé)', async () => {
