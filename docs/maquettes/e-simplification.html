@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E · Simplifier — avant / après</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="d.css">
+<link rel="stylesheet" href="e.css">
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+<style>
+  main { max-width: 980px; margin: 0 auto; padding: 48px 20px 80px; }
+  section { margin-top: 44px; }
+  section > p { color: var(--muted); margin-top: 6px; max-width: 70ch; }
+  .go { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+  .src { font-size: 12px; color: var(--subtle); margin-top: 10px; }
+</style>
+</head>
+<body>
+<main>
+  <span class="eyebrow"><i data-i="sparkles" class="sm"></i>Proposition E · à partir de ce qui est en ligne sur beta</span>
+  <h1 class="h1 mt-12">Simplifier : moins de choix, le même produit</h1>
+  <p class="lead mt-12" style="max-width:62ch">On ne change ni l'identité, ni les couleurs, ni l'accueil de l'inscrit. On retire des doublons et on repousse les réglages après le résultat.</p>
+  <div class="go">
+    <a class="btn btn-cta" href="e-accueil.html">Accueil allégé <i data-i="arrow" class="sm"></i></a>
+    <a class="btn btn-line" href="e-creer.html">Créer, parcours unique</a>
+    <a class="btn btn-line" href="e-creer.html?type=wifi">Créer un QR Wi‑Fi (fixe)</a>
+    <a class="btn btn-line" href="e-creer.html?fin=1">Écran « C'est prêt »</a>
+    <a class="btn btn-ghost" href="index.html">Toutes les maquettes</a>
+  </div>
+
+  <section>
+    <div class="kpis">
+      <div class="kpi"><div class="v"><s>12</s> → 6</div><p>entrées sur l'accueil visiteur</p></div>
+      <div class="kpi"><div class="v"><s>4</s> → 2</div><p>questions pour créer un QR</p></div>
+      <div class="kpi"><div class="v"><s>2</s> → 1</div><p>parcours de création (lien / QR)</p></div>
+      <div class="kpi"><div class="v"><s>4</s> → 0</div><p>réglages avant de télécharger un QR fixe (nom, format, taille, style)</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h2">1 · Un seul parcours de création</h2>
+    <p>Aujourd'hui, on fait choisir « Lien court » ou « QR code », puis, pour un QR, « fixe ou modifiable ? ». Or notre règle dit qu'un lien court a toujours son QR, et qu'un QR modifiable est un lien court.</p>
+    <div class="ba mt-16">
+      <div class="before"><h4>Avant</h4><ul>
+        <li>Onglets Lien court / QR code / Carte</li>
+        <li>QR : 1. contenu · 2. champs · 3. fixe ou modifiable ? · 4. style</li>
+        <li>Lien : 1. lien · 2. adresse courte · option « selon le téléphone »</li>
+        <li>Le visiteur remplit tout avant de découvrir qu'il faut un compte (QR modifiable conseillé par défaut)</li>
+      </ul></div>
+      <div class="after"><h4>Après</h4><ul>
+        <li>« Que voulez-vous partager ? » → on donne <b>le lien et le QR</b></li>
+        <li>2 questions : ce qu'on ouvre · les champs. L'adresse courte est proposée et se modifie sur place</li>
+        <li>Fixe seulement quand c'est imposé (Wi‑Fi, texte, contact…) : expliqué, pas demandé</li>
+        <li>« Selon le téléphone » dans les options avancées</li>
+        <li>Visiteur : compte à la dernière étape, <b>avec une sortie</b> « Télécharger un QR fixe »</li>
+      </ul></div>
+    </div>
+    <p class="src">Code actuel : <span class="mono">apps/web/src/components/creer/Creer.tsx</span>, <span class="mono">QrMode.tsx</span>, <span class="mono">LinkMode.tsx</span>.</p>
+  </section>
+
+  <section>
+    <h2 class="h2">2 · Les réglages après le résultat</h2>
+    <p>Le style (étape 4) et les formats (PNG/SVG × 3 tailles) arrivent avant même d'avoir un QR. On montre d'abord le résultat, avec un bouton principal, puis on propose d'ajuster.</p>
+    <div class="ba mt-16">
+      <div class="before"><h4>Avant</h4><ul>
+        <li>Style obligatoire dans le parcours</li>
+        <li>Nom, PNG/SVG, Écran/Affiche/Grand format avant « Télécharger »</li>
+      </ul></div>
+      <div class="after"><h4>Après</h4><ul>
+        <li>Écran « C'est prêt » : Copier · Partager sur WhatsApp · Télécharger le QR (PNG haute définition)</li>
+        <li>« Autres formats » replié (SVG, PDF, grand format)</li>
+        <li>« Personnaliser le QR » : 5 styles en un clic, le reste dans la fiche du lien</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h2">3 · Accueil visiteur allégé</h2>
+    <p>Aujourd'hui : le champ, 3 cartes produit, l'encadré « Lien ou QR ? », 6 idées, 3 étapes, les QR par appareil, un bandeau, plus la carte compte et deux « Se connecter ». Les cartes et les idées mènent aux mêmes écrans.</p>
+    <div class="ba mt-16">
+      <div class="before"><h4>Avant</h4><ul>
+        <li>~12 entrées, 3 invitations au compte</li>
+        <li>« Selon le téléphone » mis en avant dès l'accueil</li>
+      </ul></div>
+      <div class="after"><h4>Après</h4><ul>
+        <li>Un champ « Collez un lien » + 5 raccourcis (WhatsApp, menu, Wi‑Fi, réseaux, carte)</li>
+        <li>« Comment ça marche » en 3 lignes, avec un exemple de résultat (lien + QR + visites)</li>
+        <li>Une seule invitation au compte en page, une courte dans la barre latérale</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h2">4 · Navigation</h2>
+    <div class="ba mt-16">
+      <div class="before"><h4>Avant</h4><ul>
+        <li>Mobile : Accueil · Mes liens · + · Carte · <b>Offres</b></li>
+        <li>Cadenas « Carte de visite » sur ordinateur seulement</li>
+        <li>Visite guidée à 4 endroits</li>
+      </ul></div>
+      <div class="after"><h4>Après</h4><ul>
+        <li>Mobile : Accueil · Mes liens · + · Carte · <b>Compte</b> (Offres dedans)</li>
+        <li>Même signal « compte requis » partout</li>
+        <li>Visite guidée : une seule entrée (menu du compte / aide)</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h2">Ce qu'on ne touche pas</h2>
+    <p>L'accueil de l'inscrit (chiffre de visites en titre, liens récents), la fiche d'un lien, la carte de visite, les offres, la voix et le ton, les contours et couleurs validés.</p>
+    <p class="mt-8"><b>Impact côté code :</b> surtout l'écran Créer (fusion de <span class="mono">LinkMode</span> et <span class="mono">QrMode</span>, un écran de réussite enrichi) et <span class="mono">GuestHome</span>. Aucun changement de données : un « lien + QR » reste un lien <span class="mono">kind: 'qr'</span> ou <span class="mono">'link'</span> comme aujourd'hui.</p>
+  </section>
+</main>
+</body>
+</html>

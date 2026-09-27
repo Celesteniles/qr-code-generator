@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E · Créer — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="d.css">
+<link rel="stylesheet" href="e.css">
+<script src="d.js"></script>
+<script src="e.js"></script>
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+</head>
+<body data-page="creer" data-state="guest">
+<div class="app">
+  <aside class="side" data-shell-e></aside>
+  <div class="main"><div class="sheet">
+    <div class="topline">
+      <a class="btn btn-ghost btn-sm" href="e-accueil.html"><i data-i="back" class="sm"></i>Accueil</a>
+    </div>
+
+    <div class="content">
+      <!-- ═════════ Formulaire : 2 questions ═════════ -->
+      <div id="form-view">
+        <h1 class="h1">Que voulez-vous partager ?</h1>
+        <p class="lead mt-8">Vous obtiendrez un lien à envoyer <b>et</b> un QR à imprimer.</p>
+
+        <form class="creator mt-24" id="f" novalidate>
+          <div>
+            <section class="q">
+              <div class="q-head"><span class="q-no">1</span><div><h2 class="h3">Ce que la personne ouvre</h2><p>En cliquant sur le lien ou en scannant le QR.</p></div></div>
+              <div class="q-body">
+                <div class="what" id="what">
+                  <button type="button" data-t="site" aria-pressed="true"><span class="w-ico" style="background:var(--sky)"><i data-i="link"></i></span><span><strong>Une page web</strong><span class="d">Boutique, vidéo, formulaire…</span></span></button>
+                  <button type="button" data-t="whatsapp"><span class="w-ico" style="background:var(--mint)"><i data-i="sms"></i></span><span><strong>Votre WhatsApp</strong><span class="d">On vous écrit directement</span></span></button>
+                  <button type="button" data-t="menu"><span class="w-ico" style="background:var(--sun)"><i data-i="text"></i></span><span><strong>Un menu, un document</strong><span class="d">Lien d'un PDF ou d'une page</span></span></button>
+                  <button type="button" data-t="reseaux"><span class="w-ico" style="background:var(--lilac)"><i data-i="globe"></i></span><span><strong>Vos réseaux</strong><span class="d">Facebook, Instagram, TikTok…</span></span></button>
+                  <button type="button" data-t="wifi"><span class="w-ico" style="background:var(--sky)"><i data-i="wifi"></i></span><span><strong>Votre Wi‑Fi</strong><span class="d">Connexion sans mot de passe</span></span></button>
+                  <button type="button" id="more-btn"><span class="w-ico" style="background:var(--soft)"><i data-i="more"></i></span><span><strong>Autre chose</strong><span class="d">Texte, email, SMS, appel, lieu</span></span></button>
+                </div>
+                <div class="chips more-types" id="more-types" hidden>
+                  <button type="button" class="chip" data-t="texte"><i data-i="text"></i>Texte</button>
+                  <button type="button" class="chip" data-t="email"><i data-i="mail"></i>Email</button>
+                  <button type="button" class="chip" data-t="sms"><i data-i="sms"></i>SMS</button>
+                  <button type="button" class="chip" data-t="appel"><i data-i="phone"></i>Appel</button>
+                  <button type="button" class="chip" data-t="lieu"><i data-i="pin"></i>Lieu</button>
+                </div>
+                <p class="help"><i data-i="user"></i>Votre profil pro complet ? <a class="link" href="d-carte.html">Créez plutôt votre carte de visite</a></p>
+              </div>
+            </section>
+
+            <section class="q">
+              <div class="q-head"><span class="q-no">2</span><div><h2 class="h3" id="q2-title">Quelle page ?</h2><p id="q2-hint">Collez le lien de la page.</p></div></div>
+              <div class="q-body">
+                <!-- Champs selon le type (un seul bloc visible) -->
+                <div data-fields="site menu reseaux">
+                  <label class="field"><span class="sr" hidden>Lien</span>
+                    <input class="input" id="url" type="url" inputmode="url" autocapitalize="none" placeholder="https://votre-boutique.cg/produits/pagne-wax"></label>
+                </div>
+                <div data-fields="whatsapp" hidden>
+                  <div class="grid-2">
+                    <label class="field"><span class="label">Numéro WhatsApp</span><div class="input-affix"><span class="pre">+242</span><input id="wa" inputmode="tel" placeholder="06 123 45 67"></div></label>
+                    <label class="field"><span class="label">Premier message <span class="opt">· facultatif</span></span><input class="input" placeholder="Bonjour, je vous contacte depuis…"></label>
+                  </div>
+                </div>
+                <div data-fields="wifi" hidden>
+                  <div class="grid-2">
+                    <label class="field"><span class="label">Nom du réseau</span><input class="input" id="ssid" placeholder="Maquis-Chez-Tantine"></label>
+                    <label class="field"><span class="label">Mot de passe</span><input class="input" type="password" placeholder="••••••••"></label>
+                  </div>
+                </div>
+                <div data-fields="texte email sms appel lieu" hidden>
+                  <label class="field"><input class="input" id="other" placeholder="…"></label>
+                </div>
+
+                <!-- Adresse courte : proposée, modifiable en ligne. Pas une étape. -->
+                <div class="link-only mt-16" id="slug-zone" hidden>
+                  <div class="row wrap-flex" style="gap:10px">
+                    <label class="slug-inline"><span class="host">link.cg/</span><input id="slug" value="pagne-wax" aria-label="Adresse courte"><i data-i="pencil" class="sm subtle"></i></label>
+                    <span class="ok-dot"><i data-i="check" class="sm"></i>Libre</span>
+                  </div>
+                  <p class="help"><i data-i="sparkles"></i>Proposée d'après votre lien. Touchez pour la changer.</p>
+                </div>
+
+                <div class="tip blue mt-16 fixed-only" id="fixed-why" hidden>
+                  <span class="tip-ico"><i data-i="qr" class="sm"></i></span>
+                  <div><strong>Un QR seulement, sans lien</strong><span id="fixed-txt">Le QR contient directement le nom du réseau et le mot de passe : le téléphone se connecte sans internet.</span></div>
+                </div>
+
+                <details class="adv link-only" id="adv">
+                  <summary><i data-i="chevron" class="sm chev"></i>Options avancées</summary>
+                  <div class="adv-body">
+                    <div>
+                      <div class="row"><div class="grow"><strong class="small">Selon le téléphone</strong><div class="xs muted">Pour une application : iPhone vers l'App Store, Android vers le Play Store.</div></div>
+                        <button type="button" class="switch" role="switch" aria-checked="false" onclick="this.setAttribute('aria-checked', this.getAttribute('aria-checked') !== 'true')" aria-label="Selon le téléphone"></button></div>
+                    </div>
+                  </div>
+                </details>
+              </div>
+            </section>
+          </div>
+
+          <!-- Aperçu : un seul objet -->
+          <aside class="pv" aria-label="Aperçu">
+            <div class="pv-card">
+              <div class="pv-qr" id="pv-qr"><div class="empty">Votre QR apparaîtra ici.</div></div>
+              <div class="pv-link">
+                <div class="link-only row" style="gap:8px;min-width:0">
+                  <span class="linkchip"><span class="host">link.cg/</span><span id="pv-slug">pagne-wax</span></span>
+                </div>
+                <div class="pv-dest"><i data-i="arrow" class="sm"></i><span id="pv-dest">…</span></div>
+                <div class="row" style="gap:6px;flex-wrap:wrap">
+                  <span class="pill pill-ok link-only"><i data-i="refresh"></i>Modifiable</span>
+                  <span class="pill pill-soft link-only"><i data-i="chart"></i>Visites comptées</span>
+                  <span class="pill pill-soft fixed-only" hidden>QR fixe · s'imprime tel quel</span>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-cta btn-lg btn-block" type="submit" id="go">Créer mon lien et mon QR <i data-i="arrow" class="sm"></i></button>
+            <p class="xs subtle center link-only only-guest">Un compte gratuit vous sera demandé à la dernière étape. Ou gardez un QR fixe, sans compte.</p>
+          </aside>
+        </form>
+      </div>
+
+      <!-- ═════════ Résultat ═════════ -->
+      <section class="done" id="done" hidden aria-labelledby="done-title">
+        <div class="big-qr" id="big-qr"></div>
+        <div>
+          <span class="pill pill-ok"><i data-i="check"></i><span id="done-pill">En ligne</span></span>
+          <h1 class="h1 mt-12" id="done-title">C'est prêt.</h1>
+          <p class="lead mt-8" id="done-lead">Envoyez le lien, imprimez le QR : les deux mènent au même endroit.</p>
+
+          <div class="card pad mt-24 link-only" style="padding:16px 18px">
+            <div class="row" style="gap:10px;flex-wrap:wrap">
+              <span class="linkchip lg"><span class="host">link.cg/</span><span id="done-slug">pagne-wax</span></span>
+              <button class="btn btn-soft btn-sm" data-copy="link.cg/pagne-wax" style="margin-left:auto"><i data-i="copy" class="sm"></i>Copier</button>
+            </div>
+          </div>
+
+          <div class="share-row mt-16">
+            <a class="btn wa link-only" href="#"><i data-i="share" class="sm"></i>Partager sur WhatsApp</a>
+            <button class="btn btn-cta" type="button"><i data-i="download" class="sm"></i>Télécharger le QR</button>
+          </div>
+          <details class="formats">
+            <summary>Autres formats (SVG pour l'imprimeur, PDF, grand format)</summary>
+            <div class="row mt-8" style="gap:8px;flex-wrap:wrap">
+              <button class="btn btn-line btn-sm">SVG</button><button class="btn btn-line btn-sm">PDF A4</button><button class="btn btn-line btn-sm">PNG 2048 px</button>
+            </div>
+          </details>
+
+          <h2 class="h3 mt-32">Personnaliser le QR <span class="subtle small" style="font-weight:500">· facultatif</span></h2>
+          <p class="small muted mt-4">Même contenu, autre allure. Le QR se met à jour à gauche.</p>
+          <div class="presets mt-12" id="presets"></div>
+          <a class="link small mt-12" href="d-qr.html" style="display:inline-flex">Plus de réglages : couleurs, logo, formes <i data-i="arrow" class="sm"></i></a>
+
+          <div class="row mt-32" style="gap:8px;flex-wrap:wrap">
+            <a class="btn btn-ghost" href="e-creer.html"><i data-i="plus" class="sm"></i>Créer autre chose</a>
+            <a class="btn btn-ghost link-only" href="d-qr.html"><i data-i="chart" class="sm"></i>Voir ses visites</a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div></div>
+</div>
+
+<!-- Visiteur : compte demandé au dernier moment, avec une sortie sans compte -->
+<div class="drawer" id="signup" aria-hidden="true">
+  <div class="scrim" data-close></div>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="su-title">
+    <div class="panel-head"><h2 class="h2 grow" id="su-title">Dernière étape</h2><button class="icon-btn" data-close aria-label="Fermer"><i data-i="x"></i></button></div>
+    <div class="panel-body">
+      <p class="muted">Un compte gratuit met <b class="mono" style="color:var(--ink)">link.cg/<span class="su-slug">pagne-wax</span></b> en ligne. 30 secondes, sans carte bancaire.</p>
+      <div class="mt-24">
+        <label class="field"><span class="label">Votre nom</span><input class="input" placeholder="Céleste Gakono"></label>
+        <label class="field"><span class="label">Email</span><input class="input" type="email" placeholder="vous@exemple.cg"></label>
+        <label class="field"><span class="label">Mot de passe</span><input class="input" type="password" placeholder="8 caractères minimum"></label>
+      </div>
+      <button class="btn btn-brand btn-lg btn-block mt-24" id="su-go">Créer mon compte et mon lien</button>
+      <p class="small center mt-12">Déjà inscrit ? <a class="link" href="d-connexion.html">Se connecter</a></p>
+
+      <div class="zone mt-32" style="padding:16px">
+        <strong class="small">Pas maintenant ?</strong>
+        <p class="small muted mt-4">Téléchargez un QR fixe, sans compte. Il mènera directement à <span id="su-dest">votre page</span>, mais vous ne pourrez ni le modifier ni voir ses visites.</p>
+        <button class="btn btn-line btn-sm mt-12" id="su-fixed"><i data-i="download" class="sm"></i>Télécharger un QR fixe</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="note"><b>Créer E.</b> Plus de choix « Lien court / QR code », plus de question « fixe ou modifiable ? » : on demande ce qui est partagé, et on donne les deux. Le style et les formats passent <i>après</i> le résultat. Passez en « Visiteur » puis « Créer » pour voir la sortie sans compte. <a href="e-simplification.html">Avant / après</a></div>
+
+<script>
+(function () {
+  const FIXED = {
+    wifi: 'Le QR contient directement le nom du réseau et le mot de passe : le téléphone se connecte sans internet. Si le mot de passe change, refaites un QR.',
+    texte: 'Le QR contient directement votre texte, il s\'affiche sans connexion.',
+    email: 'Le QR contient directement l\'adresse et le message.',
+    sms: 'Le QR contient directement le numéro et le message.',
+    appel: 'Le QR contient directement le numéro.',
+    lieu: 'Le QR contient directement les coordonnées du lieu.',
+  }
+  const Q2 = {
+    site: ['Quelle page ?', 'Collez le lien de la page.'],
+    menu: ['Où est votre menu ?', 'Collez le lien de votre menu en ligne ou du PDF.'],
+    reseaux: ['Quelle page de réseau social ?', 'Votre page Facebook, Instagram, TikTok…'],
+    whatsapp: ['Sur quel numéro vous écrire ?', 'La personne ouvre une discussion WhatsApp avec vous.'],
+    wifi: ['Quel est votre Wi‑Fi ?', 'Le téléphone se connecte sans taper le mot de passe.'],
+    texte: ['Quel texte afficher ?', ''], email: ['À qui écrire ?', ''], sms: ['À quel numéro ?', ''], appel: ['Quel numéro appeler ?', ''], lieu: ['Quelle adresse ?', ''],
+  }
+  const SLUG = { site: 'pagne-wax', menu: 'menu', reseaux: 'mamiwata', whatsapp: 'ecrivez-nous' }
+  const $ = (s) => document.querySelector(s)
+  let type = 'site', fixedChoice = false, seed = 52, preset = 0
+  const PRESETS = [
+    { n: 'Classique', fg: '#16161d', bg: '#ffffff', dot: 'square', corner: 'square' },
+    { n: 'Doux', fg: '#16161d', bg: '#ffffff', dot: 'rounded', corner: 'rounded' },
+    { n: 'Bleu', fg: '#0060ff', bg: '#ffffff', dot: 'rounded', corner: 'rounded' },
+    { n: 'Points', fg: '#16161d', bg: '#ffffff', dot: 'dots', corner: 'dot' },
+    { n: 'Logo', fg: '#16161d', bg: '#ffffff', dot: 'rounded', corner: 'rounded', logo: 'M', logoBg: '#0060ff' },
+  ]
+
+  const isFixed = () => type in FIXED || fixedChoice
+  const filled = () => {
+    if (type === 'site' || type === 'menu' || type === 'reseaux') return /^https?:\/\/\S+\.\S+/.test($('#url').value.trim()) || $('#url').value.trim().includes('.')
+    if (type === 'whatsapp') return $('#wa').value.replace(/\D/g, '').length >= 6
+    if (type === 'wifi') return $('#ssid').value.trim().length > 0
+    return $('#other').value.trim().length > 0
+  }
+  const dest = () => {
+    if (type === 'whatsapp') return 'WhatsApp +242 ' + ($('#wa').value || '…')
+    if (type === 'wifi') return 'Wi‑Fi « ' + ($('#ssid').value || '…') + ' »'
+    if (type in FIXED) return $('#other').value || '…'
+    try { const u = new URL(/^https?:/.test($('#url').value) ? $('#url').value : 'https://' + $('#url').value); return u.hostname.replace(/^www\./, '') + u.pathname.replace(/\/$/, '') } catch (e) { return '…' }
+  }
+  const qr = (size) => Maquette.qrSvg(Object.assign({ size, seed }, PRESETS[preset]))
+
+  function render() {
+    document.querySelectorAll('[data-fields]').forEach((el) => { el.hidden = !el.dataset.fields.split(' ').includes(type) })
+    document.querySelectorAll('.link-only').forEach((el) => { el.hidden = isFixed() })
+    document.querySelectorAll('.fixed-only').forEach((el) => { el.hidden = !isFixed() })
+    $('#fixed-txt').textContent = FIXED[type] || ''
+    $('#q2-title').textContent = Q2[type][0]
+    $('#q2-hint').textContent = Q2[type][1]
+    $('#pv-slug').textContent = $('#slug').value || '…'
+    $('#pv-dest').textContent = filled() ? dest() : 'Remplissez l\'étape 2'
+    $('#slug-zone').hidden = isFixed() || !filled()
+    $('#pv-qr').innerHTML = filled() ? `<div>${qr(220)}</div>` : '<div class="empty">Votre QR apparaîtra ici.</div>'
+    $('#go').innerHTML = isFixed() ? 'Créer mon QR <svg class="ico sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>' : 'Créer mon lien et mon QR <svg class="ico sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>'
+  }
+
+  function pick(t) {
+    type = t; fixedChoice = false; seed = 40 + Object.keys(Q2).indexOf(t) * 7
+    if (SLUG[t]) $('#slug').value = SLUG[t]
+    document.querySelectorAll('[data-t]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.t === t)))
+    $('#more-btn').setAttribute('aria-pressed', String(t in FIXED && t !== 'wifi'))
+    render()
+  }
+
+  function showDone() {
+    $('#form-view').hidden = true
+    $('#done').hidden = false
+    $('#done-slug').textContent = $('#slug').value
+    document.querySelector('[data-copy]').dataset.copy = 'link.cg/' + $('#slug').value
+    $('#done-pill').textContent = isFixed() ? 'QR prêt' : 'En ligne'
+    $('#done-lead').textContent = isFixed()
+      ? 'Téléchargez-le et imprimez-le. Il est gardé dans Mes liens & QR sur cet appareil.'
+      : 'Envoyez le lien, imprimez le QR : les deux mènent au même endroit. Vous pourrez changer la destination plus tard.'
+    document.querySelectorAll('#done .link-only').forEach((el) => { el.hidden = isFixed() })
+    drawPresets()
+    window.scrollTo({ top: 0 })
+  }
+  function drawPresets() {
+    $('#big-qr').innerHTML = qr(300)
+    $('#presets').innerHTML = PRESETS.map((p, i) =>
+      `<button type="button" class="preset" aria-pressed="${i === preset}" data-p="${i}"><div>${Maquette.qrSvg(Object.assign({ size: 64, seed }, p))}</div>${p.n}</button>`).join('')
+    document.querySelectorAll('[data-p]').forEach((b) => b.addEventListener('click', () => { preset = Number(b.dataset.p); drawPresets() }))
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-t]').forEach((b) => b.addEventListener('click', () => pick(b.dataset.t)))
+    $('#more-btn').addEventListener('click', () => { $('#more-types').hidden = !$('#more-types').hidden })
+    $('#f').addEventListener('input', render)
+    $('#f').addEventListener('submit', (e) => {
+      e.preventDefault()
+      if (!filled()) { $('#pv-dest').textContent = 'Remplissez d\'abord l\'étape 2'; return }
+      if (!isFixed() && document.body.dataset.state === 'guest') {
+        document.querySelectorAll('.su-slug').forEach((s) => { s.textContent = $('#slug').value })
+        $('#su-dest').textContent = dest()
+        $('#signup').classList.add('is-open'); $('#signup').setAttribute('aria-hidden', 'false')
+        return
+      }
+      showDone()
+    })
+    const closeDrawer = () => { $('#signup').classList.remove('is-open'); $('#signup').setAttribute('aria-hidden', 'true') }
+    $('#su-go').addEventListener('click', () => { closeDrawer(); showDone() })
+    $('#su-fixed').addEventListener('click', () => { closeDrawer(); fixedChoice = true; showDone() })
+
+    const p = new URLSearchParams(location.search)
+    if (p.get('url')) $('#url').value = p.get('url')
+    pick(p.get('type') && Q2[p.get('type')] ? p.get('type') : 'site')
+    if (p.get('type') && FIXED[p.get('type')] && p.get('type') !== 'wifi') $('#more-types').hidden = false
+    if (p.has('fin')) { document.querySelector('[data-state-set="user"]')?.click(); showDone() }
+  })
+})()
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E · Accueil allégé — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="d.css">
+<link rel="stylesheet" href="e.css">
+<script src="d.js"></script>
+<script src="e.js"></script>
+<script src="icons.js"></script>
+<script src="shared.js"></script>
+</head>
+<body data-page="accueil" data-state="guest" data-nostate>
+<div class="app">
+  <aside class="side" data-shell-e></aside>
+  <div class="main"><div class="sheet">
+    <div class="topline">
+      <a class="logo mob-only" href="e-accueil.html"><span class="logo-mark"></span></a>
+      <span class="eyebrow"><i data-i="sparkles" class="sm"></i>Gratuit · sans inscription pour essayer</span>
+    </div>
+
+    <div class="content">
+      <h1 class="display" style="max-width:18ch">Partagez tout, en <span class="hl">un lien</span> et <span class="hl">un QR</span>.</h1>
+      <p class="lead mt-16" style="max-width:52ch">Collez un lien : vous obtenez une adresse courte pour WhatsApp et son QR à imprimer.</p>
+
+      <div class="start mt-32">
+        <form class="start-box" action="e-creer.html">
+          <i data-i="link"></i>
+          <input name="url" type="url" inputmode="url" autocapitalize="none" placeholder="Collez un lien : https://…" aria-label="Lien à partager">
+          <button class="btn btn-cta" type="submit">Créer</button>
+        </form>
+
+        <div class="or">ou partagez plutôt…</div>
+        <div class="quick">
+          <a href="e-creer.html?type=whatsapp"><span class="q-ico" style="background:var(--mint)"><i data-i="sms"></i></span>Votre WhatsApp</a>
+          <a href="e-creer.html?type=menu"><span class="q-ico" style="background:var(--sun)"><i data-i="text"></i></span>Votre menu</a>
+          <a href="e-creer.html?type=wifi"><span class="q-ico" style="background:var(--sky)"><i data-i="wifi"></i></span>Votre Wi‑Fi</a>
+          <a href="e-creer.html?type=reseaux"><span class="q-ico" style="background:var(--lilac)"><i data-i="globe"></i></span>Vos réseaux</a>
+          <a href="d-carte.html"><span class="q-ico" style="background:var(--coral-tint)"><i data-i="user"></i></span>Votre carte de visite</a>
+        </div>
+      </div>
+
+      <section class="gets mt-48" aria-labelledby="how">
+        <div>
+          <h2 id="how" class="h2">Comment ça marche</h2>
+          <ol class="mt-24">
+            <li><div><strong>Dites ce que vous partagez</strong><p>Un lien, votre WhatsApp, votre menu, votre Wi‑Fi…</p></div></li>
+            <li><div><strong>Recevez le lien et son QR</strong><p>Le lien pour WhatsApp et Facebook, le QR pour vos affiches et vos tables. Même destination.</p></div></li>
+            <li><div><strong>Changez d'avis quand vous voulez</strong><p>Avec un compte gratuit, changez la destination sans réimprimer, et voyez combien de personnes l'ouvrent.</p></div></li>
+          </ol>
+        </div>
+        <div class="result-demo">
+          <div class="mini-result">
+            <div class="qrrow">
+              <div data-qr data-size="84" data-fg="#16161d" data-bg="#fff" data-seed="52"></div>
+              <div class="grow" style="min-width:0">
+                <span class="linkchip"><span class="host">link.cg/</span>pagne-wax</span>
+                <div class="xs muted mt-4">vers boutique-mamiwata.com</div>
+              </div>
+            </div>
+            <div class="row" style="gap:8px">
+              <span class="pill pill-ok"><i data-i="check"></i>Modifiable</span>
+              <span class="pill pill-soft"><i data-i="chart"></i>128 visites</span>
+            </div>
+          </div>
+          <span class="xs subtle">Un lien court a toujours son QR.</span>
+        </div>
+      </section>
+
+      <section class="foot-cta mt-32">
+        <div class="grow">
+          <strong class="h3">Gardez vos liens et voyez qui les ouvre</strong>
+          <p>Compte gratuit : 25 liens modifiables et leurs visites. Paiement mobile money pour l'offre Pro.</p>
+        </div>
+        <a class="btn btn-brand" href="d-connexion.html?mode=inscription">Créer mon compte gratuit <i data-i="arrow" class="sm"></i></a>
+      </section>
+    </div>
+  </div></div>
+</div>
+
+<div class="note"><b>Accueil E.</b> Une seule question : « Que partagez-vous ? ». Le champ et 5 raccourcis remplacent les 3 cartes produit, les 6 idées, l'encadré « Lien ou QR ? » et les QR par appareil. Une seule invitation au compte (en bas), plus courte dans la barre latérale. <a href="e-simplification.html">Avant / après</a></div>
+</body>
+</html>
