@@ -7,12 +7,17 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./disposable-email": {
+      "types": "./src/disposable-email.ts",
+      "default": "./src/disposable-email.ts"
     }
   },
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "update:disposable": "node scripts/update-disposable-domains.mjs"
   },
   "dependencies": {
     "zod": "^3.24.1"
