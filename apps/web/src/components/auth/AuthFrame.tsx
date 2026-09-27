@@ -1,4 +1,5 @@
 import { Logo } from '@/components/kit/Logo'
+import { MadeBy } from '@/components/kit/MadeBy'
 import { UseCases } from './UseCases'
 
 /**
@@ -17,6 +18,7 @@ export function AuthFrame({ children }: { children: React.ReactNode }) {
         <div className="w-full max-w-[400px]">
           <div className="mb-8 lg:hidden"><Logo /></div>
           {children}
+          <MadeBy className="mt-6" />
         </div>
       </main>
     </div>

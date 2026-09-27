@@ -47,6 +47,7 @@ export function verificationEmail({ name, url, validityHours }: VerificationEmai
     'Si vous n\'êtes pas à l\'origine de cette inscription, ignorez ce message : aucun compte ne sera activé.',
     '',
     'L\'équipe link.cg',
+    'link.cg, un produit de NS Creative',
   ].join('\n')
 
   const u = escapeHtml(url)
@@ -80,7 +81,7 @@ export function verificationEmail({ name, url, validityHours }: VerificationEmai
 <p style="margin:0 0 16px 0;">Ce lien reste valable ${validity}. Passé ce délai, connectez-vous et demandez-en un nouveau.</p>
 <p style="margin:0;">Si vous n'êtes pas à l'origine de cette inscription, ignorez ce message&nbsp;: aucun compte ne sera activé.</p>
 </td></tr>
-<tr><td style="padding:16px 28px 28px 28px;border-top:1px solid #dcd4c6;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:19px;color:#4f4c44;">L'équipe link.cg</td></tr>
+<tr><td style="padding:16px 28px 28px 28px;border-top:1px solid #dcd4c6;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:19px;color:#4f4c44;">L'équipe link.cg<br><span style="font-size:12px;color:#8a8478;">link.cg, un produit de NS Creative</span></td></tr>
 </table>
 </td></tr>
 </table>

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { Logo } from '@/components/kit/Logo'
+import { MadeBy } from '@/components/kit/MadeBy'
 import { VerifyEmailPanel } from '@/components/auth/VerifyEmailPanel'
 import { safeNext } from '@/components/auth/safe-next'
 import { verifyEmailPath } from '@/components/auth/verify-path'
@@ -66,6 +67,7 @@ export default async function VerifierEmailPage({
               className="btn btn-cta btn-lg mt-6 w-full">Se connecter</Link>
           </section>
         )}
+        <MadeBy className="mt-8" />
       </div>
     </main>
   )

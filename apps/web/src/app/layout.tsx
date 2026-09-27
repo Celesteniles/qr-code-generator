@@ -25,6 +25,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://qr.nscreative.cg"),
   title: "link.cg — Liens courts et générateur de QR code gratuit",
   description: "Raccourcissez vos liens et créez des QR codes à votre image, gratuitement et sans inscription. Liens et QR modifiables après impression, avec leurs statistiques.",
+  applicationName: "link.cg",
+  // link.cg est un produit de NS Creative.
+  creator: "NS Creative",
+  publisher: "NS Creative",
+  authors: [{ name: "NS Creative", url: "https://nscreative.cg" }],
   // Symbole link.cg (piste A) ; fichiers générés par scripts/icons.mjs.
   icons: {
     icon: [

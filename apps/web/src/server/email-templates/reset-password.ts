@@ -44,6 +44,7 @@ export function resetPasswordEmail({ name, url, validity = '1 heure' }: {
     'Si vous n\'avez rien demandé, ignorez ce message : votre mot de passe reste inchangé.',
     '',
     'L\'équipe link.cg',
+    'link.cg, un produit de NS Creative',
   ].join('\n')
 
   const u = esc(url)
@@ -92,7 +93,7 @@ export function resetPasswordEmail({ name, url, validity = '1 heure' }: {
         </tr>
         <tr>
           <td style="padding:16px 28px 28px 28px;border-top:1px solid #e5e7eb;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:#6b7280;">
-            L&#39;équipe link.cg · Message automatique, merci de ne pas y répondre.
+            L&#39;équipe link.cg · Message automatique, merci de ne pas y répondre.<br>link.cg, un produit de NS Creative
           </td>
         </tr>
       </table>

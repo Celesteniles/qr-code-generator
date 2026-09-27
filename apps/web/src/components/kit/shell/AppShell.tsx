@@ -10,6 +10,7 @@ import { Logo } from '../Logo'
 import { Illustration } from '../Illustration'
 import { ThemeToggle } from './ThemeToggle'
 import { SignOutButton } from './SignOutButton'
+import { MadeBy } from '../MadeBy'
 import { initials, type Viewer } from './types'
 
 // Coquille unique de l'application : la même pour le visiteur et l'inscrit.
@@ -174,6 +175,7 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
 
         <main className="min-h-[calc(100vh-24px)] bg-bg pb-28 lg:rounded-[30px] lg:bg-surface lg:pb-0 lg:shadow-[0_0_0_1px_var(--line),var(--shadow)]">
           {children}
+          <MadeBy className="px-4 pb-6 pt-10" />
         </main>
       </div>
 
