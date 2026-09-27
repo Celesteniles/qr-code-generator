@@ -208,6 +208,11 @@ export function AuthPanel({ initialMode, next, freeLinks, turnstileSiteKey }: {
               </button>
             </div>
             {!isIn && <p id={`${id}-pw-help`} className="help">8 caractères minimum. Une phrase courte que vous retenez facilement fait très bien l&apos;affaire.</p>}
+            {isIn && (
+              <p className="mt-2 text-right text-sm">
+                <Link href="/mot-de-passe-oublie" className="link">Mot de passe oublié&nbsp;?</Link>
+              </p>
+            )}
           </div>
 
           {turnstileSiteKey && (
