@@ -12,19 +12,22 @@ export interface LinkPayload {
   /** Ce qu'on crée : un lien court (onglet Lien) ou un QR modifiable (onglet QR). */
   kind: 'link' | 'qr'
   slug: string
+  /** Domaine du lien (link.cg si absent). */
+  host?: string
   rule: LinkRule
   /** Style du QR à enregistrer avec le lien (QR modifiable). */
   design?: QrDesign
 }
 
 export type PublishResult =
-  | { ok: true; id: string; slug: string; designSaved: boolean }
+  | { ok: true; id: string; slug: string; host: string; designSaved: boolean }
   | { ok: false; message: string }
 
 export async function publishLink(p: LinkPayload): Promise<PublishResult> {
   const fd = new FormData()
   fd.set('type', p.rule.type)
   fd.set('slug', p.slug)
+  if (p.host) fd.set('host', p.host)
   if (p.rule.type === 'static') {
     fd.set('url', p.rule.url)
   } else {
@@ -50,7 +53,7 @@ export async function publishLink(p: LinkPayload): Promise<PublishResult> {
       designSaved = false
     }
   }
-  return { ok: true, id: res.id, slug: res.slug || p.slug, designSaved }
+  return { ok: true, id: res.id, slug: res.slug || p.slug, host: res.host, designSaved }
 }
 
 /** Création demandée par un onglet : null = succès (ou tiroir d'inscription ouvert), sinon message à afficher. */

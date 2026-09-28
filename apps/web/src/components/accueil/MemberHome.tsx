@@ -17,7 +17,6 @@ import { qrLinkUrl } from '@/lib/short-link'
 // Accueil de l'inscrit. Tout ce qui est affiché se déduit de ses données réelles :
 // pas de tendance, pas d'« idée » inventée. Référence : docs/maquettes/d-accueil.html.
 
-const SHORT_HOST = 'link.cg'
 const nf = new Intl.NumberFormat('fr-FR')
 
 function times(n: number) {
@@ -98,7 +97,7 @@ export async function MemberHome({ ctx, viewer }: { ctx: SessionContext; viewer:
           <p className="lead mt-4 max-w-[60ch]">
             Visites = clics sur vos liens + scans de vos QR, hors robots et aperçus de lien.
             {top && visitsOf(top.slug) > 0 && (
-              <> Votre adresse <b className="font-mono text-ink">{SHORT_HOST}/{top.slug}</b> en fait le plus ({nf.format(visitsOf(top.slug))}).</>
+              <> Votre adresse <b className="font-mono text-ink">{top.hostname}/{top.slug}</b> en fait le plus ({nf.format(visitsOf(top.slug))}).</>
             )}
           </p>
         </>
@@ -156,18 +155,18 @@ export async function MemberHome({ ctx, viewer }: { ctx: SessionContext; viewer:
               <Link href={`/liens/${l.id}`} className="block h-full rounded-[20px] bg-soft p-3 shadow-[inset_0_0_0_1px_var(--line)] transition hover:shadow-[inset_0_0_0_1px_var(--line-strong)]">
                 {design != null ? (
                   <div className="qr-thumb grid place-items-center">
-                    <QrCanvas data={qrLinkUrl(l.slug)} design={toDesign(design)} size={148} />
+                    <QrCanvas data={qrLinkUrl(l.slug, l.hostname)} design={toDesign(design)} size={148} />
                   </div>
                 ) : (
                   <div className="flex h-[164px] flex-col items-start justify-end gap-2.5 rounded-[14px] bg-surface p-3.5 shadow-[0_10px_24px_-16px_rgba(22,22,29,.5)]">
-                    <span className="linkchip !inline max-w-full !whitespace-normal break-words !text-[15px]"><span className="host">{SHORT_HOST}/</span>{l.slug}</span>
+                    <span className="linkchip !inline max-w-full !whitespace-normal break-words !text-[15px]"><span className="host">{l.hostname}/</span>{l.slug}</span>
                     {l.active
                       ? <span className="pill pill-soft">{KIND_LABEL[l.kind]}</span>
                       : <span className="pill pill-sun">En pause</span>}
                   </div>
                 )}
                 <strong className="mt-2.5 block truncate text-sm" title={destination(l)}>
-                  {design != null ? `${SHORT_HOST}/${l.slug}` : destination(l)}
+                  {design != null ? `${l.hostname}/${l.slug}` : destination(l)}
                 </strong>
                 <span className="text-xs text-muted">{sub}</span>
               </Link>
@@ -190,7 +189,7 @@ export async function MemberHome({ ctx, viewer }: { ctx: SessionContext; viewer:
           <span className="tip-ico"><LightBulbIcon aria-hidden="true" /></span>
           <div>
             <strong>Un lien en pause peut resservir</strong>
-            <span className="font-mono">{SHORT_HOST}/{paused.slug}</span> est en pause. Réutilisez-le : même lien, même QR imprimé, nouvelle destination.{' '}
+            <span className="font-mono">{paused.hostname}/{paused.slug}</span> est en pause. Réutilisez-le : même lien, même QR imprimé, nouvelle destination.{' '}
             <Link className="link" href={`/liens/${paused.id}`}>Le mettre à jour</Link>
           </div>
         </div>

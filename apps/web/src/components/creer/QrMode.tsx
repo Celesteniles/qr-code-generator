@@ -14,7 +14,7 @@ import { buildContent, canBeModifiable, ContentFields, initialValues, TYPE_META,
 import { SHORT_HOST, isWebUrl, normalizeUrl, readability, slugify, suggestSlug } from './helpers'
 import type { CreateFn, LinkRule } from './publish'
 import { STYLE_PRESETS, StyleEditor } from './style'
-import { PlanUsage, Question, SlugField, useSlugCheck } from './ui'
+import { HostPicker, PlanUsage, Question, SlugField, useSlugCheck } from './ui'
 import { Spinner } from '@/components/kit/Spinner'
 import { qrLinkUrl } from '@/lib/short-link'
 
@@ -26,10 +26,12 @@ const SIZES = [
   { label: 'Grand format', value: 2048 },
 ]
 
-export function QrMode({ initialType, initialUrl, viewer, onCreate }: {
+export function QrMode({ initialType, initialUrl, viewer, hosts, onCreate }: {
   initialType: ContentType
   initialUrl: string
   viewer: Viewer
+  /** link.cg, puis les domaines personnalisés actifs de l'espace (QR modifiable). */
+  hosts: string[]
   onCreate: CreateFn
 }) {
   const guest = !viewer.user
@@ -46,6 +48,7 @@ export function QrMode({ initialType, initialUrl, viewer, onCreate }: {
   const [design, setDesign] = useState<QrDesign>(STYLE_PRESETS[1].design)
   const [slugInput, setSlugInput] = useState('')
   const [slugByHand, setSlugByHand] = useState(false)
+  const [host, setHost] = useState(hosts[0] ?? SHORT_HOST)
   const [ios, setIos] = useState('')
   const [android, setAndroid] = useState('')
   const [name, setName] = useState('')
@@ -64,8 +67,8 @@ export function QrMode({ initialType, initialUrl, viewer, onCreate }: {
   const slug = slugByHand ? slugInput : suggestion
   const cleanSlug = slugify(slug)
   // La vérification ne tourne que pour un QR modifiable.
-  const status = useSlugCheck(kind === 'modifiable' ? slug : '')
-  const qrData = kind === 'modifiable' ? (cleanSlug ? qrLinkUrl(cleanSlug) : '') : built.data
+  const status = useSlugCheck(kind === 'modifiable' ? slug : '', host)
+  const qrData = kind === 'modifiable' ? (cleanSlug ? qrLinkUrl(cleanSlug, host) : '') : built.data
   const read = readability(design)
   const label = name.trim() || built.label
 
@@ -108,7 +111,7 @@ export function QrMode({ initialType, initialUrl, viewer, onCreate }: {
       if (i || a) rule = { type: 'app', fallback: built.link, ...(i ? { ios: i } : {}), ...(a ? { android: a } : {}) }
     }
     setBusy(true)
-    const msg = await onCreate({ kind: 'qr', slug: cleanSlug, rule, design }, slugify(label) || `qr-${cleanSlug}`)
+    const msg = await onCreate({ kind: 'qr', slug: cleanSlug, host, rule, design }, slugify(label) || `qr-${cleanSlug}`)
     setBusy(false)
     if (msg) setError(msg)
   }
@@ -153,7 +156,9 @@ export function QrMode({ initialType, initialUrl, viewer, onCreate }: {
               </div>
               {kind === 'modifiable' && (
                 <div className="mt-4">
+                  <HostPicker hosts={hosts} value={host} onChange={setHost} />
                   <SlugField
+                    host={host}
                     label="Votre adresse courte"
                     value={slug}
                     status={status}
@@ -166,7 +171,7 @@ export function QrMode({ initialType, initialUrl, viewer, onCreate }: {
                       <EyeIcon className="h-4 w-4" />Comment ça marche ?
                     </summary>
                     <p className="mt-2 rounded-xl bg-soft px-3.5 py-3 text-[13px] text-muted">
-                      Le QR imprimé contient toujours <b className="text-ink">{SHORT_HOST}/{cleanSlug || '…'}</b>. Quand quelqu&apos;un scanne, on l&apos;envoie
+                      Le QR imprimé contient toujours <b className="text-ink">{host}/{cleanSlug || '…'}</b>. Quand quelqu&apos;un scanne, on l&apos;envoie
                       vers la destination que vous avez choisie. Changez-la dans votre espace : les QR déjà imprimés suivent.
                     </p>
                   </details>
@@ -215,7 +220,7 @@ export function QrMode({ initialType, initialUrl, viewer, onCreate }: {
             ? <span className="pill pill-ok"><CheckIcon />Se scanne bien</span>
             : <span className="pill pill-bad"><ExclamationTriangleIcon />À vérifier</span>)}
           <span className="ml-auto text-xs text-muted">
-            {kind === 'modifiable' ? <span className="font-mono">{SHORT_HOST}/{cleanSlug || '…'}</span> : 'QR fixe'}
+            {kind === 'modifiable' ? <span className="font-mono">{host}/{cleanSlug || '…'}</span> : 'QR fixe'}
           </span>
         </div>
         {!read.ok && (

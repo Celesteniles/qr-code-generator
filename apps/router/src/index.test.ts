@@ -103,6 +103,23 @@ describe('router fetch', () => {
     const res = await get('https://go.client.cg/promo', env)
     expect(res.status).toBe(302)
     expect(res.headers.get('location')).toBe('https://client.cg')
+    // Le même slug sur link.cg n'est pas celui du client.
+    expect((await get('https://link.cg/promo', env)).status).toBe(404)
+  })
+
+  it('enregistre le domaine de la visite (blob8), pour séparer les statistiques par domaine', async () => {
+    const points: { blobs: string[] }[] = []
+    const env: Env = {
+      ...makeEnv({ 'go.client.cg:promo': { slug: 'promo', active: true, rule: { type: 'static', url: 'https://client.cg' } } }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      SCANS: { writeDataPoint: (p: any) => void points.push(p) } as any,
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await worker.fetch(new Request('https://go.client.cg/promo'), env, ctx as any)
+    await Promise.all(waited)
+    expect(points).toHaveLength(1)
+    expect(points[0].blobs[0]).toBe('promo')
+    expect(points[0].blobs[7]).toBe('go.client.cg')
   })
 
   it('enregistre la ville et le canal (QR « ?q » ou clic), sans toucher à la redirection', async () => {
@@ -125,8 +142,8 @@ describe('router fetch', () => {
     await Promise.all(waited)
 
     expect(points).toHaveLength(2)
-    expect(points[0].blobs).toEqual(['m1', 'redirect', 'CG', 'Mozilla/5.0 (Linux; Android 13) Mobile', '', 'Brazzaville', 'qr'])
+    expect(points[0].blobs).toEqual(['m1', 'redirect', 'CG', 'Mozilla/5.0 (Linux; Android 13) Mobile', '', 'Brazzaville', 'qr', 'link.cg'])
     // Sans métadonnées Cloudflare : pays XX, ville vide ; sans « ?q » : clic
-    expect(points[1].blobs.slice(2)).toEqual(['XX', '', '', '', 'link'])
+    expect(points[1].blobs.slice(2)).toEqual(['XX', '', '', '', 'link', 'link.cg'])
   })
 })

@@ -139,32 +139,56 @@ function recentVerdict(slug: string): SlugCheck | null {
   return hit && Date.now() - hit.at < SLUG_TTL_MS ? hit.check : null
 }
 
-/** Vérifie l'adresse pendant la saisie (400 ms après la dernière frappe). */
-export function useSlugCheck(slug: string): SlugStatus {
+/**
+ * Vérifie l'adresse pendant la saisie (400 ms après la dernière frappe), sur
+ * `host` (link.cg par défaut, ou un domaine personnalisé de l'espace).
+ */
+export function useSlugCheck(slug: string, host: string = SHORT_HOST): SlugStatus {
   const value = slug.trim()
+  // Verdicts rangés par domaine + adresse : « menu » peut être libre sur l'un et pris sur l'autre.
+  const key = value ? `${host}/${value}` : ''
   // Dernier verdict reçu, rattaché à l'adresse vérifiée : l'état affiché en découle.
-  const [result, setResult] = useState<{ slug: string; check: SlugCheck | null } | null>(null)
-  const known = value ? recentVerdict(value) : null
+  const [result, setResult] = useState<{ key: string; check: SlugCheck | null } | null>(null)
+  const known = key ? recentVerdict(key) : null
   useEffect(() => {
-    if (!value || recentVerdict(value)) return
+    if (!key || recentVerdict(key)) return
     let cancelled = false
     const t = setTimeout(async () => {
       let check: SlugCheck | null = null
-      try { check = await checkSlugAction(value) } catch { check = null }
-      if (check) slugVerdicts.set(value, { at: Date.now(), check })
-      if (!cancelled) setResult({ slug: value, check })
+      try { check = await checkSlugAction(value, host === SHORT_HOST ? undefined : host) } catch { check = null }
+      if (check) slugVerdicts.set(key, { at: Date.now(), check })
+      if (!cancelled) setResult({ key, check })
     }, 400)
     return () => { cancelled = true; clearTimeout(t) }
-  }, [value])
+  }, [key, value, host])
   if (!value) return { state: 'idle' }
   if (known) return { state: 'done', check: known }
-  if (!result || result.slug !== value) return { state: 'checking' }
+  if (!result || result.key !== key) return { state: 'checking' }
   return result.check ? { state: 'done', check: result.check } : { state: 'error' }
 }
 
-/** Champ `link.cg/…` + verdict + suggestions cliquables. */
-export function SlugField({ value, onChange, status, suggestion, label, extraHelp, id }: {
+/**
+ * Choix du domaine du lien (link.cg ou un domaine personnalisé actif de
+ * l'espace). Rien n'est affiché s'il n'y a que link.cg.
+ */
+export function HostPicker({ hosts, value, onChange }: { hosts: string[]; value: string; onChange: (host: string) => void }) {
+  const id = useId()
+  if (hosts.length < 2) return null
+  return (
+    <div className="mb-3">
+      <label htmlFor={id} className="label">Domaine</label>
+      <select id={id} className="input font-mono" value={value} onChange={(e) => onChange(e.target.value)}>
+        {hosts.map((h) => <option key={h} value={h}>{h}</option>)}
+      </select>
+    </div>
+  )
+}
+
+/** Champ `link.cg/…` (ou `go.monresto.cg/…`) + verdict + suggestions cliquables. */
+export function SlugField({ value, onChange, status, suggestion, label, extraHelp, id, host = SHORT_HOST }: {
   value: string
+  /** Domaine affiché devant l'adresse. */
+  host?: string
   onChange: (v: string, byHand: boolean) => void
   status: SlugStatus
   /** Adresse proposée à partir du contenu (affichée si différente). */
@@ -186,7 +210,7 @@ export function SlugField({ value, onChange, status, suggestion, label, extraHel
     <div>
       {label && <label htmlFor={inputId} className="label">{label}</label>}
       <span className="input-affix">
-        <span className="pre" aria-hidden="true">{SHORT_HOST}/</span>
+        <span className="pre" aria-hidden="true">{host}/</span>
         <input
           id={inputId}
           value={value}

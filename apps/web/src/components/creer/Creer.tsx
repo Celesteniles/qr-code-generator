@@ -22,6 +22,8 @@ export interface CreerProps {
   /** `?type=app` en mode lien : « Selon le téléphone » présélectionné. */
   deviceRoute: boolean
   viewer: Viewer
+  /** Domaines possibles pour un lien : link.cg d'abord, puis les domaines personnalisés actifs. */
+  hosts: string[]
 }
 
 const MODES: { id: Mode; title: string; desc: string; icon: typeof LinkIcon; bg: string }[] = [
@@ -31,7 +33,7 @@ const MODES: { id: Mode; title: string; desc: string; icon: typeof LinkIcon; bg:
 // Mobile : trois colonnes, icône et titre seulement ; à partir de md, icône + titre + description.
 const modeCls = 'flex flex-col items-center gap-2 rounded-[18px] bg-surface px-2 py-3 text-center shadow-[inset_0_0_0_1px_var(--line)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--line-strong)] md:flex-row md:gap-3.5 md:rounded-[20px] md:px-4 md:py-3.5 md:text-left'
 
-export function Creer({ initialMode, initialUrl, initialType, deviceRoute, viewer }: CreerProps) {
+export function Creer({ initialMode, initialUrl, initialType, deviceRoute, viewer, hosts }: CreerProps) {
   const guest = !viewer.user
   const [mode, setMode] = useState<Mode>(initialMode)
   const [signup, setSignup] = useState<LinkPayload | null>(null)
@@ -51,7 +53,7 @@ export function Creer({ initialMode, initialUrl, initialType, deviceRoute, viewe
     if (guest) { setSignup(payload); return null }
     const res = await publishLink(payload)
     if (!res.ok) return res.message
-    setSuccess({ id: res.id, slug: res.slug, kind: payload.kind, designSaved: res.designSaved, design: payload.design, fileName })
+    setSuccess({ id: res.id, slug: res.slug, host: res.host, kind: payload.kind, designSaved: res.designSaved, design: payload.design, fileName })
     return null
   }
 
@@ -91,8 +93,8 @@ export function Creer({ initialMode, initialUrl, initialType, deviceRoute, viewe
 
         <div key={mode} className="anim-rise mt-6">
           {mode === 'lien'
-            ? <LinkMode initialUrl={initialUrl} deviceRoute={deviceRoute} viewer={viewer} onCreate={create} />
-            : <QrMode initialType={initialType ?? 'site'} initialUrl={initialUrl} viewer={viewer} onCreate={create} />}
+            ? <LinkMode initialUrl={initialUrl} deviceRoute={deviceRoute} viewer={viewer} hosts={hosts} onCreate={create} />
+            : <QrMode initialType={initialType ?? 'site'} initialUrl={initialUrl} viewer={viewer} hosts={hosts} onCreate={create} />}
         </div>
       </div>
 

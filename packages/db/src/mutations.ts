@@ -10,6 +10,7 @@ import { ruleSchema, linkKey } from '@link/shared'
 import { z } from 'zod'
 import * as schema from './schema'
 import { compileLink, serializeEntry } from './compile'
+import { isPlatformHost } from './domains'
 
 /** Écriture KV minimale — suffit aux chemins de création/mise à jour/suppression. */
 export interface KVWriter {
@@ -49,6 +50,7 @@ export type CreateLinkResult =
   | { ok: true; id: string; key: string }
   | { ok: false; error: 'invalid'; issues: string[] }
   | { ok: false; error: 'domain_not_found' }
+  | { ok: false; error: 'domain_not_verified' }
   | { ok: false; error: 'slug_taken' }
   | { ok: false; error: 'unsafe_url'; url: string }
   | { ok: false; error: 'limit_reached' }
@@ -72,6 +74,13 @@ export async function createLink(deps: CreateLinkDeps, raw: unknown): Promise<Cr
   // Le domaine doit exister — on a besoin de son hostname pour la clé KV.
   const domain = await deps.db.query.domains.findFirst({ where: eq(schema.domains.id, input.domainId) })
   if (!domain) return { ok: false, error: 'domain_not_found' }
+  // Domaine personnalisé : seulement celui de l'espace (jamais celui d'un autre
+  // client), et seulement une fois activé chez Cloudflare. Les domaines de la
+  // plateforme (link.cg) sont partagés par tous les espaces.
+  if (!isPlatformHost(domain.hostname)) {
+    if (domain.workspaceId !== input.workspaceId) return { ok: false, error: 'domain_not_found' }
+    if (!domain.verified) return { ok: false, error: 'domain_not_verified' }
+  }
 
   // Unicité (domain_id, slug) — vérifiée avant l'écriture pour un message clair.
   const existing = await deps.db.query.links.findFirst({

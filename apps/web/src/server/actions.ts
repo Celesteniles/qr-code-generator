@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createLink, setLinkActive, deleteLink, updateLinkRule, upsertCardProfile, upsertQrDesign, validateCardProfile, QrDesignError, getLink, getWorkspace, listLinks, takenSlugs, checkLinkCreationRate, checkLinkUpdateRate, type CardProfileInput, type SocialLink, type ThrottleResult } from '@link/db'
+import { createLink, setLinkActive, deleteLink, updateLinkRule, upsertCardProfile, upsertQrDesign, validateCardProfile, QrDesignError, getLink, getWorkspace, listLinks, takenSlugs, checkLinkCreationRate, checkLinkUpdateRate, getWorkspaceDomainByHostname, DEFAULT_LINK_HOST, type CardProfileInput, type SocialLink, type ThrottleResult } from '@link/db'
 import { canCreateLink, PLANS, type Rule, type Plan } from '@link/shared'
 import { getDb, getKv } from './data'
 import { getSessionContext } from './session'
@@ -87,7 +87,7 @@ function ruleFromForm(formData: FormData): Rule | { error: string } {
 
 export async function createLinkAction(_prev: CreateState, formData: FormData): Promise<CreateState> {
   // Répercuté sur erreur pour repeupler le formulaire (React 19 le réinitialise).
-  const fields = ['type', 'slug', 'url', 'ios', 'android', 'fallback', 'fullName', 'title', 'org', 'cardPhone', 'cardEmail', 'website', 'whatsapp', 'theme']
+  const fields = ['type', 'host', 'slug', 'url', 'ios', 'android', 'fallback', 'fullName', 'title', 'org', 'cardPhone', 'cardEmail', 'website', 'whatsapp', 'theme']
   const values: Record<string, string> = {}
   for (const f of fields) values[f] = String(formData.get(f) ?? '')
   const fail = (message: string): CreateState => ({ ok: false, message, values })
@@ -111,6 +111,12 @@ export async function createLinkAction(_prev: CreateState, formData: FormData): 
     return fail(`Limite du palier ${PLANS[plan].label} atteinte (${PLANS[plan].maxLinks} liens).`)
   }
 
+  // Domaine choisi : link.cg par défaut ; un domaine personnalisé doit appartenir
+  // à l'espace, être actif, et l'offre doit l'inclure. Une carte reste sur link.cg
+  // (sa page publique /c/{slug} est résolue par slug sur link.cg).
+  const target = await resolveLinkDomain(db, ctx.workspaceId, plan, rule.type === 'card' ? '' : String(formData.get('host') ?? ''))
+  if ('error' in target) return fail(target.error)
+
   // Anti-abus : pas de création en rafale (lien de phishing → link.cg entier bloqué).
   const rate = await checkLinkCreationRate(db, ctx.workspaceId, plan)
   if (!rate.ok) return fail(throttleMessage(rate, 'créé'))
@@ -126,7 +132,7 @@ export async function createLinkAction(_prev: CreateState, formData: FormData): 
   // passeraient toutes deux le contrôle ci-dessus.
   const res = await createLink(
     { db, kv: getKv(), checkUrl: getUrlChecker() },
-    { workspaceId: ctx.workspaceId, domainId: DEFAULT_DOMAIN, slug, rule, maxLinks: PLANS[plan].maxLinks ?? undefined },
+    { workspaceId: ctx.workspaceId, domainId: target.domainId, slug, rule, maxLinks: PLANS[plan].maxLinks ?? undefined },
   )
 
   if (res.ok) {
@@ -137,16 +143,40 @@ export async function createLinkAction(_prev: CreateState, formData: FormData): 
     }
     revalidatePath('/')
     revalidatePath('/liens')
-    return { ok: true, slug, id: res.id }
+    return { ok: true, slug, id: res.id, host: target.hostname }
   }
   return fail(
-    res.error === 'slug_taken' ? 'Ce raccourci est déjà utilisé sur link.cg. Essayez-en un autre.'
+    res.error === 'slug_taken' ? `Ce raccourci est déjà utilisé sur ${target.hostname}. Essayez-en un autre.`
     : res.error === 'domain_not_found' ? 'Domaine introuvable.'
+    : res.error === 'domain_not_verified' ? `Le domaine ${target.hostname} n’est pas encore actif. Vérifiez-le dans Mon compte, onglet Domaines.`
     : res.error === 'unsafe_url' ? 'Cette adresse a été signalée comme dangereuse, ou n\'a pas pu être vérifiée. Réessayez dans un instant, ou choisissez une autre adresse.'
     : res.error === 'invalid' ? res.issues[0] ?? 'Entrée invalide.'
     : res.error === 'limit_reached' ? `Limite du palier ${PLANS[plan].label} atteinte (${PLANS[plan].maxLinks} liens).`
     : 'Erreur inconnue.',
   )
+}
+
+/**
+ * Domaine d'un nouveau lien. Vide ou link.cg : le domaine partagé. Sinon, un
+ * domaine personnalisé de l'espace, actif, et une offre qui l'inclut.
+ */
+async function resolveLinkDomain(
+  db: ReturnType<typeof getDb>,
+  workspaceId: string,
+  plan: Plan,
+  rawHost: string,
+): Promise<{ domainId: string; hostname: string } | { error: string }> {
+  const host = rawHost.trim().toLowerCase()
+  if (!host || host === DEFAULT_LINK_HOST) return { domainId: DEFAULT_DOMAIN, hostname: DEFAULT_LINK_HOST }
+  if (!PLANS[plan].customDomains) {
+    return { error: `L’offre ${PLANS[plan].label} n’inclut pas les domaines personnalisés. Créez ce lien sur ${DEFAULT_LINK_HOST}.` }
+  }
+  const domain = await getWorkspaceDomainByHostname(db, workspaceId, host.slice(0, 253))
+  if (!domain) return { error: 'Ce domaine ne fait pas partie de votre espace.' }
+  if (!domain.verified) {
+    return { error: `Le domaine ${domain.hostname} n’est pas encore actif. Vérifiez-le dans Mon compte, onglet Domaines.` }
+  }
+  return { domainId: domain.id, hostname: domain.hostname }
 }
 
 /** Pages qui affichent un lien : accueil, liste, fiche. */
@@ -338,8 +368,11 @@ function normalizeSlug(raw: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
-/** Vérifie qu'une adresse courte est libre sur link.cg et propose des alternatives. */
-export async function checkSlugAction(slug: string): Promise<SlugCheck> {
+/**
+ * Vérifie qu'une adresse courte est libre sur link.cg (ou sur `host`, un domaine
+ * personnalisé de l'espace connecté) et propose des alternatives.
+ */
+export async function checkSlugAction(slug: string, host?: string): Promise<SlugCheck> {
   // Pas de session : le visiteur prépare son lien avant de s'inscrire. Une seule
   // requête D1 par appel (adresse + candidats ensemble, entrée tronquée à 200
   // caractères) borne le coût ; rien n'est écrit. Pas de limite par IP ici : elle
@@ -361,12 +394,27 @@ export async function checkSlugAction(slug: string): Promise<SlugCheck> {
   ))].filter((c) => c !== normalized)
 
   try {
-    const taken = await takenSlugs(getDb(), DEFAULT_DOMAIN, [normalized, ...candidates])
+    const db = getDb()
+    // Domaine personnalisé : réservé à l'espace connecté (un visiteur ne sonde pas
+    // les adresses d'un client). Même garde qu'à la création.
+    let domainId = DEFAULT_DOMAIN
+    let hostname = DEFAULT_LINK_HOST
+    const wanted = String(host ?? '').trim().toLowerCase().slice(0, 253)
+    if (wanted && wanted !== DEFAULT_LINK_HOST) {
+      const ctx = await getSessionContext()
+      const domain = ctx ? await getWorkspaceDomainByHostname(db, ctx.workspaceId, wanted) : null
+      if (!domain || !domain.verified) {
+        return { normalized, available: false, message: 'Ce domaine n’est pas disponible pour votre espace.', suggestions: [] }
+      }
+      domainId = domain.id
+      hostname = domain.hostname
+    }
+    const taken = await takenSlugs(db, domainId, [normalized, ...candidates])
     if (!taken.has(normalized)) return { normalized, available: true, suggestions: [] }
     return {
       normalized,
       available: false,
-      message: `link.cg/${normalized} est déjà pris. Essayez une de ces adresses :`,
+      message: `${hostname}/${normalized} est déjà pris. Essayez une de ces adresses :`,
       suggestions: candidates.filter((c) => !taken.has(c)).slice(0, 3),
     }
   } catch (e) {

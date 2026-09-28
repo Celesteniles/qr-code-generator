@@ -125,6 +125,8 @@ export function SignupDrawer({ open, onClose, payload, nextPath }: {
 export interface SuccessInfo {
   id: string
   slug: string
+  /** Domaine du lien créé (link.cg ou domaine personnalisé). */
+  host: string
   kind: 'link' | 'qr'
   designSaved: boolean
   design?: LinkPayload['design']
@@ -136,8 +138,8 @@ export function SuccessDrawer({ info, onClose }: { info: SuccessInfo | null; onC
   const qr = useRef<QrCanvasHandle>(null)
   const [downloading, setDownloading] = useState(false)
   if (!info) return null
-  const url = shortUrl(info.slug)
-  const qrData = qrLinkUrl(info.slug)
+  const url = shortUrl(info.slug, info.host)
+  const qrData = qrLinkUrl(info.slug, info.host)
   const design = info.design ?? DEFAULT_DESIGN
   const shareHref = `https://wa.me/?text=${encodeURIComponent(url)}`
 
@@ -190,7 +192,7 @@ export function SuccessDrawer({ info, onClose }: { info: SuccessInfo | null; onC
             : 'Partagez-le dans vos statuts et vos groupes. Sur sa fiche, vous verrez combien de visites il reçoit.'}
         </p>
         <div className="mt-6 flex items-center justify-center gap-2">
-          <span className="linkchip text-lg"><span className="host">{SHORT_HOST}/</span>{info.slug}</span>
+          <span className="linkchip text-lg"><span className="host">{info.host}/</span>{info.slug}</span>
           <CopyButton text={url} />
         </div>
         {!info.designSaved && (

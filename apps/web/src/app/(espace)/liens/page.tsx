@@ -31,10 +31,11 @@ async function loadLinks(workspaceId: string): Promise<LinkItem[]> {
   return links.map((l) => ({
     id: l.id,
     slug: l.slug,
+    host: l.hostname,
     kind: l.kind,
     active: l.active,
     createdAt: l.createdAt,
-    shortUrl: shortUrl(l.slug),
+    shortUrl: shortUrl(l.slug, l.hostname),
     destination: describeRule(l.rule, cardName.get(l.id)),
     design: designs[l.id] ? toDesign(designs[l.id]) : null,
     visits: scans[l.slug] ?? 0,

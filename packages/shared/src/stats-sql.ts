@@ -9,6 +9,11 @@
 // libéré puis repris par un autre compte hériterait des visites de l'ancien lien.
 // Chaque adresse est donc bornée à la date de création du lien ACTUEL
 // (links.createdAt) : on ne compte que les visites qui lui appartiennent.
+//
+// Domaines personnalisés : un même slug peut exister sur link.cg et sur
+// go.monresto.cg (deux espaces différents). Le routeur enregistre le hostname en
+// blob8 ; un lien qui donne son `hostname` n'est compté que sur son domaine.
+// Les lignes antérieures à blob8 (vide) sont toutes des visites de link.cg.
 
 import { humanVisitSql } from './visitor'
 
@@ -22,7 +27,17 @@ const HUMAN = humanVisitSql('blob4')
 export interface StatsLink {
   slug: string
   createdAt: number
+  /**
+   * Domaine du lien (link.cg ou domaine personnalisé). Absent : visites de
+   * l'adresse sur tous les domaines (ancien comportement, à éviter).
+   */
+  hostname?: string
 }
+
+/** Domaine partagé : ses visites anciennes n'ont pas de blob8. */
+const SHARED_HOST = 'link.cg'
+// Nom de domaine en minuscules (validé à l'ajout par @link/db) : sans guillemet possible.
+const HOST_RE = /^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$/
 
 const SLUG_RE = /^[a-zA-Z0-9_-]{1,64}$/
 // Bornes de vraisemblance des dates de création : de 2020 à 2100.
@@ -37,20 +52,37 @@ const MAX_MS = Date.UTC(2100, 0, 1)
  * et triés : l'ordre est stable pour la mémoïsation.
  */
 export function safeStatsLinks(links: readonly StatsLink[]): StatsLink[] {
-  const bySlug = new Map<string, number>()
+  // Clé : domaine + slug (le même slug sur deux domaines = deux adresses).
+  const byKey = new Map<string, StatsLink>()
   for (const l of links) {
     if (typeof l.slug !== 'string' || !SLUG_RE.test(l.slug)) continue
+    if (l.hostname !== undefined && (typeof l.hostname !== 'string' || !HOST_RE.test(l.hostname))) continue
     if (!Number.isFinite(l.createdAt)) continue
     const ms = Math.floor(l.createdAt)
     if (ms < MIN_MS || ms >= MAX_MS) continue
-    bySlug.set(l.slug, Math.max(bySlug.get(l.slug) ?? 0, ms))
+    const key = `${l.slug} ${l.hostname ?? ''}`
+    const prev = byKey.get(key)
+    byKey.set(key, {
+      slug: l.slug,
+      createdAt: Math.max(prev?.createdAt ?? 0, ms),
+      ...(l.hostname !== undefined ? { hostname: l.hostname } : {}),
+    })
   }
-  return [...bySlug.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).map(([slug, createdAt]) => ({ slug, createdAt }))
+  return [...byKey.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).map(([, l]) => l)
 }
 
-/** Clé de mémoïsation : slug et création, pour qu'une adresse reprise ne relise pas l'ancien résultat. */
+/** Clé de mémoïsation : slug, domaine et création, pour qu'une adresse reprise ne relise pas l'ancien résultat. */
 export function statsKey(links: readonly StatsLink[]): string {
-  return links.map((l) => `${l.slug}@${l.createdAt}`).join(',')
+  return links.map((l) => `${l.slug}${l.hostname ? `/${l.hostname}` : ''}@${l.createdAt}`).join(',')
+}
+
+/** Condition sur le domaine (blob8), vide si le lien ne donne pas son domaine. */
+function hostSql(hostname: string | undefined): string {
+  if (hostname === undefined) return ''
+  if (!HOST_RE.test(hostname)) throw new Error(`domaine invalide : ${hostname}`)
+  return hostname === SHARED_HOST
+    ? ` AND blob8 IN ('', '${SHARED_HOST}')`
+    : ` AND blob8 = '${hostname}'`
 }
 
 /** Date SQL « AAAA-MM-JJ HH:MM:SS » (UTC, à la seconde) depuis un epoch ms entier. */
@@ -70,7 +102,7 @@ export function linksScopeSql(links: readonly StatsLink[]): string {
     if (!SLUG_RE.test(l.slug)) throw new Error(`slug invalide : ${l.slug}`)
     // Création arrondie à la seconde inférieure : on ne perd aucune visite du lien.
     const since = sqlDateTime(Math.floor(l.createdAt / 1000) * 1000)
-    return `(index1 = '${l.slug}' AND timestamp >= toDateTime('${since}'))`
+    return `(index1 = '${l.slug}'${hostSql(l.hostname)} AND timestamp >= toDateTime('${since}'))`
   }
   return links.length === 1 ? one(links[0]!) : `(${links.map(one).join(' OR ')})`
 }
@@ -80,7 +112,10 @@ export function clampDays(days: number): number {
   return Math.max(1, Math.min(90, Math.floor(days) || 30))
 }
 
-/** Visites par adresse sur 30 jours (clé slug, visites scans). */
+/**
+ * Visites par adresse sur 30 jours (clé slug, visites scans). Deux liens d'un
+ * même espace avec le même slug sur deux domaines sont additionnés sous ce slug.
+ */
 export function scanCountsSql(links: readonly StatsLink[]): string {
   return (
     `SELECT index1 AS slug, sum(_sample_interval) AS scans ` +

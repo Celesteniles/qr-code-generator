@@ -12,8 +12,9 @@ export const CONTENT_TYPES: ContentType[] = ['site', 'menu', 'whatsapp', 'wifi',
 
 export const SHORT_HOST = 'link.cg'
 
-export function shortUrl(slug: string): string {
-  return `https://${SHORT_HOST}/${slug}`
+/** Adresse complète d'un lien court, sur link.cg ou sur un domaine personnalisé. */
+export function shortUrl(slug: string, host: string = SHORT_HOST): string {
+  return `https://${host}/${slug}`
 }
 
 /** Ajoute https:// si la personne a tapé « boutique.cg/promo ». */

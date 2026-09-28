@@ -53,7 +53,7 @@ export async function GET(request: Request): Promise<Response> {
 
   const described: ExportLink[] = links.map((l) => ({
     slug: l.slug,
-    shortUrl: shortUrl(l.slug),
+    shortUrl: shortUrl(l.slug, l.hostname),
     type: KIND_LABELS[l.kind],
     // Adresse complète pour un lien simple : plus utile qu'une version abrégée dans un tableur.
     destination: l.rule.type === 'static' ? l.rule.url : describeRule(l.rule),

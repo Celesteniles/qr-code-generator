@@ -8,12 +8,15 @@
 
 export const SHORT_HOST = 'link.cg'
 
-/** Adresse publique d'un lien court (affichage, copie, partage). */
-export function shortLinkUrl(slug: string): string {
-  return `https://${SHORT_HOST}/${slug}`
+/**
+ * Adresse publique d'un lien court (affichage, copie, partage). `host` : domaine
+ * du lien, link.cg par défaut ou un domaine personnalisé (go.monresto.cg).
+ */
+export function shortLinkUrl(slug: string, host: string = SHORT_HOST): string {
+  return `https://${host}/${slug}`
 }
 
 /** Adresse encodée dans le QR d'un lien court. */
-export function qrLinkUrl(slug: string): string {
-  return `${shortLinkUrl(slug)}?q`
+export function qrLinkUrl(slug: string, host: string = SHORT_HOST): string {
+  return `${shortLinkUrl(slug, host)}?q`
 }
