@@ -32,7 +32,8 @@ export async function startCheckoutAction(formData: FormData): Promise<void> {
   const page = await createPaymentPage(cfg!, {
     depositId: checkout.id,
     amount: checkout.amount,
-    returnUrl: `${base}/compte/facturation/paiement/${checkout.id}`,
+    // pawaPay refuse « localhost » : 127.0.0.1 en local, puis /paiement/retour renvoie vers BETTER_AUTH_URL.
+    returnUrl: `${base.replace('//localhost', '//127.0.0.1')}/paiement/retour/${checkout.id}`,
     reason: `link.cg ${label}, ${cycle === 'year' ? '1 an' : '1 mois'}`,
     // 4 à 22 caractères, lettres, chiffres et espaces seulement (relevé de l'opérateur).
     customerMessage: `linkcg ${label}`,
