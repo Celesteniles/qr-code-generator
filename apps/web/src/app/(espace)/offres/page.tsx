@@ -1,18 +1,19 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckIcon } from '@heroicons/react/24/outline'
-import { PLANS, type Plan, type PlanSpec } from '@link/shared'
+import { ENTERPRISE_FROM_PRICE, PLANS, type Plan, type PlanSpec } from '@link/shared'
 import { Illustration } from '@/components/kit/Illustration'
 import { getViewer } from '@/server/viewer'
 import { MOBILE_MONEY, PaymentMethodChip } from '@/components/kit/PaymentMethod'
+import { formatFcfa } from '@/components/facturation/format'
 
 // Offres (proposition D). Référence : docs/maquettes/d-offres.html.
-// Le prix Pro n'est pas fixé : on ne l'invente pas.
+// Prix et limites viennent de PLANS (@link/shared).
 
 export const metadata: Metadata = {
   title: 'Offres — link.cg',
   description:
-    'QR codes fixes gratuits, sans compte. Liens courts et QR modifiables : offre Gratuite, Pro ou Entreprise, paiement Airtel Money ou MTN MoMo.',
+    'QR codes fixes gratuits, sans compte. Liens courts et QR modifiables : Pro dès 5 000 FCFA par mois, Business ou Entreprise, paiement Airtel Money ou MTN MoMo.',
 }
 
 const CONTACT = 'contact@nscreative.cg'
@@ -24,7 +25,9 @@ function features(p: PlanSpec): string[] {
     case 'free':
       return [links, 'QR fixes illimités, sans compte', 'Visites : clics et scans', 'Carte de visite digitale']
     case 'pro':
-      return [links, 'Votre propre domaine (ex. go.monresto.cg)', 'Statistiques détaillées', 'Support prioritaire']
+      return [links, 'Studio QR complet : couleurs, formes', 'Statistiques détaillées', 'Cartes de visite digitales']
+    case 'business':
+      return [links, 'Votre propre domaine (ex. go.monresto.cg)', '3 utilisateurs', 'Export des statistiques']
     case 'enterprise':
       return [links, 'Plusieurs domaines', 'Plusieurs utilisateurs', 'Accompagnement dédié par NS Creative']
   }
@@ -32,7 +35,8 @@ function features(p: PlanSpec): string[] {
 
 const TAGLINE: Record<Plan, string> = {
   free: 'Pour démarrer et tester',
-  pro: 'Commerces, restaurants, agences',
+  pro: 'Indépendants, commerces, restaurants',
+  business: 'PME, agences, écoles',
   enterprise: 'Réseaux, institutions, grandes marques',
 }
 
@@ -63,7 +67,7 @@ export default async function OffresPage() {
   const { viewer } = await getViewer()
   const current = viewer.plan?.label ?? null
   const signedIn = !!viewer.user
-  const order = [PLANS.free, PLANS.pro, PLANS.enterprise]
+  const order = [PLANS.free, PLANS.pro, PLANS.business, PLANS.enterprise]
 
   return (
     <div className="px-4 pb-14 pt-6 lg:px-8 lg:pt-10">
@@ -75,7 +79,7 @@ export default async function OffresPage() {
         </p>
       </div>
 
-      <div className="stagger mt-8 grid items-stretch gap-4 min-[960px]:grid-cols-3">
+      <div className="stagger mt-8 grid items-stretch gap-4 min-[720px]:grid-cols-2 min-[1200px]:grid-cols-4">
         {order.map((p) => {
           const pop = p.id === 'pro'
           const isCurrent = signedIn && current === p.label
@@ -89,9 +93,14 @@ export default async function OffresPage() {
               </div>
               <p className={`mt-1 text-sm ${pop ? 'text-bg/70' : 'text-muted'}`}>{TAGLINE[p.id]}</p>
               <div className="mt-[18px] font-display text-[34px] font-bold tracking-[-.03em]">
-                {p.id === 'free' ? '0 FCFA' : p.id === 'pro' ? 'Sur demande' : 'Sur devis'}
+                {p.monthlyPrice === null ? 'Sur devis' : formatFcfa(p.monthlyPrice)}
+                {!!p.monthlyPrice && <span className={`text-base font-medium ${pop ? 'text-bg/70' : 'text-muted'}`}> /mois</span>}
               </div>
-              {p.id === 'pro' && <p className="text-sm text-bg/70">Tarif mensuel à venir, en FCFA.</p>}
+              <p className={`text-sm ${pop ? 'text-bg/70' : 'text-muted'}`}>
+                {p.yearlyPrice !== null
+                  ? `ou ${formatFcfa(p.yearlyPrice)} par an, deux mois offerts`
+                  : p.monthlyPrice === null ? `À partir de ${formatFcfa(ENTERPRISE_FROM_PRICE)} par mois` : 'Sans engagement, sans carte'}
+              </p>
               <ul className="mb-[26px] mt-[22px] grid flex-1 content-start gap-2.5 text-sm">
                 {features(p).map((f) => (
                   <li key={f} className="flex items-start gap-2.5">
@@ -108,6 +117,8 @@ export default async function OffresPage() {
                   : <Link className="btn btn-soft w-full" href="/connexion?mode=inscription">Créer mon compte</Link>
               ) : pop ? (
                 <a className="btn btn-brand w-full" href={mail}>Passer à Pro</a>
+              ) : p.id === 'business' ? (
+                <a className="btn btn-soft w-full" href={mail}>Passer à Business</a>
               ) : (
                 <a className="btn btn-soft w-full" href={mail}>Parlons-en</a>
               )}

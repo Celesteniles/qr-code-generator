@@ -9,7 +9,7 @@ const now = () => integer('created_at').notNull()
 export const workspaces = sqliteTable('workspaces', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
-  plan: text('plan', { enum: ['free', 'pro', 'enterprise'] }).notNull().default('free'),
+  plan: text('plan', { enum: ['free', 'pro', 'business', 'enterprise'] }).notNull().default('free'),
   createdAt: now(),
 })
 
@@ -99,7 +99,7 @@ export const payments = sqliteTable(
     id: text('id').primaryKey(),
     workspaceId: text('workspace_id').notNull().references(() => workspaces.id),
     receiptNumber: text('receipt_number').notNull().unique(),
-    plan: text('plan', { enum: ['free', 'pro', 'enterprise'] }).notNull(),
+    plan: text('plan', { enum: ['free', 'pro', 'business', 'enterprise'] }).notNull(),
     periodStart: integer('period_start').notNull(),
     periodEnd: integer('period_end').notNull(),
     /** Montant en FCFA, entier (le franc CFA n'a pas de subdivision en usage). */

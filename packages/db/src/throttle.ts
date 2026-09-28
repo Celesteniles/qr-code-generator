@@ -20,9 +20,9 @@ import type { Db } from './mutations'
 export const THROTTLE_WINDOW_MS = 60 * 60 * 1000
 
 /** Liens créés par heure glissante, selon le palier. */
-export const LINK_CREATIONS_PER_HOUR = { free: 20, pro: 100, enterprise: 300 } as const
+export const LINK_CREATIONS_PER_HOUR = { free: 20, pro: 100, business: 200, enterprise: 300 } as const
 /** Liens dont la destination change, par heure glissante, selon le palier. */
-export const LINK_UPDATES_PER_HOUR = { free: 30, pro: 150, enterprise: 500 } as const
+export const LINK_UPDATES_PER_HOUR = { free: 30, pro: 150, business: 300, enterprise: 500 } as const
 
 export type ThrottlePlan = keyof typeof LINK_CREATIONS_PER_HOUR
 

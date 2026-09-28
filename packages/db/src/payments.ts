@@ -53,7 +53,7 @@ export function maskPhone(phone: string | null | undefined): string | null {
 export const recordPaymentInput = z
   .object({
     workspaceId: z.string().min(1),
-    plan: z.enum(['free', 'pro', 'enterprise']),
+    plan: z.enum(['free', 'pro', 'business', 'enterprise']),
     periodStart: z.number().int().nonnegative(),
     periodEnd: z.number().int().positive(),
     amount: z.number().int('montant entier en FCFA').positive('montant strictement positif').max(1_000_000_000),
