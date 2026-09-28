@@ -21,13 +21,22 @@ export default async function FacturationPage() {
   if (!ctx) redirect('/connexion?next=/compte/facturation')
   // Un simple membre utilise l'espace mais n'en voit pas la facturation.
   if (!canManageBilling(ctx.role)) redirect('/compte')
-  const { planId, planLabel, current, payments } = await getBillingOverview(ctx)
+  const { planId, planLabel, current, payments, underReview } = await getBillingOverview(ctx)
 
   return (
     <div className="px-4 pb-14 pt-6 sm:px-8 lg:px-10 lg:pt-9">
       <h1 className="h1">Mon compte</h1>
       <p className="lead mt-2 max-w-[60ch]">Votre offre, vos paiements et leurs reçus.</p>
       <CompteTabs current="/compte/facturation" />
+
+      {underReview > 0 && (
+        // Encaissé mais pas encore rapproché (anomalie) : rassurer, et surtout ne pas faire repayer.
+        <p role="status" className="mt-8 rounded-[18px] bg-sun px-4 py-3 text-sm text-ink">
+          <strong>{underReview > 1 ? `${underReview} paiements reçus` : 'Paiement reçu'}, en cours de vérification par notre équipe.</strong>{' '}
+          Votre offre sera activée dès la vérification terminée&nbsp;: inutile de payer à nouveau. Une question&nbsp;? Écrivez-nous à{' '}
+          <a className="link" href={`mailto:${ISSUER.email}`}>{ISSUER.email}</a>.
+        </p>
+      )}
 
       <div className="mt-8 grid items-start gap-4 lg:grid-cols-2">
         <section className="card p-5 sm:p-[26px]" aria-labelledby="f-offre">

@@ -8,6 +8,7 @@ import { getDb } from '@/server/data'
 import { UUID_RE, reconcileCheckout } from '@/server/checkout'
 import { AutoRefresh, RefreshOnce } from '@/components/facturation/AutoRefresh'
 import { formatFcfa } from '@/components/facturation/format'
+import { ISSUER } from '@/server/billing-config'
 
 export const metadata: Metadata = { title: 'Paiement — link.cg', robots: { index: false } }
 
@@ -21,6 +22,12 @@ const FAILURES: Record<string, string> = {
   INSUFFICIENT_BALANCE: 'Le solde de votre compte mobile money est insuffisant.',
   PAYMENT_NOT_APPROVED: 'Le paiement n’a pas été validé sur votre téléphone.',
   PAYER_NOT_FOUND: 'Ce numéro n’a pas de compte mobile money actif.',
+}
+
+/** Échecs après lesquels on ne peut pas affirmer que rien n'a été prélevé. */
+const UNCERTAIN: Record<string, string> = {
+  EXPIRED: 'Le paiement n’a pas été confirmé à temps par l’opérateur.',
+  REFUNDED: 'Ce paiement vous a été remboursé par notre équipe.',
 }
 
 export default async function PaiementPage({ params }: Props) {
@@ -52,13 +59,37 @@ export default async function PaiementPage({ params }: Props) {
               <Link className="btn btn-brand" href="/liens">Mes liens</Link>
             </div>
           </>
+        ) : checkout.status === 'review' ? (
+          <>
+            {/* Encaissé, mais l'offre n'a pas pu être donnée automatiquement (anomalie). Surtout pas « Réessayer ». */}
+            <span className="pill pill-sun">Paiement reçu</span>
+            <h1 className="h1 mt-4">Paiement en cours de vérification</h1>
+            <p className="lead mt-2">
+              Nous avons bien reçu votre paiement. Il est en cours de vérification par notre équipe, déjà prévenue, qui
+              active votre offre {label} au plus vite. Vous n’avez rien à refaire&nbsp;: ne payez pas une seconde fois.
+            </p>
+            <p className="mt-4 text-sm text-muted">
+              Une question&nbsp;? Écrivez-nous à <a className="link" href={`mailto:${ISSUER.email}`}>{ISSUER.email}</a> en
+              indiquant la référence <span className="font-mono">{checkout.id.slice(0, 8)}</span>.
+            </p>
+            <Link className="btn btn-soft mt-6 w-full" href="/compte/facturation">Retour à la facturation</Link>
+          </>
         ) : checkout.status === 'failed' ? (
           <>
             <span className="pill pill-bad">Paiement non abouti</span>
             <h1 className="h1 mt-4">Le paiement n’est pas passé</h1>
             <p className="lead mt-2">
-              {FAILURES[checkout.failureCode ?? ''] ?? 'L’opérateur a refusé ou interrompu le paiement.'} Aucun montant n’a été prélevé.
+              {UNCERTAIN[checkout.failureCode ?? ''] ?? (
+                <>{FAILURES[checkout.failureCode ?? ''] ?? 'L’opérateur a refusé ou interrompu le paiement.'} Aucun montant n’a été prélevé.</>
+              )}
             </p>
+            {checkout.failureCode === 'EXPIRED' && (
+              <p className="mt-4 text-sm text-muted">
+                Un montant a tout de même été prélevé&nbsp;? Écrivez-nous à{' '}
+                <a className="link" href={`mailto:${ISSUER.email}`}>{ISSUER.email}</a> avec la référence{' '}
+                <span className="font-mono">{checkout.id.slice(0, 8)}</span>&nbsp;: nous le retrouverons.
+              </p>
+            )}
             <Link className="btn btn-brand mt-6 w-full" href={`/compte/facturation/payer?offre=${checkout.plan}&cycle=${checkout.cycle}`}>Réessayer</Link>
           </>
         ) : (

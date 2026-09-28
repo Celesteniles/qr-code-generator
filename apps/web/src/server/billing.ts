@@ -1,6 +1,6 @@
 import 'server-only'
 import { cache } from 'react'
-import { activePaidPeriod, getPayment, getWorkspace, listPayments, type PaymentRow } from '@link/db'
+import { activePaidPeriod, countOpenAnomalies, getPayment, getWorkspace, listPayments, type PaymentRow } from '@link/db'
 import { PLANS, type Plan, type PlanSpec } from '@link/shared'
 import type { SessionContext } from './session'
 import { getDb } from './data'
@@ -23,17 +23,24 @@ export interface BillingOverview {
   /** Paiement « paid » dont la période est en cours, s'il y en a un. */
   current: PaymentRow | null
   payments: PaymentRow[]
+  /** Paiements encaissés mais en vérification par l'équipe (anomalies ouvertes). */
+  underReview: number
 }
 
 export async function getBillingOverview(ctx: SessionContext): Promise<BillingOverview> {
   const db = getDb()
-  const [ws, payments] = await Promise.all([getWorkspace(db, ctx.workspaceId), listPayments(db, ctx.workspaceId)])
+  const [ws, payments, underReview] = await Promise.all([
+    getWorkspace(db, ctx.workspaceId),
+    listPayments(db, ctx.workspaceId),
+    countOpenAnomalies(db, ctx.workspaceId),
+  ])
   const planId = (ws?.plan ?? 'free') as Plan
   return {
     planId,
     planLabel: PLANS[planId].label,
     current: activePaidPeriod(payments, Date.now()),
     payments,
+    underReview,
   }
 }
 

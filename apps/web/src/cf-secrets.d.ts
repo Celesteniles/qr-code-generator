@@ -36,4 +36,9 @@ interface CloudflareEnv {
   PAWAPAY_API_TOKEN?: string
   /** "production" pour l'API réelle de pawaPay ; sinon sandbox. */
   PAWAPAY_ENV?: string
+  /**
+   * Adresses (séparées par des virgules) autorisées sur /interne/paiements
+   * (anomalies de paiement). Absent ou vide : page fermée à tous.
+   */
+  BILLING_ADMIN_EMAILS?: string
 }

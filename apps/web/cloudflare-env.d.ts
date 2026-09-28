@@ -7,6 +7,7 @@ interface __BaseEnv_CloudflareEnv {
 	ASSETS: Fetcher;
 	CF_ACCOUNT_ID: "d173b721d701ab7804ac541a92709654";
 	DISABLE_SIGNUP: "false";
+	BILLING_REMINDERS: "true" | "false";
 	BETTER_AUTH_URL: string;
 	BETTER_AUTH_SECRET: string;
 }
@@ -17,6 +18,7 @@ declare namespace Cloudflare {
 		ASSETS: Fetcher;
 		CF_ACCOUNT_ID: "d173b721d701ab7804ac541a92709654";
 		DISABLE_SIGNUP: "false";
+		BILLING_REMINDERS: "true";
 		BETTER_AUTH_URL: string;
 		BETTER_AUTH_SECRET: string;
 	}

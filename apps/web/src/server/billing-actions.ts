@@ -26,7 +26,9 @@ export async function startCheckoutAction(formData: FormData): Promise<void> {
   if (!cfg) back('indisponible')
 
   const db = getDb()
-  const checkout = await createCheckout({ db }, { workspaceId: ctx.workspaceId, userId: ctx.userId, plan, cycle })
+  const checkout = await createCheckout({ db }, {
+    workspaceId: ctx.workspaceId, userId: ctx.userId, plan, cycle, pawapayEnv: cfg!.sandbox ? 'sandbox' : 'production',
+  })
   const base = getCloudflareContext().env.BETTER_AUTH_URL.replace(/\/+$/, '')
   const label = PLANS[plan].label
   const page = await createPaymentPage(cfg!, {

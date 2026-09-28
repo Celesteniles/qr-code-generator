@@ -27,9 +27,16 @@ export interface EmailMessage {
 }
 
 export class EmailError extends Error {
-  constructor(message: string) {
+  /**
+   * true : issue incertaine (délai dépassé, réseau coupé), l'e-mail a pu partir.
+   * false : refusé avant l'envoi (clé absente, erreur Brevo), rien n'est parti.
+   * Les envois automatiques (notifications) ne retentent que dans ce second cas.
+   */
+  readonly maybeSent: boolean
+  constructor(message: string, maybeSent = false) {
     super(message)
     this.name = 'EmailError'
+    this.maybeSent = maybeSent
   }
 }
 
@@ -56,7 +63,7 @@ export async function sendEmail(msg: EmailMessage): Promise<void> {
     })
   } catch (e) {
     console.error('[email] échec de l\'envoi', e)
-    throw new EmailError('Envoi impossible')
+    throw new EmailError('Envoi impossible', true)
   }
   if (!res.ok) {
     // Le corps de l'erreur Brevo ne contient pas la clé : on peut le journaliser.

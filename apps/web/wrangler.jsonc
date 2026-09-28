@@ -3,7 +3,9 @@
   // Déploiement : pnpm --filter @link/web deploy
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "link-web",
-  "main": ".open-next/worker.js",
+  // custom-worker.ts = Worker généré par OpenNext (.open-next/worker.js) + tâche
+  // planifiée (scheduled). Voir custom-worker.ts.
+  "main": "custom-worker.ts",
   "compatibility_date": "2025-01-15",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
@@ -16,8 +18,16 @@
     "BETTER_AUTH_URL": "https://beta.qrcode.cg",
     "CF_ACCOUNT_ID": "d173b721d701ab7804ac541a92709654",
     // Passer à "true" (puis redéployer) pour fermer les inscriptions.
-    "DISABLE_SIGNUP": "false"
+    "DISABLE_SIGNUP": "false",
+    // Rappels d'échéance (server/billing-jobs.ts) : "true" sur UN SEUL Worker, celui
+    // du site public (les liens des e-mails pointent vers BETTER_AUTH_URL). La bêta
+    // et la production partagent la base : les deux enverraient, chacune avec son lien.
+    "BILLING_REMINDERS": "false"
   },
+  // Tâche planifiée de la facturation, toutes les heures (UTC) : rattrapage des
+  // paiements en attente, alertes d'anomalie, rappels d'échéance (8 h–20 h à
+  // Brazzaville). Chaque Worker ne relit que les paiements de SON API pawaPay.
+  "triggers": { "crons": ["0 * * * *"] },
   // Secrets (wrangler secret put …) :
   //   BETTER_AUTH_SECRET   — signature des sessions
   //   CF_ANALYTICS_TOKEN   — jeton API "Account Analytics: Read" pour lire les scans
@@ -32,6 +42,10 @@
   //                          renvoient vers le contact commercial. PAWAPAY_ENV
   //                          ("production" pour l'API réelle, sinon sandbox) se
   //                          pose aussi en secret, pour ne pas payer en vrai en bêta.
+  //   BREVO_API_KEY        — e-mails (dont rappels d'échéance et alertes d'anomalie).
+  //   BILLING_ADMIN_EMAILS — adresses (séparées par des virgules) autorisées sur la
+  //                          page réservée /interne/paiements (anomalies de paiement).
+  //                          Absent : page fermée à tous. Voir docs/PAIEMENTS.md.
 
   // Le dashboard écrit les liens directement via les bindings (server actions),
   // en réutilisant @link/db — pas besoin du jeton d'admin de l'API côté serveur.
@@ -60,14 +74,18 @@
   // que la bêta (les liens et les comptes sont les mêmes).
   // Secrets à poser une fois sur ce Worker (wrangler secret put … --env production) :
   //   BETTER_AUTH_SECRET, CF_ANALYTICS_TOKEN, SAFE_BROWSING_KEY,
-  //   TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY
+  //   TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY, BREVO_API_KEY, PAWAPAY_API_TOKEN,
+  //   PAWAPAY_ENV, BILLING_ADMIN_EMAILS
   "env": {
     "production": {
       "vars": {
         "BETTER_AUTH_URL": "https://qrcode.cg",
         "CF_ACCOUNT_ID": "d173b721d701ab7804ac541a92709654",
-        "DISABLE_SIGNUP": "false"
+        "DISABLE_SIGNUP": "false",
+        // Le site public envoie les rappels d'échéance (cf. vars de la bêta).
+        "BILLING_REMINDERS": "true"
       },
+      "triggers": { "crons": ["0 * * * *"] },
       "kv_namespaces": [
         { "binding": "LINKS", "id": "41d7ebd986a141e0a5abde505aa174e2" }
       ],
