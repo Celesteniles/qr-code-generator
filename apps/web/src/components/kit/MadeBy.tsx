@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 /** Mention d'éditeur, en pied des écrans : link.cg est un produit de NS Creative. */
 export function MadeBy({ className = '' }: { className?: string }) {
   return (
@@ -6,6 +8,10 @@ export function MadeBy({ className = '' }: { className?: string }) {
       <a href="https://nscreative.cg" target="_blank" rel="noopener" className="font-semibold text-muted underline-offset-2 hover:underline">
         NS Creative
       </a>
+      {' · '}
+      <Link href="/confidentialite" className="underline-offset-2 hover:underline">Confidentialité</Link>
+      {' · '}
+      <Link href="/conditions" className="underline-offset-2 hover:underline">Conditions</Link>
     </p>
   )
 }

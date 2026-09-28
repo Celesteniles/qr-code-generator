@@ -123,6 +123,16 @@
   .hl { background: linear-gradient(transparent 62%, var(--sun) 62%); padding: 0 .08em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
   .link { color: var(--brand); font-weight: 600; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
   .link:hover { text-decoration: underline; text-underline-offset: 3px; }
+  /* Pages légales (confidentialité, conditions) : texte long, lisible sur mobile. */
+  .legal { line-height: 1.65; }
+  .legal h1 { font-family: var(--f-display); font-weight: 700; letter-spacing: -.03em; line-height: 1.1; font-size: clamp(28px, 4vw, 38px); }
+  .legal h2 { font-family: var(--f-display); font-weight: 650; letter-spacing: -.02em; font-size: 21px; margin: 36px 0 10px; }
+  .legal p, .legal ul { margin: 0 0 14px; }
+  .legal ul { padding-left: 22px; list-style: disc; }
+  .legal li { margin-bottom: 6px; }
+  .legal a { color: var(--brand); font-weight: 600; }
+  .legal a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .legal .updated { color: var(--muted); font-size: 14px; margin-top: 8px; }
 
   /* ── Boutons ─────────────────────────────────────────────────────────────── */
   .btn {

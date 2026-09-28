@@ -255,6 +255,12 @@ export function AuthPanel({ initialMode, next, freeLinks, turnstileSiteKey, goog
           <button type="submit" className="btn btn-cta btn-lg w-full" disabled={pending} aria-busy={pending}>
             {pending ? <><Spinner />{isIn ? 'Connexion…' : 'Création du compte…'}</> : isIn ? 'Se connecter' : 'Créer mon compte'}
           </button>
+          {!isIn && (
+            <p className="text-center text-xs text-subtle">
+              En créant un compte, vous acceptez les <Link href="/conditions" className="underline underline-offset-2">conditions d&apos;utilisation</Link> et
+              la <Link href="/confidentialite" className="underline underline-offset-2">politique de confidentialité</Link>.
+            </p>
+          )}
           {isIn && (
             <p className="text-center text-sm text-muted">
               Pas encore de compte ?{' '}
