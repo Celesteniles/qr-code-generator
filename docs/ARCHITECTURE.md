@@ -267,6 +267,9 @@ le lien par `(hostname, slug)` — d'où la clé composite dans KV et l'unicité
 C'est à la fois une offre payante et un **pare-feu de réputation** : un client
 sur son propre domaine ne dépend plus de la réputation de `link.cg`.
 
+Mise en œuvre, étapes manuelles d'activation et limites : voir
+[`DOMAINES.md`](./DOMAINES.md).
+
 ---
 
 ## 7. Anti-abus — la partie qui protège l'actif
