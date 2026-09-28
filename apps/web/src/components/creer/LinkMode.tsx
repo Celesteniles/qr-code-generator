@@ -7,22 +7,25 @@ import { QrCanvas } from '@/components/kit/QrCanvas'
 import { DEFAULT_DESIGN } from '@/lib/qr-design'
 import { SHORT_HOST, hostOf, isWebUrl, normalizeUrl, shortUrl, slugify, suggestSlug } from './helpers'
 import type { CreateFn, LinkRule } from './publish'
-import { CopyButton, PlanUsage, Question, SlugField, Sr, useSlugCheck } from './ui'
+import { CopyButton, HostPicker, PlanUsage, Question, SlugField, Sr, useSlugCheck } from './ui'
 import { Spinner } from '@/components/kit/Spinner'
 import { qrLinkUrl } from '@/lib/short-link'
 
 // Onglet « Lien court » : lien long → adresse courte, et en option « selon le téléphone ».
 
-export function LinkMode({ initialUrl, deviceRoute, viewer, onCreate }: {
+export function LinkMode({ initialUrl, deviceRoute, viewer, hosts, onCreate }: {
   initialUrl: string
   deviceRoute: boolean
   viewer: Viewer
+  /** link.cg, puis les domaines personnalisés actifs de l'espace. */
+  hosts: string[]
   onCreate: CreateFn
 }) {
   const guest = !viewer.user
   const [url, setUrl] = useState(initialUrl)
   const [slugInput, setSlugInput] = useState('')
   const [slugByHand, setSlugByHand] = useState(false)
+  const [linkHost, setLinkHost] = useState(hosts[0] ?? SHORT_HOST)
   const [route, setRoute] = useState<'same' | 'device'>(deviceRoute ? 'device' : 'same')
   const [ios, setIos] = useState('')
   const [android, setAndroid] = useState('')
@@ -34,10 +37,10 @@ export function LinkMode({ initialUrl, deviceRoute, viewer, onCreate }: {
   const suggestion = validUrl ? suggestSlug(url) : ''
   // Tant que la personne n'a pas tapé son adresse, on propose celle tirée du lien.
   const slug = slugByHand ? slugInput : suggestion
-  const status = useSlugCheck(slug)
+  const status = useSlugCheck(slug, linkHost)
   const host = validUrl ? hostOf(url) : ''
   const cleanSlug = slugify(slug)
-  const preview = cleanSlug ? shortUrl(cleanSlug) : ''
+  const preview = cleanSlug ? shortUrl(cleanSlug, linkHost) : ''
 
   async function submit(e: FormEvent) {
     e.preventDefault()
@@ -56,7 +59,7 @@ export function LinkMode({ initialUrl, deviceRoute, viewer, onCreate }: {
       rule = { type: 'app', fallback: normalizeUrl(url), ...(i ? { ios: i } : {}), ...(a ? { android: a } : {}) }
     }
     setBusy(true)
-    const msg = await onCreate({ kind: 'link', slug: cleanSlug, rule }, `qr-${cleanSlug}`)
+    const msg = await onCreate({ kind: 'link', slug: cleanSlug, host: linkHost, rule }, `qr-${cleanSlug}`)
     setBusy(false)
     if (msg) setError(msg)
   }
@@ -84,7 +87,9 @@ export function LinkMode({ initialUrl, deviceRoute, viewer, onCreate }: {
         </Question>
 
         <Question n={2} title="Quelle adresse courte ?" hint="C'est ce que les gens verront et taperont. Courte, lisible, à votre image.">
+          <HostPicker hosts={hosts} value={linkHost} onChange={setLinkHost} />
           <SlugField
+            host={linkHost}
             value={slug}
             status={status}
             suggestion={slugByHand ? suggestion : undefined}
@@ -128,14 +133,14 @@ export function LinkMode({ initialUrl, deviceRoute, viewer, onCreate }: {
           <div className="text-xs font-semibold text-subtle">Votre lien</div>
           <div className="mt-2 flex items-center gap-2">
             <span className="linkchip min-w-0 overflow-hidden text-ellipsis text-lg">
-              <span className="host">{SHORT_HOST}/</span>{cleanSlug || <span className="text-subtle">…</span>}
+              <span className="host">{linkHost}/</span>{cleanSlug || <span className="text-subtle">…</span>}
             </span>
             {preview && <span className="ml-auto"><CopyButton text={preview} /></span>}
           </div>
           <div className="mt-3 flex items-center gap-2.5 border-t border-line pt-3">
             <div className="qr-thumb !rounded-[10px] !p-1">
               {preview
-                ? <QrCanvas data={qrLinkUrl(cleanSlug)} design={DEFAULT_DESIGN} size={144} className="!h-12 !w-12" />
+                ? <QrCanvas data={qrLinkUrl(cleanSlug, linkHost)} design={DEFAULT_DESIGN} size={144} className="!h-12 !w-12" />
                 : <div className="h-12 w-12 rounded-md bg-soft" aria-hidden="true" />}
             </div>
             <div className="grow text-[13px]">
@@ -155,7 +160,7 @@ export function LinkMode({ initialUrl, deviceRoute, viewer, onCreate }: {
             )}
             <div className="msg">
               {preview
-                ? <span className="text-[#027eb5] underline">{SHORT_HOST}/{cleanSlug}</span>
+                ? <span className="text-[#027eb5] underline">{linkHost}/{cleanSlug}</span>
                 : <span className="text-[#667781]">Votre lien apparaîtra ici.</span>}
             </div>
           </div>

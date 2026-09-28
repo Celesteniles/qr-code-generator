@@ -7,13 +7,14 @@ import { DEFAULT_DESIGN, type QrDesign } from '@/lib/qr-design'
 import { CopyButton } from './CopyButton'
 import { StyleDrawer } from './StyleDrawer'
 import { qrFileName } from './qr-file'
-import { SHORT_HOST } from './model'
 import { qrLinkUrl } from '@/lib/short-link'
 
 /** Colonne gauche de la fiche : le QR, l'adresse courte, partager, télécharger, style. */
-export function QrPanel({ linkId, slug, url, initialDesign }: {
+export function QrPanel({ linkId, slug, host, url, initialDesign }: {
   linkId: string
   slug: string
+  /** Domaine du lien (link.cg ou domaine personnalisé). */
+  host: string
   url: string
   initialDesign: QrDesign | null
 }) {
@@ -43,13 +44,13 @@ export function QrPanel({ linkId, slug, url, initialDesign }: {
     // largeur) ; téléphone et grand écran (colonne latérale) : l'un sous l'autre.
     <div className="grid gap-3.5 md:grid-cols-[minmax(0,300px)_minmax(0,1fr)] md:items-center md:gap-6 xl:grid-cols-1 xl:gap-3.5">
       <div className="board">
-        <div className="qrbox"><QrCanvas ref={qr} data={qrLinkUrl(slug)} design={design} size={240} /></div>
+        <div className="qrbox"><QrCanvas ref={qr} data={qrLinkUrl(slug, host)} design={design} size={240} /></div>
       </div>
 
       <div className="grid min-w-0 gap-3.5">
 
       <div className="flex items-center gap-1.5 rounded-full bg-soft py-1.5 pl-4 pr-1.5 font-mono text-[13px]">
-        <span className="min-w-0 flex-1 truncate">{SHORT_HOST}/{slug}</span>
+        <span className="min-w-0 flex-1 truncate">{host}/{slug}</span>
         <CopyButton text={url} />
         <button type="button" className="icon-btn" onClick={share} aria-label="Partager le lien" title="Partager"><ShareIcon /></button>
       </div>
@@ -81,7 +82,7 @@ export function QrPanel({ linkId, slug, url, initialDesign }: {
       </p>
       </div>
 
-      {styling && <StyleDrawer linkId={linkId} data={qrLinkUrl(slug)} initial={design} onClose={close} onSaved={onSaved} />}
+      {styling && <StyleDrawer linkId={linkId} data={qrLinkUrl(slug, host)} initial={design} onClose={close} onSaved={onSaved} />}
     </div>
   )
 }

@@ -14,7 +14,7 @@ import { ActiveSwitch } from '@/components/liens/ActiveSwitch'
 import { DeleteZone } from '@/components/liens/DeleteZone'
 import { VisitsChart } from '@/components/liens/VisitsChart'
 import { LinkInsightsView } from '@/components/stats/LinkInsightsView'
-import { SHORT_HOST, nf, shortUrl } from '@/components/liens/model'
+import { nf, shortUrl } from '@/components/liens/model'
 
 export const metadata: Metadata = { title: 'Fiche du lien — link.cg' }
 
@@ -41,7 +41,7 @@ export default async function LienPage({ params }: { params: Promise<{ id: strin
     getDailyVisits([link], 30).catch(() => []),
     getLinkInsights(link, 30).catch(() => null),
   ])
-  const url = shortUrl(link.slug)
+  const url = shortUrl(link.slug, link.hostname)
   const visits = scans[link.slug] ?? 0
   const destination: DestinationValues = link.rule.type === 'app'
     ? { type: 'app', fallback: link.rule.fallback, ios: link.rule.ios, android: link.rule.android }
@@ -55,7 +55,7 @@ export default async function LienPage({ params }: { params: Promise<{ id: strin
 
       <div className="px-4 pb-14 pt-1 lg:px-8 lg:pt-2">
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="h1 min-w-0 break-all"><span className="text-muted">{SHORT_HOST}/</span>{link.slug}</h1>
+          <h1 className="h1 min-w-0 break-all"><span className="text-muted">{link.hostname}/</span>{link.slug}</h1>
           {link.active
             ? <span className="pill pill-ok"><span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />En ligne</span>
             : <span className="pill pill-sun">En pause</span>}
@@ -69,7 +69,7 @@ export default async function LienPage({ params }: { params: Promise<{ id: strin
         {/* Deux colonnes seulement à partir de xl : à lg, la barre latérale laisse trop peu de place. */}
         <div className="mt-6 grid grid-cols-1 items-start gap-8 xl:grid-cols-[340px_minmax(0,1fr)] 2xl:grid-cols-[360px_minmax(0,1fr)]">
           <aside className="xl:sticky xl:top-6" aria-label="QR et partage">
-            <QrPanel linkId={link.id} slug={link.slug} url={url} initialDesign={rawDesign ? toDesign(rawDesign) : null} />
+            <QrPanel linkId={link.id} slug={link.slug} host={link.hostname} url={url} initialDesign={rawDesign ? toDesign(rawDesign) : null} />
           </aside>
 
           <div className="grid min-w-0 gap-4">

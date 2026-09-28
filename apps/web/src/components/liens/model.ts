@@ -9,6 +9,8 @@ export type LinkKind = 'static' | 'app' | 'card'
 export interface LinkItem {
   id: string
   slug: string
+  /** Domaine du lien : link.cg ou un domaine personnalisé (go.monresto.cg). */
+  host: string
   kind: LinkKind
   active: boolean
   createdAt: number
@@ -24,8 +26,8 @@ export interface LinkItem {
 
 export const SHORT_HOST = 'link.cg'
 
-export function shortUrl(slug: string): string {
-  return `https://${SHORT_HOST}/${slug}`
+export function shortUrl(slug: string, host: string = SHORT_HOST): string {
+  return `https://${host}/${slug}`
 }
 
 /** URL lisible : sans protocole, sans « www. », sans barre finale. */
