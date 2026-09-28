@@ -22,4 +22,14 @@ interface CloudflareEnv {
   /** Identifiant OAuth Google. Avec GOOGLE_CLIENT_SECRET, active « Continuer avec Google » (cf. server/google.ts). */
   GOOGLE_CLIENT_ID?: string
   GOOGLE_CLIENT_SECRET?: string
+  /**
+   * Domaines personnalisés (Cloudflare for SaaS, cf. server/cf-saas.ts et
+   * docs/DOMAINES.md). Les trois requis ; sans eux, la fonctionnalité est désactivée.
+   * CF_ZONE_ID : identifiant de la zone link.cg (où les hostnames clients sont déclarés).
+   */
+  CF_ZONE_ID?: string
+  /** Jeton API « Zone · SSL and Certificates · Edit », limité à la zone link.cg. */
+  CF_SAAS_TOKEN?: string
+  /** Cible du CNAME donnée aux clients (ex. domaines.link.cg). Publique ; secret ou var au choix. */
+  CF_SAAS_CNAME_TARGET?: string
 }

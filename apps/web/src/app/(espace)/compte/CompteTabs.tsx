@@ -3,6 +3,8 @@ import Link from 'next/link'
 const TABS = [
   { href: '/compte', label: 'Profil' },
   { href: '/compte/facturation', label: 'Facturation' },
+  { href: '/compte/domaines', label: 'Domaines' },
+  { href: '/compte/domaines', label: 'Domaines' },
 ] as const
 
 /** Onglets de « Mon compte » : de simples liens, l'onglet courant porte aria-current. */

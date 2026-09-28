@@ -25,6 +25,9 @@
   //                          lien (création, changement). Sans elle, rien n'est vérifié.
   //   TURNSTILE_SITE_KEY   — Turnstile (anti-robots) à l'inscription et à la connexion.
   //   TURNSTILE_SECRET_KEY   Les DEUX requises ; sans elles, ni captcha ni widget.
+  //   CF_ZONE_ID           — domaines personnalisés (Cloudflare for SaaS, zone link.cg).
+  //   CF_SAAS_TOKEN          Les TROIS requises ; sans elles, l'onglet Domaines
+  //   CF_SAAS_CNAME_TARGET   affiche « bientôt disponible ». Voir docs/DOMAINES.md.
 
   // Le dashboard écrit les liens directement via les bindings (server actions),
   // en réutilisant @link/db — pas besoin du jeton d'admin de l'API côté serveur.
