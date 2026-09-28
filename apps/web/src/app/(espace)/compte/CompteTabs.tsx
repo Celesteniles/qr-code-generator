@@ -2,14 +2,18 @@ import Link from 'next/link'
 
 const TABS = [
   { href: '/compte', label: 'Profil' },
+  { href: '/compte/equipe', label: 'Équipe' },
   { href: '/compte/facturation', label: 'Facturation' },
 ] as const
 
-/** Onglets de « Mon compte » : de simples liens, l'onglet courant porte aria-current. */
-export function CompteTabs({ current }: { current: (typeof TABS)[number]['href'] }) {
+/**
+ * Onglets de « Mon compte » : de simples liens, l'onglet courant porte aria-current.
+ * `billing` : faux pour un simple membre de l'espace, qui ne voit pas la facturation.
+ */
+export function CompteTabs({ current, billing = true }: { current: (typeof TABS)[number]['href']; billing?: boolean }) {
   return (
     <nav aria-label="Rubriques du compte" className="seg mt-6 print:hidden">
-      {TABS.map((t) => (
+      {TABS.filter((t) => billing || t.href !== '/compte/facturation').map((t) => (
         <Link
           key={t.href}
           href={t.href}

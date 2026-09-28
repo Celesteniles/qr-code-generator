@@ -1,7 +1,7 @@
 import 'server-only'
 import { cache } from 'react'
 import { redirect } from 'next/navigation'
-import { getWorkspace } from '@link/db'
+import { getWorkspace, listUserWorkspaces } from '@link/db'
 import { PLANS, type Plan } from '@link/shared'
 import type { Viewer } from '@/components/kit/shell/types'
 import { getDb } from './data'
@@ -23,13 +23,18 @@ export const getViewer = cache(async (): Promise<{ viewer: Viewer; ctx: SessionC
   const { ctx } = state
 
   const db = getDb()
-  const [ws, links] = await Promise.all([getWorkspace(db, ctx.workspaceId), getWorkspaceLinks(ctx.workspaceId)])
+  const [ws, links, spaces] = await Promise.all([
+    getWorkspace(db, ctx.workspaceId),
+    getWorkspaceLinks(ctx.workspaceId),
+    listUserWorkspaces(db, ctx.userId),
+  ])
   const plan = PLANS[(ws?.plan ?? 'free') as Plan]
   return {
     ctx,
     viewer: {
       user: { name: ctx.name, email: ctx.email },
       plan: { label: plan.label, used: links.length, max: plan.maxLinks },
+      workspace: spaces.length > 1 ? { name: ws?.name || 'Espace sans nom' } : null,
     },
   }
 })

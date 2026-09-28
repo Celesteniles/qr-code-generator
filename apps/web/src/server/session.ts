@@ -1,6 +1,6 @@
 import 'server-only'
-import { headers } from 'next/headers'
-import { getUserWorkspaceId, ensureWorkspaceForUser } from '@link/db'
+import { cookies, headers } from 'next/headers'
+import { ensureWorkspaceForUser, resolveCurrentWorkspace, type TeamRole } from '@link/db'
 import { getAuth } from './auth'
 import { getDb } from './data'
 
@@ -9,8 +9,18 @@ export interface SessionContext {
   email: string
   /** Nom saisi à l'inscription (personne ou activité). */
   name: string
+  /** Espace courant (cf. resolveCurrentWorkspace) : toutes les lectures et écritures s'y bornent. */
   workspaceId: string
+  /** Rôle dans l'espace courant : owner/admin gèrent l'équipe et la facturation. */
+  role: TeamRole
 }
+
+/**
+ * Cookie de l'espace choisi, pour qui appartient à plusieurs espaces. Simple
+ * préférence : sa valeur n'est retenue que si l'utilisateur est toujours membre
+ * de cet espace (vérifié en base à chaque requête), jamais crue telle quelle.
+ */
+export const WORKSPACE_COOKIE = 'lcg_espace'
 
 /**
  * État de la personne qui fait la requête :
@@ -46,11 +56,18 @@ export async function getSessionState(): Promise<SessionState> {
   if (!user.emailVerified) return { kind: 'unverified', email: user.email, name: user.name || '' }
 
   const db = getDb()
-  const workspaceId =
-    (await getUserWorkspaceId(db, user.id)) ??
-    (await ensureWorkspaceForUser(db, user.id, user.name || user.email))
+  const preferred = (await cookies()).get(WORKSPACE_COOKIE)?.value ?? null
+  let current = await resolveCurrentWorkspace(db, { userId: user.id, email: user.email, preferred })
+  if (!current) {
+    await ensureWorkspaceForUser(db, user.id, user.name || user.email)
+    current = await resolveCurrentWorkspace(db, { userId: user.id, email: user.email })
+  }
+  if (!current) throw new Error('Espace de travail introuvable après création')
 
-  return { kind: 'ready', ctx: { userId: user.id, email: user.email, name: user.name || '', workspaceId } }
+  return {
+    kind: 'ready',
+    ctx: { userId: user.id, email: user.email, name: user.name || '', workspaceId: current.workspaceId, role: current.role },
+  }
 }
 
 /**

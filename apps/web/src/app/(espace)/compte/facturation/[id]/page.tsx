@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
+import { canManageBilling } from '@link/db'
 import { getViewer } from '@/server/viewer'
 import { getOwnReceipt } from '@/server/billing'
 import { ISSUER, SERVICE_NAME } from '@/server/billing-config'
@@ -14,7 +15,7 @@ type Props = { params: Promise<{ id: string }> }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   const { ctx } = await getViewer()
-  const data = ctx ? await getOwnReceipt(ctx.workspaceId, id) : null
+  const data = ctx && canManageBilling(ctx.role) ? await getOwnReceipt(ctx.workspaceId, id) : null
   return { title: data ? `Reçu ${data.payment.receiptNumber} — link.cg` : 'Reçu — link.cg' }
 }
 
@@ -22,6 +23,8 @@ export default async function RecuPage({ params }: Props) {
   const { id } = await params
   const { ctx } = await getViewer()
   if (!ctx) redirect(`/connexion?next=${encodeURIComponent(`/compte/facturation/${id}`)}`)
+  // Facturation réservée au propriétaire et aux administrateurs.
+  if (!canManageBilling(ctx.role)) redirect('/compte')
 
   // Paiement absent ou d'un autre espace : même réponse, 404.
   const data = await getOwnReceipt(ctx.workspaceId, id)

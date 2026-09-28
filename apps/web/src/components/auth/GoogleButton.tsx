@@ -20,11 +20,12 @@ export function GoogleButton({ next, onError }: {
     setPending(true)
     try {
       // Better Auth renvoie l'adresse Google ; le navigateur y part. Au retour :
-      // compte existant → `next`, nouveau compte → visite guidée, échec → /connexion.
+      // compte existant → `next`, nouveau compte → visite guidée (sauf invitation
+      // à rejoindre un espace : on y revient directement), échec → /connexion.
       const res = await signIn.social({
         provider: 'google',
         callbackURL: next,
-        newUserCallbackURL: '/bienvenue',
+        newUserCallbackURL: next.startsWith('/invitation/') ? next : '/bienvenue',
         errorCallbackURL: '/connexion',
       })
       if (res.error) {
