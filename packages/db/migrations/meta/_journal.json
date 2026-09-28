@@ -43,6 +43,13 @@
       "when": 1790500536352,
       "tag": "0005_comptes_existants_verifies",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1790607092713,
+      "tag": "0006_equipes_domaines",
+      "breakpoints": true
     }
   ]
 }

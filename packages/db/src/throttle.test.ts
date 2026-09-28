@@ -10,15 +10,16 @@ import {
   LINK_CREATIONS_PER_HOUR, LINK_UPDATES_PER_HOUR, THROTTLE_WINDOW_MS,
 } from './throttle'
 
-// Base SQLite en mémoire avec la première migration (tables workspaces, domains, links).
+// Base SQLite en mémoire avec toutes les migrations réelles.
 function freshDb(): Db {
   const client = createClient({ url: ':memory:' })
   const migDir = join(__dirname, '..', 'migrations')
-  const file = readdirSync(migDir).filter((f) => f.endsWith('.sql')).sort()[0]
-  const sql = readFileSync(join(migDir, file), 'utf8')
-  for (const stmt of sql.split('--> statement-breakpoint')) {
-    const s = stmt.trim()
-    if (s) client.execute(s)
+  for (const file of readdirSync(migDir).filter((f) => f.endsWith('.sql')).sort()) {
+    const sql = readFileSync(join(migDir, file), 'utf8')
+    for (const stmt of sql.split('--> statement-breakpoint')) {
+      const s = stmt.trim()
+      if (s) client.execute(s)
+    }
   }
   return drizzle(client, { schema }) as unknown as Db
 }

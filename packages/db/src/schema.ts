@@ -41,7 +41,30 @@ export const domains = sqliteTable(
     hostname: text('hostname').notNull().unique(),
     verified: integer('verified', { mode: 'boolean' }).notNull().default(false),
     isDefault: integer('is_default', { mode: 'boolean' }).notNull().default(false),
+    // Domaine personnalisé (Cloudflare for SaaS). Null pour les domaines de la
+    // plateforme (link.cg). sslStatus = statut du certificat renvoyé par Cloudflare.
+    cfHostnameId: text('cf_hostname_id'),
+    sslStatus: text('ssl_status'),
+    createdAt: integer('created_at'),
   },
+)
+
+// Invitation d'une personne dans un espace. Le jeton en clair ne part que dans
+// l'e-mail ; seul son hachage SHA-256 est stocké.
+export const invitations = sqliteTable(
+  'invitations',
+  {
+    id: text('id').primaryKey(),
+    workspaceId: text('workspace_id').notNull().references(() => workspaces.id),
+    email: text('email').notNull(),
+    role: text('role', { enum: ['admin', 'member'] }).notNull().default('member'),
+    tokenHash: text('token_hash').notNull().unique(),
+    invitedBy: text('invited_by').notNull(),
+    createdAt: now(),
+    expiresAt: integer('expires_at').notNull(),
+    acceptedAt: integer('accepted_at'),
+  },
+  (t) => [index('invitations_workspace').on(t.workspaceId)],
 )
 
 export const links = sqliteTable(
@@ -126,3 +149,4 @@ export const payments = sqliteTable(
 export type LinkRow = typeof links.$inferSelect
 export type PaymentRow = typeof payments.$inferSelect
 export type DomainRow = typeof domains.$inferSelect
+export type InvitationRow = typeof invitations.$inferSelect

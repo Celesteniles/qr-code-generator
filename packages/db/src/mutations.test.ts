@@ -7,17 +7,18 @@ import * as schema from './schema'
 import { takenSlugs } from './queries'
 import { createLink, setLinkActive, deleteLink, updateLinkRule, type Db, type KVWriter } from './mutations'
 
-// Base SQLite en mémoire (asynchrone, comme D1) avec la migration réelle appliquée.
+// Base SQLite en mémoire (asynchrone, comme D1) avec les migrations réelles appliquées.
 function freshDb(): Db {
   const client = createClient({ url: ':memory:' })
   const migDir = join(__dirname, '..', 'migrations')
-  const file = readdirSync(migDir).find((f) => f.endsWith('.sql'))!
-  const sql = readFileSync(join(migDir, file), 'utf8')
   // Comme D1 : les clés étrangères sont appliquées.
   client.execute('PRAGMA foreign_keys = ON')
-  for (const stmt of sql.split('--> statement-breakpoint')) {
-    const s = stmt.trim()
-    if (s) client.execute(s)
+  for (const file of readdirSync(migDir).filter((f) => f.endsWith('.sql')).sort()) {
+    const sql = readFileSync(join(migDir, file), 'utf8')
+    for (const stmt of sql.split('--> statement-breakpoint')) {
+      const s = stmt.trim()
+      if (s) client.execute(s)
+    }
   }
   return drizzle(client, { schema }) as unknown as Db
 }
