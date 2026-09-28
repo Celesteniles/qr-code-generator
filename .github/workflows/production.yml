@@ -2,7 +2,7 @@
 #
 #   push sur main ─► contrôles (tests, types, lint)
 #                     ├─► migrations D1 (link-db), si packages/db/migrations a changé
-#                     │     └─► app (link-web-production) → qrcode.cg, automatique
+#                     │     └─► app (link-web) → qrcode.cg, automatique
 #                     └─► routeur (link-router) → link.cg, s'il a changé, automatique
 #
 # Pousser sur main VAUT validation : pas d'étape manuelle ici (le passage par staging
@@ -96,7 +96,7 @@ jobs:
         working-directory: apps/web
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: pnpm exec wrangler d1 migrations apply link-db --remote --env production
+        run: pnpm exec wrangler d1 migrations apply link-db --remote
 
   deploy-web:
     name: App → qrcode.cg
@@ -127,7 +127,7 @@ jobs:
         working-directory: apps/web
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: pnpm exec opennextjs-cloudflare deploy --env production
+        run: pnpm exec opennextjs-cloudflare deploy
       - name: Vérification
         run: |
           for p in / /connexion /offres /creer; do

@@ -1,6 +1,8 @@
 {
-  // apps/web sur Cloudflare Workers via OpenNext — qrcode.cg (bêta d'abord).
-  // Déploiement : pnpm --filter @link/web deploy
+  // apps/web sur Cloudflare Workers via OpenNext — qrcode.cg (production).
+  // Déploiement : push sur main (CI), ou pnpm --filter @link/web deploy.
+  // L'ancien Worker de la bêta est devenu la production le 2026-09-28 (mêmes secrets) ;
+  // beta.qrcode.cg n'existe plus.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "link-web",
   // custom-worker.ts = Worker généré par OpenNext (.open-next/worker.js) + tâche
@@ -15,14 +17,13 @@
   "observability": { "enabled": true },
 
   "vars": {
-    "BETTER_AUTH_URL": "https://beta.qrcode.cg",
+    "BETTER_AUTH_URL": "https://qrcode.cg",
     "CF_ACCOUNT_ID": "d173b721d701ab7804ac541a92709654",
     // Passer à "true" (puis redéployer) pour fermer les inscriptions.
     "DISABLE_SIGNUP": "false",
     // Rappels d'échéance (server/billing-jobs.ts) : "true" sur UN SEUL Worker, celui
-    // du site public (les liens des e-mails pointent vers BETTER_AUTH_URL). La bêta
-    // et la production partagent la base : les deux enverraient, chacune avec son lien.
-    "BILLING_REMINDERS": "false"
+    // du site public (les liens des e-mails pointent vers BETTER_AUTH_URL).
+    "BILLING_REMINDERS": "true"
   },
   // Tâche planifiée de la facturation, toutes les heures (UTC) : rattrapage des
   // paiements en attente, alertes d'anomalie, rappels d'échéance (8 h–20 h à
@@ -63,45 +64,9 @@
     }
   ],
 
-  // Configuration par défaut = bêta (branche staging).
+  // www redirige vers l'apex (next.config.ts). beta.qrcode.cg est abandonné.
   "routes": [
-    { "pattern": "beta.qrcode.cg", "custom_domain": true }
-  ],
-
-  // Production (branche main) : Worker distinct `link-web-production` sur qrcode.cg.
-  // Déploiement : opennextjs-cloudflare deploy --env production
-  // Les vars et bindings ne sont pas hérités : les répéter ici. Même base et même KV
-  // que la bêta (les liens et les comptes sont les mêmes).
-  // Secrets à poser une fois sur ce Worker (wrangler secret put … --env production) :
-  //   BETTER_AUTH_SECRET, CF_ANALYTICS_TOKEN, SAFE_BROWSING_KEY,
-  //   TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY, BREVO_API_KEY, PAWAPAY_API_TOKEN,
-  //   PAWAPAY_ENV, BILLING_ADMIN_EMAILS
-  "env": {
-    "production": {
-      "vars": {
-        "BETTER_AUTH_URL": "https://qrcode.cg",
-        "CF_ACCOUNT_ID": "d173b721d701ab7804ac541a92709654",
-        "DISABLE_SIGNUP": "false",
-        // Le site public envoie les rappels d'échéance (cf. vars de la bêta).
-        "BILLING_REMINDERS": "true"
-      },
-      "triggers": { "crons": ["0 * * * *"] },
-      "kv_namespaces": [
-        { "binding": "LINKS", "id": "41d7ebd986a141e0a5abde505aa174e2" }
-      ],
-      "d1_databases": [
-        {
-          "binding": "DB",
-          "database_name": "link-db",
-          "database_id": "6798b00a-d331-488c-9e48-a38fb11654d1",
-          "migrations_dir": "../../packages/db/migrations"
-        }
-      ],
-      // www redirige vers l'apex (next.config.ts).
-      "routes": [
-        { "pattern": "qrcode.cg", "custom_domain": true },
-        { "pattern": "www.qrcode.cg", "custom_domain": true }
-      ]
-    }
-  }
+    { "pattern": "qrcode.cg", "custom_domain": true },
+    { "pattern": "www.qrcode.cg", "custom_domain": true }
+  ]
 }

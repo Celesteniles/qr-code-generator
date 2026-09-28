@@ -2,10 +2,12 @@
 #
 #   push sur staging ─► contrôles (tests, types, lint)
 #                        ├─► migrations D1 (link-db), si packages/db/migrations a changé
-#                        │     └─► app (link-web) → beta.qrcode.cg, automatique
 #                        └─► routeur (link-router) → link.cg, seulement s'il a changé,
 #                            APRÈS validation manuelle (environnement « link-router » :
 #                            il sert toutes les adresses link.cg en production)
+#
+# L'app n'est plus déployée depuis staging : depuis la bascule du 2026-09-28, le
+# Worker de la bêta est la production (qrcode.cg), déployée par main (production.yml).
 #
 # Migrations : `wrangler d1 migrations apply`, suivi dans la table d1_migrations.
 # ATTENTION : beta et production partagent la MÊME base link-db. Une migration poussée
@@ -98,44 +100,6 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: pnpm exec wrangler d1 migrations apply link-db --remote
-
-  deploy-web:
-    name: App → beta.qrcode.cg
-    concurrency:
-      group: staging-web
-      cancel-in-progress: true
-    needs: [checks, migrate]
-    # Part aussi quand il n'y avait pas de migration (job ignoré), jamais après un échec.
-    if: ${{ !failure() && !cancelled() }}
-    runs-on: ubuntu-latest
-    environment:
-      name: beta
-      url: https://beta.qrcode.cg
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-        with:
-          persist-credentials: false
-      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: 22
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - name: Build
-        working-directory: apps/web
-        run: pnpm exec opennextjs-cloudflare build
-      - name: Déploiement
-        working-directory: apps/web
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: pnpm exec opennextjs-cloudflare deploy
-      - name: Vérification
-        run: |
-          for p in / /connexion /offres /creer; do
-            code=$(curl -s -o /dev/null -w '%{http_code}' "https://beta.qrcode.cg$p")
-            echo "$p → $code"
-            [ "$code" = "200" ] || exit 1
-          done
 
   deploy-router:
     name: Routeur → link.cg (validation requise)
