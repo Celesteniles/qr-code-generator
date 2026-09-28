@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { ArrowRightIcon, DevicePhoneMobileIcon, DocumentTextIcon, SparklesIcon } from '@heroicons/react/24/outline'
 import { canManageBilling } from '@link/db'
+import { isPayablePlan } from '@link/shared'
 import { getViewer } from '@/server/viewer'
 import { getBillingOverview } from '@/server/billing'
 import { ISSUER } from '@/server/billing-config'
@@ -49,8 +50,15 @@ export default async function FacturationPage() {
           <ul className="flex flex-wrap gap-2.5" aria-label="Moyens de paiement acceptés">
             {MOBILE_MONEY.map((m) => <li key={m}><PaymentMethodChip method={m} /></li>)}
           </ul>
+          {isPayablePlan(planId) ? (
+            <Link href={`/compte/facturation/payer?offre=${planId}`} className="btn btn-brand btn-sm mt-4">
+              {current ? 'Prolonger mon offre' : 'Payer mon offre'}
+            </Link>
+          ) : planId === 'free' ? (
+            <Link href="/offres" className="btn btn-brand btn-sm mt-4">Choisir une offre payante</Link>
+          ) : null}
           <p className="mt-4 text-sm text-muted">
-            Pour changer d&apos;offre, écrivez-nous à{' '}
+            Offre Entreprise ou question sur un paiement : écrivez-nous à{' '}
             <a className="link" href={`mailto:${ISSUER.email}`}>{ISSUER.email}</a>.
           </p>
         </section>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { PLANS, canCreateLink } from './plans'
+import { PLANS, canCreateLink, isPayablePlan, planPrice } from './plans'
 
 describe('plans', () => {
   it('le palier gratuit plafonne à 10 liens', () => {
@@ -23,5 +23,13 @@ describe('plans', () => {
   })
   it("l'annuel coûte moins que douze mois", () => {
     for (const p of [PLANS.pro, PLANS.business]) expect(p.yearlyPrice!).toBeLessThan(p.monthlyPrice! * 12)
+  })
+  it('seuls Pro et Business se paient en ligne, au prix de PLANS', () => {
+    expect(isPayablePlan('pro')).toBe(true)
+    expect(isPayablePlan('enterprise')).toBe(false)
+    expect(isPayablePlan('free')).toBe(false)
+    expect(planPrice('pro', 'month')).toBe(1_500)
+    expect(planPrice('pro', 'year')).toBe(13_000)
+    expect(planPrice('business', 'year')).toBe(100_000)
   })
 })

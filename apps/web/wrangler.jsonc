@@ -28,6 +28,10 @@
   //   CF_ZONE_ID           — domaines personnalisés (Cloudflare for SaaS, zone link.cg).
   //   CF_SAAS_TOKEN          Les TROIS requises ; sans elles, l'onglet Domaines
   //   CF_SAAS_CNAME_TARGET   affiche « bientôt disponible ». Voir docs/DOMAINES.md.
+  //   PAWAPAY_API_TOKEN    — paiement mobile money (pawaPay). Sans lui, les offres
+  //                          renvoient vers le contact commercial. PAWAPAY_ENV
+  //                          ("production" pour l'API réelle, sinon sandbox) se
+  //                          pose aussi en secret, pour ne pas payer en vrai en bêta.
 
   // Le dashboard écrit les liens directement via les bindings (server actions),
   // en réutilisant @link/db — pas besoin du jeton d'admin de l'API côté serveur.

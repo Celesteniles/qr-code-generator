@@ -1,6 +1,6 @@
 import 'server-only'
 import { cookies, headers } from 'next/headers'
-import { ensureWorkspaceForUser, resolveCurrentWorkspace, type TeamRole } from '@link/db'
+import { ensureWorkspaceForUser, resolveCurrentWorkspace, syncWorkspacePlan, type TeamRole } from '@link/db'
 import { getAuth } from './auth'
 import { getDb } from './data'
 
@@ -63,6 +63,8 @@ export async function getSessionState(): Promise<SessionState> {
     current = await resolveCurrentWorkspace(db, { userId: user.id, email: user.email })
   }
   if (!current) throw new Error('Espace de travail introuvable après création')
+  // Période payée échue (délai de grâce passé) : retour en Gratuit avant toute lecture du palier.
+  await syncWorkspacePlan(db, current.workspaceId)
 
   return {
     kind: 'ready',

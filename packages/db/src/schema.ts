@@ -114,6 +114,30 @@ export const linkReviews = sqliteTable('link_reviews', {
   provider: text('provider'),
 })
 
+// Tentatives de paiement en ligne (pawaPay). id = depositId envoyé à pawaPay.
+// Le reçu (table payments) n'est créé qu'une fois le dépôt COMPLETED, pour que
+// les numéros de reçu restent continus malgré les paiements abandonnés.
+export const checkouts = sqliteTable(
+  'checkouts',
+  {
+    id: text('id').primaryKey(),
+    workspaceId: text('workspace_id').notNull().references(() => workspaces.id),
+    /** Utilisateur (Better Auth) qui a lancé le paiement. */
+    userId: text('user_id').notNull(),
+    plan: text('plan', { enum: ['pro', 'business'] }).notNull(),
+    cycle: text('cycle', { enum: ['month', 'year'] }).notNull(),
+    /** Montant attendu en FCFA, figé au lancement. */
+    amount: integer('amount').notNull(),
+    status: text('status', { enum: ['pending', 'completed', 'failed'] }).notNull().default('pending'),
+    failureCode: text('failure_code'),
+    /** Paiement (reçu) créé à la confirmation. */
+    paymentId: text('payment_id'),
+    createdAt: now(),
+    updatedAt: integer('updated_at').notNull(),
+  },
+  (t) => [index('checkouts_workspace').on(t.workspaceId)],
+)
+
 // Paiements d'abonnement (mobile money). Un paiement = un reçu numéroté
 // LCG-AAAA-NNNNN. Montants en FCFA (XAF), entiers. Voir payments.ts.
 export const payments = sqliteTable(
@@ -150,3 +174,4 @@ export type LinkRow = typeof links.$inferSelect
 export type PaymentRow = typeof payments.$inferSelect
 export type DomainRow = typeof domains.$inferSelect
 export type InvitationRow = typeof invitations.$inferSelect
+export type CheckoutRow = typeof checkouts.$inferSelect

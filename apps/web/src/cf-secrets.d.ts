@@ -32,4 +32,8 @@ interface CloudflareEnv {
   CF_SAAS_TOKEN?: string
   /** Cible du CNAME donnée aux clients (ex. domaines.link.cg). Publique ; secret ou var au choix. */
   CF_SAAS_CNAME_TARGET?: string
+  /** Jeton API pawaPay (paiement mobile money, cf. server/pawapay.ts). Sans lui, pas de paiement en ligne. */
+  PAWAPAY_API_TOKEN?: string
+  /** "production" pour l'API réelle de pawaPay ; sinon sandbox. */
+  PAWAPAY_ENV?: string
 }

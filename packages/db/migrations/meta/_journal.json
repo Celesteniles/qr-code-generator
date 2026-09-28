@@ -50,6 +50,13 @@
       "when": 1790607092713,
       "tag": "0006_equipes_domaines",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1790608265386,
+      "tag": "0007_paiements_en_ligne",
+      "breakpoints": true
     }
   ]
 }

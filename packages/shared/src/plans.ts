@@ -84,3 +84,22 @@ export function canAddMember(plan: Plan, currentCount: number): boolean {
   const max = PLANS[plan].maxMembers
   return max === null || currentCount < max
 }
+
+/** Rythme de paiement d'un abonnement. */
+export type BillingCycle = 'month' | 'year'
+
+/** Paliers payables en ligne (Entreprise se négocie sur devis). */
+export const PAYABLE_PLANS = ['pro', 'business'] as const
+export type PayablePlan = (typeof PAYABLE_PLANS)[number]
+
+export function isPayablePlan(plan: string): plan is PayablePlan {
+  return (PAYABLE_PLANS as readonly string[]).includes(plan)
+}
+
+/** Prix en FCFA d'un palier payable pour un cycle. */
+export function planPrice(plan: PayablePlan, cycle: BillingCycle): number {
+  const p = PLANS[plan]
+  const price = cycle === 'year' ? p.yearlyPrice : p.monthlyPrice
+  if (!price) throw new Error(`palier sans prix : ${plan}/${cycle}`)
+  return price
+}

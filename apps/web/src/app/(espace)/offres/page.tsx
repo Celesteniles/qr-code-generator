@@ -116,9 +116,9 @@ export default async function OffresPage() {
                   ? <span className="btn btn-soft w-full cursor-default" aria-disabled="true">Incluse dans votre offre</span>
                   : <Link className="btn btn-soft w-full" href="/connexion?mode=inscription">Créer mon compte</Link>
               ) : pop ? (
-                <a className="btn btn-brand w-full" href={mail}>Passer à Pro</a>
+                <Link className="btn btn-brand w-full" href="/compte/facturation/payer?offre=pro">Passer à Pro</Link>
               ) : p.id === 'business' ? (
-                <a className="btn btn-soft w-full" href={mail}>Passer à Business</a>
+                <Link className="btn btn-soft w-full" href="/compte/facturation/payer?offre=business">Passer à Business</Link>
               ) : (
                 <a className="btn btn-soft w-full" href={mail}>Parlons-en</a>
               )}
