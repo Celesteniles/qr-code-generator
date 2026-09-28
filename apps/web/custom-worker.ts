@@ -15,7 +15,16 @@ import { default as handler } from './.open-next/worker.js'
 import { INTERNAL_TASK_HEADER, issueInternalTaskToken, revokeInternalTaskToken } from './src/lib/internal-task'
 
 export default {
-  fetch: handler.fetch,
+  // www.qrcode.cg → qrcode.cg, même chemin. Ici plutôt que dans next.config.ts :
+  // la règle `/:path*` de Next renvoyait la racine vers « /:path* » littéral.
+  fetch(request: Request, env: CloudflareEnv, ctx: ExecutionContext) {
+    const url = new URL(request.url)
+    if (url.hostname.startsWith('www.')) {
+      url.hostname = url.hostname.slice(4)
+      return Response.redirect(url.toString(), 308)
+    }
+    return handler.fetch(request, env, ctx)
+  },
 
   async scheduled(controller, env, ctx) {
     const token = issueInternalTaskToken()
