@@ -7,6 +7,8 @@ interface CloudflareEnv {
   CF_ANALYTICS_TOKEN?: string
   /** Clé API Google Safe Browsing. Optionnelle : sans elle, les URLs ne sont pas vérifiées (log d'avertissement). */
   SAFE_BROWSING_KEY?: string
+  /** Clé API Google Web Risk (usage commercial). Prioritaire sur SAFE_BROWSING_KEY (cf. server/safebrowsing.ts). */
+  WEB_RISK_KEY?: string
   /** Clé secrète Turnstile. Avec TURNSTILE_SITE_KEY, active le captcha (cf. server/turnstile.ts). */
   TURNSTILE_SECRET_KEY?: string
   /**
