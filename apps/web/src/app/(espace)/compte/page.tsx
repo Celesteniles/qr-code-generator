@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { ArrowRightIcon, ComputerDesktopIcon, KeyIcon, PaintBrushIcon, SparklesIcon, UserCircleIcon } from '@heroicons/react/24/outline'
+import { canManageBilling } from '@link/db'
 import { getViewer } from '@/server/viewer'
 import { SectionHead } from '@/components/compte/SectionHead'
 import { ProfileForm } from '@/components/compte/ProfileForm'
@@ -25,7 +26,7 @@ export default async function ComptePage() {
     <div className="px-4 pb-14 pt-6 sm:px-8 lg:px-10 lg:pt-9">
       <h1 className="h1">Mon compte</h1>
       <p className="lead mt-2 max-w-[60ch]">Vos informations, votre mot de passe et les appareils connectés à votre espace.</p>
-      <CompteTabs current="/compte" />
+      <CompteTabs current="/compte" billing={canManageBilling(ctx.role)} />
 
       <div className="mt-8 grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="grid min-w-0 grid-cols-1 gap-4">

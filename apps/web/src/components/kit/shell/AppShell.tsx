@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
 import {
   HomeIcon, LinkIcon, UserIcon, CreditCardIcon, PlusIcon, LockClosedIcon, ArrowRightIcon, QuestionMarkCircleIcon,
+  UsersIcon, ArrowsRightLeftIcon,
 } from '@heroicons/react/24/outline'
 import { Logo } from '../Logo'
 import { Illustration } from '../Illustration'
@@ -106,6 +107,15 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
             </div>
           ) : viewer.plan && (
             <div className="rounded-[18px] bg-surface p-4 text-[13px] shadow-[0_0_0_1px_var(--line),var(--shadow)]">
+              {viewer.workspace && (
+                // Plusieurs espaces : lequel est ouvert, et où en changer.
+                <Link href="/compte/equipe" title="Changer d’espace"
+                  className="-mx-1 -mt-1 mb-3 flex min-w-0 items-center gap-2 rounded-xl px-1 py-1 transition hover:bg-soft">
+                  <UsersIcon className="h-4 w-4 shrink-0 text-muted" aria-hidden="true" />
+                  <span className="min-w-0 grow truncate font-semibold">{viewer.workspace.name}<span className="sr-only"> : changer d’espace</span></span>
+                  <ArrowsRightLeftIcon className="h-4 w-4 shrink-0 text-subtle" aria-hidden="true" />
+                </Link>
+              )}
               <div className="flex items-center"><strong>Offre {viewer.plan.label}</strong>
                 <span className="ml-auto tabular-nums text-subtle">
                   {viewer.plan.used}{viewer.plan.max !== null ? ` / ${viewer.plan.max}` : ''} liens
@@ -163,6 +173,11 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
                   {initials(viewer.user!.name || viewer.user!.email)}
                 </summary>
                 <div className="card absolute right-0 top-11 z-50 w-56 p-2">
+                  {viewer.workspace && (
+                    <Link href="/compte/equipe" className="btn btn-ghost btn-sm w-full justify-start">
+                      <span className="min-w-0 truncate">Espace : {viewer.workspace.name}</span>
+                    </Link>
+                  )}
                   <Link href="/compte" className="btn btn-ghost btn-sm w-full justify-start">Mon compte</Link>
                   <Link href="/offres" className="btn btn-ghost btn-sm w-full justify-start">Offres</Link>
                   <Link href="/bienvenue" className="btn btn-ghost btn-sm w-full justify-start">Visite guidée</Link>

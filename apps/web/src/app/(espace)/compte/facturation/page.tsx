@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { ArrowRightIcon, DevicePhoneMobileIcon, DocumentTextIcon, SparklesIcon } from '@heroicons/react/24/outline'
+import { canManageBilling } from '@link/db'
 import { getViewer } from '@/server/viewer'
 import { getBillingOverview } from '@/server/billing'
 import { ISSUER } from '@/server/billing-config'
@@ -17,6 +18,8 @@ export const metadata: Metadata = { title: 'Facturation — link.cg' }
 export default async function FacturationPage() {
   const { ctx } = await getViewer()
   if (!ctx) redirect('/connexion?next=/compte/facturation')
+  // Un simple membre utilise l'espace mais n'en voit pas la facturation.
+  if (!canManageBilling(ctx.role)) redirect('/compte')
   const { planId, planLabel, current, payments } = await getBillingOverview(ctx)
 
   return (

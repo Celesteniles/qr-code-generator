@@ -3,6 +3,11 @@ export interface Viewer {
   /** null = visiteur sans compte. */
   user: { name: string; email: string } | null
   plan: { label: string; used: number; max: number | null } | null
+  /**
+   * Espace courant, affiché seulement si l'utilisateur en a plusieurs (le sien +
+   * ceux qui l'ont invité) ; null sinon.
+   */
+  workspace?: { name: string } | null
 }
 
 export function initials(nameOrEmail: string): string {
