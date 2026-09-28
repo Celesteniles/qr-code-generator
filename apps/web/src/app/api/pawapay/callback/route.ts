@@ -12,8 +12,8 @@ export async function POST(request: Request): Promise<Response> {
   const body = (await request.json().catch(() => null)) as { depositId?: unknown } | null
   const id = typeof body?.depositId === 'string' ? body.depositId : ''
   if (!UUID_RE.test(id)) return new Response(null, { status: 200 })
-  const checkout = await reconcileCheckout(id)
+  const res = await reconcileCheckout(id)
   // Tentative inconnue : pas pour nous (ou déjà purgée) — rien à renvoyer.
-  if (!checkout) return new Response(null, { status: 200 })
-  return new Response(null, { status: checkout.status === 'pending' ? 503 : 200 })
+  if (!res) return new Response(null, { status: 200 })
+  return new Response(null, { status: res.checkout.status === 'pending' ? 503 : 200 })
 }

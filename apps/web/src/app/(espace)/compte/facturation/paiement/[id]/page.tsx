@@ -6,7 +6,7 @@ import { PLANS } from '@link/shared'
 import { getViewer } from '@/server/viewer'
 import { getDb } from '@/server/data'
 import { UUID_RE, reconcileCheckout } from '@/server/checkout'
-import { AutoRefresh } from '@/components/facturation/AutoRefresh'
+import { AutoRefresh, RefreshOnce } from '@/components/facturation/AutoRefresh'
 import { formatFcfa } from '@/components/facturation/format'
 
 export const metadata: Metadata = { title: 'Paiement — link.cg', robots: { index: false } }
@@ -33,7 +33,8 @@ export default async function PaiementPage({ params }: Props) {
   // Tentative d'un autre espace : même réponse qu'une tentative inconnue.
   const own = await getCheckout(getDb(), id)
   if (!own || own.workspaceId !== ctx.workspaceId) notFound()
-  const checkout = (await reconcileCheckout(id)) ?? own
+  const settled = await reconcileCheckout(id)
+  const checkout = settled?.checkout ?? own
   const label = PLANS[checkout.plan].label
 
   return (
@@ -41,6 +42,8 @@ export default async function PaiementPage({ params }: Props) {
       <div className="card mx-auto max-w-[560px] p-6 text-center sm:p-8" aria-live="polite">
         {checkout.status === 'completed' ? (
           <>
+            {/* La barre latérale (layout) a lu l'offre en parallèle, avant la confirmation : on la relit. */}
+            {settled?.changed && <RefreshOnce />}
             <span className="pill pill-ok">Paiement reçu</span>
             <h1 className="h1 mt-4">Bienvenue en {label}</h1>
             <p className="lead mt-2">{formatFcfa(checkout.amount)} réglés. Votre offre est active dès maintenant.</p>

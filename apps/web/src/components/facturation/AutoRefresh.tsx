@@ -12,3 +12,12 @@ export function AutoRefresh({ everyMs = 4000 }: { everyMs?: number }) {
   }, [router, everyMs])
   return null
 }
+
+/** Recharge une fois les données de la page et du layout (offre changée pendant le rendu). */
+export function RefreshOnce() {
+  const router = useRouter()
+  useEffect(() => {
+    router.refresh()
+  }, [router])
+  return null
+}
