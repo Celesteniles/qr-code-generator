@@ -57,6 +57,13 @@
       "when": 1790608265386,
       "tag": "0007_paiements_en_ligne",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1790610468894,
+      "tag": "0008_rappels_anomalies",
+      "breakpoints": true
     }
   ]
 }

@@ -128,15 +128,64 @@ export const checkouts = sqliteTable(
     cycle: text('cycle', { enum: ['month', 'year'] }).notNull(),
     /** Montant attendu en FCFA, figé au lancement. */
     amount: integer('amount').notNull(),
-    status: text('status', { enum: ['pending', 'completed', 'failed'] }).notNull().default('pending'),
+    /**
+     * review : pawaPay a encaissé, mais le rapprochement a échoué (anomalie de
+     * paiement, cf. payment_anomalies) ; l'équipe NS Creative tranche à la main.
+     */
+    status: text('status', { enum: ['pending', 'completed', 'failed', 'review'] }).notNull().default('pending'),
     failureCode: text('failure_code'),
     /** Paiement (reçu) créé à la confirmation. */
     paymentId: text('payment_id'),
+    /**
+     * API pawaPay qui a créé le dépôt (« sandbox » ou « production »). La bêta et
+     * la production partagent la base mais pas l'API : chaque Worker ne relit que
+     * ses propres tentatives. Null : tentative antérieure à cette colonne.
+     */
+    pawapayEnv: text('pawapay_env', { enum: ['sandbox', 'production'] }),
     createdAt: now(),
     updatedAt: integer('updated_at').notNull(),
   },
-  (t) => [index('checkouts_workspace').on(t.workspaceId)],
+  (t) => [
+    index('checkouts_workspace').on(t.workspaceId),
+    index('checkouts_status_created').on(t.status, t.createdAt),
+  ],
 )
+
+// Anomalies de paiement : pawaPay a encaissé (COMPLETED) mais l'offre n'a pas pu
+// être donnée (montant ou devise inattendus, opérateur inconnu, reçu non créé).
+// Une seule par tentative, quel que soit le nombre de relectures. Voir
+// anomalies.ts et docs/PAIEMENTS.md (procédure de résolution).
+export const paymentAnomalies = sqliteTable('payment_anomalies', {
+  id: text('id').primaryKey(),
+  checkoutId: text('checkout_id').notNull().unique().references(() => checkouts.id),
+  workspaceId: text('workspace_id').notNull().references(() => workspaces.id),
+  kind: text('kind', { enum: ['amount_mismatch', 'unknown_provider', 'receipt_failed'] }).notNull(),
+  /** Explication lisible (montant reçu / attendu, code d'erreur…). */
+  detail: text('detail').notNull(),
+  /** Dépôt tel que relu chez pawaPay (montant, devise, opérateur, numéro, transaction). */
+  deposit: text('deposit', { mode: 'json' }).$type<Record<string, string>>().notNull(),
+  status: text('status', { enum: ['open', 'resolved'] }).notNull().default('open'),
+  /** granted : offre accordée (reçu créé) ; refunded : remboursé ; dismissed : rien d'encaissé. */
+  resolution: text('resolution', { enum: ['granted', 'refunded', 'dismissed'] }),
+  /** Qui a tranché (adresse e-mail) et pourquoi. */
+  resolvedBy: text('resolved_by'),
+  resolutionNote: text('resolution_note'),
+  resolvedAt: integer('resolved_at'),
+  createdAt: now(),
+})
+
+// Journal des e-mails automatiques (rappels d'échéance, alertes d'anomalie).
+// La clé identifie UN envoi à UN destinataire (ex. rappel:<paiement>:j7:<user>) :
+// elle est réservée AVANT l'envoi, si bien qu'un e-mail n'est jamais envoyé deux
+// fois, même si la tâche tourne en double ou s'interrompt au milieu (cf. notifications.ts).
+export const notifications = sqliteTable('notifications', {
+  key: text('key').primaryKey(),
+  /** sending : réservé (envoi en cours ou interrompu) ; sent : parti ; failed : refusé, à retenter. */
+  status: text('status', { enum: ['sending', 'sent', 'failed'] }).notNull(),
+  attempts: integer('attempts').notNull().default(1),
+  createdAt: now(),
+  updatedAt: integer('updated_at').notNull(),
+})
 
 // Paiements d'abonnement (mobile money). Un paiement = un reçu numéroté
 // LCG-AAAA-NNNNN. Montants en FCFA (XAF), entiers. Voir payments.ts.
@@ -175,3 +224,4 @@ export type PaymentRow = typeof payments.$inferSelect
 export type DomainRow = typeof domains.$inferSelect
 export type InvitationRow = typeof invitations.$inferSelect
 export type CheckoutRow = typeof checkouts.$inferSelect
+export type PaymentAnomalyRow = typeof paymentAnomalies.$inferSelect

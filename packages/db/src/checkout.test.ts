@@ -8,8 +8,8 @@ import * as schema from './schema'
 import type { Db } from './mutations'
 import { listPayments } from './payments'
 import {
-  addMonths, createCheckout, getCheckout, methodForProvider, settleCheckout, syncWorkspacePlan,
-  PLAN_GRACE_MS, type DepositOutcome,
+  addMonths, createCheckout, getCheckout, listStaleCheckouts, methodForProvider, settleCheckout, settleStaleCheckout,
+  syncWorkspacePlan, CHECKOUT_EXPIRY_MS, CHECKOUT_RECHECK_AFTER_MS, PLAN_GRACE_MS, type DepositOutcome,
 } from './checkout'
 
 // Base SQLite en mémoire avec TOUTES les migrations réelles, dans l'ordre.
@@ -105,10 +105,37 @@ describe('settleCheckout', () => {
 
   it('montant ou devise inattendus : aucun palier donné', async () => {
     const c = await createCheckout(deps(), { workspaceId: 'ws_a', userId: 'u1', plan: 'business', cycle: 'month' })
-    expect(await settleCheckout(deps(), c.id, completed({ amount: '1500' }))).toMatchObject({ ok: false, error: 'anomaly' })
-    expect(await settleCheckout(deps(), c.id, completed({ amount: '10000', currency: 'XOF' }))).toMatchObject({ ok: false, error: 'anomaly' })
+    const d = await createCheckout(deps(), { workspaceId: 'ws_a', userId: 'u1', plan: 'business', cycle: 'month' })
+    expect(await settleCheckout(deps(), c.id, completed({ amount: '1500' }))).toMatchObject({
+      ok: false, error: 'anomaly', created: true, checkout: { status: 'review' }, anomaly: { kind: 'amount_mismatch', status: 'open' },
+    })
+    expect(await settleCheckout(deps(), d.id, completed({ amount: '10000', currency: 'XOF' }))).toMatchObject({ ok: false, error: 'anomaly' })
     expect(await plan()).toBe('free')
     expect(await listPayments(db, 'ws_a')).toHaveLength(0)
+  })
+
+  it('anomalie rejouée (callback + page de retour + tâche) : une seule, tentative en « review »', async () => {
+    const c = await createCheckout(deps(), { workspaceId: 'ws_a', userId: 'u1', plan: 'pro', cycle: 'month' })
+    const bad = completed({ provider: 'ORANGE_CMR' })
+    const [a, b] = await Promise.all([settleCheckout(deps(), c.id, bad), settleCheckout(deps(), c.id, bad)])
+    const again = await settleCheckout(deps(), c.id, bad)
+    const created = [a, b].filter((r) => !r.ok && r.error === 'anomaly' && r.created)
+    expect(created).toHaveLength(1)
+    expect(again).toMatchObject({ ok: true, changed: false, checkout: { status: 'review' } })
+    const rows = await db.query.paymentAnomalies.findMany({ where: eq(schema.paymentAnomalies.checkoutId, c.id) })
+    expect(rows).toHaveLength(1)
+    expect(rows[0]).toMatchObject({
+      kind: 'unknown_provider', workspaceId: 'ws_a',
+      deposit: { status: 'COMPLETED', amount: '1500', provider: 'ORANGE_CMR', providerTransactionId: 'TX-1', phoneNumber: '242063456789' },
+    })
+  })
+
+  it('confirmation tardive d’une tentative expirée : l’offre est donnée', async () => {
+    const c = await createCheckout(deps(), { workspaceId: 'ws_a', userId: 'u1', plan: 'pro', cycle: 'month' })
+    await settleStaleCheckout(deps(JUNE + 3 * DAY), c.id, { status: 'PENDING' })
+    expect(await getCheckout(db, c.id)).toMatchObject({ status: 'failed', failureCode: 'EXPIRED' })
+    expect(await settleCheckout(deps(JUNE + 3 * DAY), c.id, completed())).toMatchObject({ ok: true, changed: true })
+    expect(await plan()).toBe('pro')
   })
 
   it('FAILED puis PENDING : échec enregistré, pas de reçu', async () => {
@@ -137,5 +164,30 @@ describe('syncWorkspacePlan', () => {
   it('un palier posé à la main (aucun paiement) n’est jamais retiré', async () => {
     await db.update(schema.workspaces).set({ plan: 'enterprise' }).where(eq(schema.workspaces.id, 'ws_a'))
     expect(await syncWorkspacePlan(db, 'ws_a', D('2030-01-01T00:00:00Z'))).toBe('enterprise')
+  })
+})
+
+describe('tâche planifiée : tentatives en attente', () => {
+  it('listStaleCheckouts : plus de 10 minutes, même API pawaPay (ou inconnue)', async () => {
+    const old = await createCheckout(deps(), { workspaceId: 'ws_a', userId: 'u1', plan: 'pro', cycle: 'month', pawapayEnv: 'production' })
+    const legacy = await createCheckout(deps(), { workspaceId: 'ws_a', userId: 'u1', plan: 'pro', cycle: 'month' })
+    await createCheckout(deps(), { workspaceId: 'ws_a', userId: 'u1', plan: 'pro', cycle: 'month', pawapayEnv: 'sandbox' })
+    await createCheckout(deps(JUNE + 5 * 60_000), { workspaceId: 'ws_a', userId: 'u1', plan: 'pro', cycle: 'month', pawapayEnv: 'production' })
+    const stale = await listStaleCheckouts(db, { env: 'production', now: JUNE + CHECKOUT_RECHECK_AFTER_MS + 60_000 })
+    expect(stale.map((c) => c.id).sort()).toEqual([old.id, legacy.id].sort())
+  })
+
+  it('settleStaleCheckout : toujours en attente après 48 h → EXPIRED ; avant, rien', async () => {
+    const c = await createCheckout(deps(), { workspaceId: 'ws_a', userId: 'u1', plan: 'pro', cycle: 'month' })
+    await settleStaleCheckout(deps(JUNE + CHECKOUT_EXPIRY_MS - 1), c.id, { status: 'PENDING' })
+    expect(await getCheckout(db, c.id)).toMatchObject({ status: 'pending' })
+    expect(await settleStaleCheckout(deps(JUNE + CHECKOUT_EXPIRY_MS), c.id, { status: 'PENDING' })).toMatchObject({ ok: true, changed: true })
+    expect(await getCheckout(db, c.id)).toMatchObject({ status: 'failed', failureCode: 'EXPIRED' })
+  })
+
+  it('settleStaleCheckout : un dépôt confirmé est appliqué comme par le callback', async () => {
+    const c = await createCheckout(deps(), { workspaceId: 'ws_a', userId: 'u1', plan: 'pro', cycle: 'month' })
+    expect(await settleStaleCheckout(deps(JUNE + CHECKOUT_EXPIRY_MS + DAY), c.id, completed())).toMatchObject({ ok: true, changed: true })
+    expect(await plan()).toBe('pro')
   })
 })
