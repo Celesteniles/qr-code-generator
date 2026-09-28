@@ -13,7 +13,7 @@ import { formatFcfa } from '@/components/facturation/format'
 export const metadata: Metadata = {
   title: 'Offres — link.cg',
   description:
-    'QR codes fixes gratuits, sans compte. Liens courts et QR modifiables : Pro dès 5 000 FCFA par mois, Business ou Entreprise, paiement Airtel Money ou MTN MoMo.',
+    'QR codes fixes gratuits, sans compte. Liens courts et QR modifiables : Pro dès 1 500 FCFA par mois, Business ou Entreprise, paiement Airtel Money ou MTN MoMo.',
 }
 
 const CONTACT = 'contact@nscreative.cg'
@@ -58,8 +58,8 @@ const FAQ = [
     a: 'Oui, l’impression est possible via NS Creative : autocollants de table, flyers, cartes de visite, kakémonos. Écrivez-nous pour un devis.',
   },
   {
-    q: 'Comment passer à l’offre Pro ?',
-    a: `Écrivez-nous à ${CONTACT}. Le paiement se fait par Airtel Money ou MTN MoMo.`,
+    q: 'Comment passer à l’offre Pro ou Business ?',
+    a: `Écrivez-nous à ${CONTACT}. Le paiement se fait par Airtel Money ou MTN MoMo, au mois ou à l’année (moins cher).`,
   },
 ]
 
@@ -98,7 +98,7 @@ export default async function OffresPage() {
               </div>
               <p className={`text-sm ${pop ? 'text-bg/70' : 'text-muted'}`}>
                 {p.yearlyPrice !== null
-                  ? `ou ${formatFcfa(p.yearlyPrice)} par an, deux mois offerts`
+                  ? `ou ${formatFcfa(p.yearlyPrice)} par an, soit ${formatFcfa(p.monthlyPrice! * 12 - p.yearlyPrice)} d’économie`
                   : p.monthlyPrice === null ? `À partir de ${formatFcfa(ENTERPRISE_FROM_PRICE)} par mois` : 'Sans engagement, sans carte'}
               </p>
               <ul className="mb-[26px] mt-[22px] grid flex-1 content-start gap-2.5 text-sm">

@@ -13,7 +13,7 @@ export interface PlanSpec {
   customDomains: boolean
   /** Prix mensuel en FCFA. 0 = gratuit, null = sur devis. */
   monthlyPrice: number | null
-  /** Prix annuel en FCFA (2 mois offerts). null = sur devis ou gratuit. */
+  /** Prix annuel en FCFA (remisé). null = sur devis ou gratuit. */
   yearlyPrice: number | null
   /** Argumentaire (page tarifs). */
   features: string[]
@@ -32,20 +32,20 @@ export const PLANS: Record<Plan, PlanSpec> = {
   pro: {
     id: 'pro',
     label: 'Pro',
-    maxLinks: 200,
+    maxLinks: 100,
     customDomains: false,
-    monthlyPrice: 5_000,
-    yearlyPrice: 50_000,
-    features: ['200 liens dynamiques', 'Studio QR complet', 'Statistiques détaillées', 'Cartes de visite'],
+    monthlyPrice: 1_500,
+    yearlyPrice: 13_000,
+    features: ['100 liens dynamiques', 'Studio QR complet', 'Statistiques détaillées', 'Cartes de visite'],
   },
   business: {
     id: 'business',
     label: 'Business',
-    maxLinks: 1_000,
+    maxLinks: 500,
     customDomains: true,
-    monthlyPrice: 15_000,
-    yearlyPrice: 150_000,
-    features: ['1 000 liens dynamiques', 'Domaine personnalisé', 'Plusieurs utilisateurs', 'Export des statistiques'],
+    monthlyPrice: 10_000,
+    yearlyPrice: 100_000,
+    features: ['500 liens dynamiques', 'Domaine personnalisé', 'Plusieurs utilisateurs', 'Export des statistiques'],
   },
   enterprise: {
     id: 'enterprise',
