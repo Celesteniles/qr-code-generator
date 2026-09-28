@@ -109,7 +109,9 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;margin-top:2
 // dashboard lisent blobN par position) :
 //   blob1 slug · blob2 résultat · blob3 pays · blob4 user-agent · blob5 referer
 //   blob6 ville · blob7 canal ('qr' = scan d'un QR, adresse suivie de « ?q » ;
-//   'link' = clic). Les lignes antérieures ont blob6/blob7 vides.
+//   'link' = clic) · blob8 hostname (link.cg ou domaine personnalisé : le même
+//   slug peut exister sur deux domaines). Les lignes antérieures ont blob6/blob7
+//   (et blob8) vides.
 // Les robots (aperçus de lien…) sont enregistrés tels quels et écartés à la
 // lecture (humanVisitSql de @link/shared) : la donnée brute reste complète.
 async function logScan(env: Env, request: Request, url: URL, slug: string, r: Resolution): Promise<void> {
@@ -124,6 +126,7 @@ async function logScan(env: Env, request: Request, url: URL, slug: string, r: Re
       request.headers.get('referer') ?? '',
       cf?.city ?? '',
       url.searchParams.has('q') ? 'qr' : 'link',
+      url.hostname,
     ],
     doubles: [1],
     indexes: [slug],

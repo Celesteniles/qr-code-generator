@@ -40,6 +40,35 @@ describe('safeStatsLinks', () => {
   })
 })
 
+describe('domaines (blob8)', () => {
+  it('garde le domaine, écarte un domaine non conforme, distingue le même slug sur deux domaines', () => {
+    const out = safeStatsLinks([
+      { slug: 'menu', createdAt: T, hostname: 'link.cg' },
+      { slug: 'menu', createdAt: T + 1000, hostname: 'go.resto.cg' },
+      { slug: 'menu', createdAt: T, hostname: "x' OR 1=1 --" },
+      { slug: 'menu', createdAt: T, hostname: 'GO.RESTO.CG' },
+    ])
+    expect(out).toEqual([
+      { slug: 'menu', createdAt: T + 1000, hostname: 'go.resto.cg' },
+      { slug: 'menu', createdAt: T, hostname: 'link.cg' },
+    ])
+    expect(statsKey(out)).toBe(`menu/go.resto.cg@${T + 1000},menu/link.cg@${T}`)
+  })
+
+  it('link.cg compte aussi les visites sans domaine enregistré ; un domaine personnalisé seulement les siennes', () => {
+    expect(linksScopeSql([{ slug: 'menu', createdAt: T, hostname: 'link.cg' }])).toBe(
+      "(index1 = 'menu' AND blob8 IN ('', 'link.cg') AND timestamp >= toDateTime('2026-09-20 14:30:05'))",
+    )
+    expect(linksScopeSql([{ slug: 'menu', createdAt: T, hostname: 'go.resto.cg' }])).toBe(
+      "(index1 = 'menu' AND blob8 = 'go.resto.cg' AND timestamp >= toDateTime('2026-09-20 14:30:05'))",
+    )
+  })
+
+  it('refuse un domaine non validé', () => {
+    expect(() => linksScopeSql([{ slug: 'a', createdAt: T, hostname: "a'b.cg" }])).toThrow()
+  })
+})
+
 describe('sqlDateTime', () => {
   it('formate en UTC à la seconde', () => {
     expect(sqlDateTime(T)).toBe('2026-09-20 14:30:05')
