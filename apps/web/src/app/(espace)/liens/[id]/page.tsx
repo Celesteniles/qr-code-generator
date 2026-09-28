@@ -7,6 +7,7 @@ import { getDb } from '@/server/data'
 import { getViewer } from '@/server/viewer'
 import { getScanCounts, getDailyVisits, getLinkInsights } from '@/server/scans'
 import { deleteLinkAction } from '@/server/actions'
+import { getWorkspacePlan } from '@/server/billing'
 import { toDesign } from '@/lib/qr-design'
 import { QrPanel } from '@/components/liens/QrPanel'
 import { DestinationForm, type DestinationValues } from '@/components/liens/DestinationForm'
@@ -14,6 +15,7 @@ import { ActiveSwitch } from '@/components/liens/ActiveSwitch'
 import { DeleteZone } from '@/components/liens/DeleteZone'
 import { VisitsChart } from '@/components/liens/VisitsChart'
 import { LinkInsightsView } from '@/components/stats/LinkInsightsView'
+import { StatsExport } from '@/components/stats/StatsExport'
 import { SHORT_HOST, nf, shortUrl } from '@/components/liens/model'
 
 export const metadata: Metadata = { title: 'Fiche du lien — link.cg' }
@@ -35,11 +37,12 @@ export default async function LienPage({ params }: { params: Promise<{ id: strin
   if (!link || link.workspaceId !== ctx.workspaceId) notFound()
   if (link.kind === 'card' || link.rule.type === 'card') redirect(`/carte/${link.slug}`)
 
-  const [rawDesign, scans, daily, insights] = await Promise.all([
+  const [rawDesign, scans, daily, insights, plan] = await Promise.all([
     getQrDesign(db, link.id),
     getScanCounts([link]),
     getDailyVisits([link], 30).catch(() => []),
     getLinkInsights(link, 30).catch(() => null),
+    getWorkspacePlan(ctx.workspaceId),
   ])
   const url = shortUrl(link.slug)
   const visits = scans[link.slug] ?? 0
@@ -84,9 +87,12 @@ export default async function LienPage({ params }: { params: Promise<{ id: strin
               <SectionHead icon={<ChartBarIcon />} tone="bg-sun text-[#7a4b00]" id="qui-ouvre" title="Qui l'ouvre ?">
                 Clics sur le lien et scans du QR, hors robots et aperçus de lien, comptés sans collecter de données personnelles.
               </SectionHead>
-              <div className="inline-block rounded-2xl bg-soft px-4 py-3.5">
-                <div className="font-display text-[28px] font-bold tabular-nums tracking-[-.03em]">{nf.format(visits)}</div>
-                <div className="text-xs text-muted">{visits > 1 ? 'visites' : 'visite'} ces 30 derniers jours</div>
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <div className="inline-block rounded-2xl bg-soft px-4 py-3.5">
+                  <div className="font-display text-[28px] font-bold tabular-nums tracking-[-.03em]">{nf.format(visits)}</div>
+                  <div className="text-xs text-muted">{visits > 1 ? 'visites' : 'visite'} ces 30 derniers jours</div>
+                </div>
+                <StatsExport allowed={plan.statsExport} linkId={link.id} />
               </div>
               {daily.length > 0
                 ? <VisitsChart points={daily} />

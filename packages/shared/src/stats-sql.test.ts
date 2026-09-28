@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   clampDays,
+  dailyLinkVisitsSql,
   dailyVisitsSql,
   insightsQueries,
   linksScopeSql,
@@ -81,6 +82,13 @@ describe('requêtes', () => {
   it('série par jour : bornée par adresse, jour validé', () => {
     expect(dailyVisitsSql(links, '2026-08-28')).toContain(`toDateTime('2026-08-28 00:00:00') AND ${scope} AND`)
     expect(() => dailyVisitsSql(links, "2026-08-28' OR 1=1")).toThrow()
+  })
+
+  it('export : par adresse, jour et canal, borné par adresse, jour validé', () => {
+    const sql = dailyLinkVisitsSql(links, '2026-08-28')
+    expect(sql).toContain(`toDateTime('2026-08-28 00:00:00') AND ${scope} AND`)
+    expect(sql).toContain('GROUP BY slug, day, channel')
+    expect(() => dailyLinkVisitsSql(links, "2026-08-28' OR 1=1")).toThrow()
   })
 
   it('statistiques détaillées : toutes les requêtes portent la borne', () => {

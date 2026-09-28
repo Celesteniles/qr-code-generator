@@ -6,8 +6,10 @@ import { getWorkspaceLinks } from '@/server/links'
 import { getDb } from '@/server/data'
 import { getViewer } from '@/server/viewer'
 import { getScanCounts } from '@/server/scans'
+import { getWorkspacePlan } from '@/server/billing'
 import { toDesign } from '@/lib/qr-design'
 import { LinksBoard } from '@/components/liens/LinksBoard'
+import { StatsExport } from '@/components/stats/StatsExport'
 import { describeRule, shortUrl, type LinkItem } from '@/components/liens/model'
 
 export const metadata: Metadata = { title: 'Mes liens & QR — link.cg' }
@@ -41,12 +43,16 @@ async function loadLinks(workspaceId: string): Promise<LinkItem[]> {
 
 export default async function LiensPage() {
   const { ctx } = await getViewer()
-  const links = ctx ? await loadLinks(ctx.workspaceId) : []
+  const [links, plan] = ctx
+    ? await Promise.all([loadLinks(ctx.workspaceId), getWorkspacePlan(ctx.workspaceId)])
+    : [[], null]
 
   return (
     <>
-      <div className="flex items-center gap-2.5 px-4 py-3.5 lg:px-8 lg:py-[18px]">
-        <Link href="/creer" className="btn btn-cta btn-sm ml-auto"><PlusIcon aria-hidden="true" />Créer</Link>
+      <div className="flex items-center justify-end gap-2.5 px-4 py-3.5 lg:px-8 lg:py-[18px]">
+        {/* Export des visites de tous les liens (ou incitation vers /offres). */}
+        {plan && links.length > 0 && <StatsExport allowed={plan.statsExport} />}
+        <Link href="/creer" className="btn btn-cta btn-sm"><PlusIcon aria-hidden="true" />Créer</Link>
       </div>
       <div className="px-4 pb-14 pt-1 lg:px-8 lg:pt-2">
         <LinksBoard links={links} signedIn={!!ctx} />

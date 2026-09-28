@@ -2,11 +2,13 @@ import 'server-only'
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 import {
   clampDays,
+  dailyLinkVisitsSql,
   dailyVisitsSql,
   insightsQueries,
   safeStatsLinks,
   scanCountsSql,
   statsKey,
+  type DailyLinkRow,
   type StatsLink,
 } from '@link/shared'
 import type { DailyPoint } from './config'
@@ -109,6 +111,31 @@ export async function getDailyVisits(links: StatsLink[], days = 30): Promise<Dai
   const n = clampDays(days)
   if (!safe.length) return []
   return remember(`daily:${n}:${statsKey(safe)}`, () => loadDailyVisits(safe, n), [])
+}
+
+// ── Export CSV ───────────────────────────────────────────────────────────────
+
+export type ExportRead =
+  | { ok: true; rows: DailyLinkRow[] }
+  /** config : jeton Analytics absent ; erreur : l'API SQL a échoué. */
+  | { ok: false; reason: 'config' | 'erreur' }
+
+/**
+ * Visites par adresse, par jour (UTC) et par canal sur `days` jours, aujourd'hui
+ * compris, pour l'export CSV. Pas de mémoïsation (lecture rare, à la demande),
+ * et pas de dégradation muette : l'appelant distingue « non configuré » d'une
+ * panne pour répondre clairement. `links` doit être borné à l'espace connecté.
+ */
+export async function getDailyLinkVisits(links: StatsLink[], days = 30): Promise<ExportRead> {
+  const creds = credentials()
+  if (!creds) return { ok: false, reason: 'config' }
+  const safe = safeStatsLinks(links)
+  if (!safe.length) return { ok: true, rows: [] }
+  const n = clampDays(days)
+  const today = new Date()
+  const first = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()) - (n - 1) * 86_400_000)
+  const rows = await runSql<DailyLinkRow>(creds.account, creds.token, dailyLinkVisitsSql(safe, first.toISOString().slice(0, 10)), 'export')
+  return rows ? { ok: true, rows } : { ok: false, reason: 'erreur' }
 }
 
 // ── Statistiques détaillées ──────────────────────────────────────────────────

@@ -137,3 +137,18 @@ export function insightsQueries(links: readonly StatsLink[], n: number) {
       `FROM ${SCANS_DATASET} WHERE ${where} GROUP BY d, h`,
   }
 }
+
+/**
+ * Visites par adresse, par jour (UTC) et par canal depuis `firstDay` (AAAA-MM-JJ) :
+ * base de l'export CSV. blob7 = canal 'qr' | 'link' ('' avant la distinction).
+ */
+export function dailyLinkVisitsSql(links: readonly StatsLink[], firstDay: string): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(firstDay)) throw new Error(`jour invalide : ${firstDay}`)
+  return (
+    `SELECT index1 AS slug, toStartOfDay(timestamp) AS day, blob7 AS channel, sum(_sample_interval) AS visits ` +
+    `FROM ${SCANS_DATASET} WHERE timestamp >= toDateTime('${firstDay} 00:00:00') ` +
+    `AND ${linksScopeSql(links)} ` +
+    `AND ${HUMAN} ` +
+    `GROUP BY slug, day, channel ORDER BY day, slug`
+  )
+}

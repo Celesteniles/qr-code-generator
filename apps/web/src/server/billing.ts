@@ -1,12 +1,21 @@
 import 'server-only'
 import { cache } from 'react'
 import { activePaidPeriod, getPayment, getWorkspace, listPayments, type PaymentRow } from '@link/db'
-import { PLANS, type Plan } from '@link/shared'
+import { PLANS, type Plan, type PlanSpec } from '@link/shared'
 import type { SessionContext } from './session'
 import { getDb } from './data'
 
 // Lectures « Facturation » pour l'utilisateur connecté. Toujours bornées à son
 // espace de travail : un paiement d'un autre espace est traité comme inexistant.
+
+/**
+ * Palier de l'espace `workspaceId` (Gratuit si l'espace ou son palier est
+ * inconnu). `cache` : une seule lecture par requête.
+ */
+export const getWorkspacePlan = cache(async (workspaceId: string): Promise<PlanSpec> => {
+  const ws = await getWorkspace(getDb(), workspaceId)
+  return PLANS[(ws?.plan ?? 'free') as Plan] ?? PLANS.free
+})
 
 export interface BillingOverview {
   planId: Plan
