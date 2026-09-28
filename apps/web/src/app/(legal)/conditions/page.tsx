@@ -23,8 +23,8 @@ export default function ConditionsPage() {
       <h2>1. Le service</h2>
       <p>
         link.cg permet de créer des liens courts (link.cg/…), des QR codes et des cartes de visite en ligne, et de
-        suivre leurs visites. Le service est édité par <strong>{ISSUER.name}</strong>, en République du Congo
-        {ISSUER.rccm ? ` (RCCM ${ISSUER.rccm})` : ''}. En utilisant link.cg, vous acceptez ces conditions.
+        suivre leurs visites. Le service est édité par <strong>{ISSUER.name}</strong>
+        {ISSUER.rccm ? ` (RCCM ${ISSUER.rccm})` : ''}, {ISSUER.address || 'en République du Congo'}. En utilisant link.cg, vous acceptez ces conditions.
       </p>
 
       <h2>2. Votre compte</h2>
@@ -98,7 +98,12 @@ export default function ConditionsPage() {
       </p>
 
       <h2>11. Contact</h2>
-      <p>{ISSUER.name} — <a href={`mailto:${contact}`}>{contact}</a></p>
+      <p>
+        {ISSUER.name}{ISSUER.address ? `, ${ISSUER.address}` : ''}
+        <br />
+        E-mail : <a href={`mailto:${contact}`}>{contact}</a>
+        {ISSUER.phone && <><br />Téléphone : <a href={`tel:${ISSUER.phone.replace(/\s/g, '')}`}>{ISSUER.phone}</a></>}
+      </p>
     </article>
   )
 }

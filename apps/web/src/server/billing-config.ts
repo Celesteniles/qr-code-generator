@@ -1,9 +1,9 @@
 // Mentions de l'émetteur imprimées sur les reçus link.cg.
 //
-// À COMPLÉTER par NS Creative avant la mise en service des paiements :
-// adresse, NIU (numéro d'identification unique), RCCM et téléphone. Ne saisir
-// que des informations officielles et vérifiées. Tant qu'un champ est vide, il
-// n'apparaît pas sur le reçu.
+// Coordonnées fournies par NS Creative le 2026-09-28 (reprises aussi dans les
+// pages légales). Reste à compléter : le NIU (numéro d'identification unique).
+// Ne saisir que des informations officielles et vérifiées. Tant qu'un champ est
+// vide, il n'apparaît pas sur le reçu.
 
 export interface Issuer {
   /** Raison sociale. */
@@ -24,10 +24,10 @@ export const ISSUER: Issuer = {
   name: 'NS Creative',
   website: 'nscreative.cg',
   email: 'contact@nscreative.cg',
-  address: '', // à compléter
+  address: '15, rue Konda, Ouenzé, Brazzaville, République du Congo',
   niu: '', // à compléter
-  rccm: '', // à compléter
-  phone: '', // à compléter
+  rccm: 'CG-BZV-01-2026-A10-01846',
+  phone: '+242 06 723 0202',
 }
 
 /** Nom du service facturé, repris dans la désignation des reçus. */

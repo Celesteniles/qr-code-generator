@@ -21,7 +21,7 @@ export default function ConfidentialitePage() {
 
       <p>
         link.cg (liens courts, QR codes et cartes de visite en ligne, accessibles sur qrcode.cg et link.cg) est un
-        service édité par <strong>{ISSUER.name}</strong>, en République du Congo{ISSUER.address ? `, ${ISSUER.address}` : ''}.
+        service édité par <strong>{ISSUER.name}</strong>{ISSUER.rccm ? ` (RCCM ${ISSUER.rccm})` : ''}, {ISSUER.address || 'en République du Congo'}.
         Cette page explique quelles données nous collectons, pourquoi, et ce que vous pouvez en faire.
       </p>
 
@@ -144,7 +144,13 @@ export default function ConfidentialitePage() {
 
       <h2>10. Contact</h2>
       <p>
-        {ISSUER.name} — <a href={`mailto:${contact}`}>{contact}</a>. Voir aussi nos{' '}
+        {ISSUER.name}{ISSUER.address ? `, ${ISSUER.address}` : ''}
+        <br />
+        E-mail : <a href={`mailto:${contact}`}>{contact}</a>
+        {ISSUER.phone && <><br />Téléphone : <a href={`tel:${ISSUER.phone.replace(/\s/g, '')}`}>{ISSUER.phone}</a></>}
+      </p>
+      <p>
+        Voir aussi nos{' '}
         <Link href="/conditions">conditions d&apos;utilisation</Link>.
       </p>
     </article>
